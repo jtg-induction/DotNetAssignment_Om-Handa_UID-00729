@@ -59,7 +59,28 @@
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=10.0.0.8, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.10.0.8\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Bcl.Cryptography, Version=10.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Cryptography.10.0.2\lib\net462\Microsoft.Bcl.Cryptography.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.TimeProvider, Version=8.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.TimeProvider.8.0.1\lib\net462\Microsoft.Bcl.TimeProvider.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.2.1.0\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Abstractions, Version=8.22.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Abstractions.8.22.0\lib\net472\Microsoft.IdentityModel.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.JsonWebTokens, Version=8.22.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.JsonWebTokens.8.22.0\lib\net472\Microsoft.IdentityModel.JsonWebTokens.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=8.22.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.8.22.0\lib\net472\Microsoft.IdentityModel.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=8.22.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.8.22.0\lib\net472\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers, Version=18.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Web.Infrastructure, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.Infrastructure.2.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
@@ -69,6 +90,15 @@
     </Reference>
     <Reference Include="System.Buffers, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.6.1\lib\net462\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=6.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.6.0.2\lib\net461\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Formats.Asn1, Version=10.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Formats.Asn1.10.0.2\lib\net462\System.Formats.Asn1.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=8.22.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.8.22.0\lib\net472\System.IdentityModel.Tokens.Jwt.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Pipelines, Version=10.0.0.8, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IO.Pipelines.10.0.8\lib\net462\System.IO.Pipelines.dll</HintPath>
@@ -156,11 +186,24 @@
     <Compile Include="Migrations\202608041026198_UpdatePasswordLength.Designer.cs">
       <DependentUpon>202608041026198_UpdatePasswordLength.cs</DependentUpon>
     </Compile>
+<<<<<<< HEAD
     <Compile Include="Migrations\202608051152564_UpdateValidations.cs" />
     <Compile Include="Migrations\202608051152564_UpdateValidations.Designer.cs">
       <DependentUpon>202608051152564_UpdateValidations.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+=======
+    <Compile Include="Migrations\202608041830443_AddRefreshTokenTable.cs" />
+    <Compile Include="Migrations\202608041830443_AddRefreshTokenTable.Designer.cs">
+      <DependentUpon>202608041830443_AddRefreshTokenTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\DTO\AddressDto.cs" />
+    <Compile Include="Models\DTO\ApiResponseDto.cs" />
+    <Compile Include="Models\DTO\JWTResponseDto.cs" />
+    <Compile Include="Models\DTO\SignupRequestDto.cs" />
+    <Compile Include="Models\Entities\RefreshToken.cs" />
+>>>>>>> 369ac89 ([OH_DA_01]Signup API- Completed Implementation)
     <Compile Include="Models\Entities\UserAddress.cs" />
     <Compile Include="Models\Entities\MenuItem.cs" />
     <Compile Include="Models\Entities\OrderedItem.cs" />
@@ -171,6 +214,19 @@
     <Compile Include="Models\Enums\OrderStatus.cs" />
     <Compile Include="Models\Enums\UserRoles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+<<<<<<< HEAD
+=======
+    <Compile Include="Repository\RefreshTokens\IRefreshTokenRepository.cs" />
+    <Compile Include="Repository\RefreshTokens\RefreshTokenRepository.cs" />
+    <Compile Include="Repository\Users\IUserRepository.cs" />
+    <Compile Include="Repository\Users\UserRepository.cs" />
+    <Compile Include="Services\JWT\IJWTService.cs" />
+    <Compile Include="Services\JWT\JWTService.cs" />
+    <Compile Include="Services\Password\IPasswordService.cs" />
+    <Compile Include="Services\Password\PasswordService.cs" />
+    <Compile Include="Services\Auth\IAuthService.cs" />
+    <Compile Include="Services\Auth\AuthService.cs" />
+>>>>>>> 369ac89 ([OH_DA_01]Signup API- Completed Implementation)
   </ItemGroup>
   <ItemGroup>
     <Content Include="ConnectionString.config" />
@@ -192,8 +248,13 @@
     <EmbeddedResource Include="Migrations\202608041026198_UpdatePasswordLength.resx">
       <DependentUpon>202608041026198_UpdatePasswordLength.cs</DependentUpon>
     </EmbeddedResource>
+<<<<<<< HEAD
     <EmbeddedResource Include="Migrations\202608051152564_UpdateValidations.resx">
       <DependentUpon>202608051152564_UpdateValidations.cs</DependentUpon>
+=======
+    <EmbeddedResource Include="Migrations\202608041830443_AddRefreshTokenTable.resx">
+      <DependentUpon>202608041830443_AddRefreshTokenTable.cs</DependentUpon>
+>>>>>>> 369ac89 ([OH_DA_01]Signup API- Completed Implementation)
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
