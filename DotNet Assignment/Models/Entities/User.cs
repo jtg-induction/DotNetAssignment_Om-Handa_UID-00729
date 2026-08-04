@@ -18,7 +18,7 @@ namespace DotNet_Assignment.Models.Entities
         public string Email { get; set; }
 
         [Required]
-        [StringLength(50), MinLength(8)]
+        [StringLength(255), MinLength(8)]
         public string Password { get; set; }
 
         [Required]
