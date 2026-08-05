@@ -143,9 +143,7 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Data\AppDbContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -158,9 +156,11 @@
     <Compile Include="Migrations\202608041026198_UpdatePasswordLength.Designer.cs">
       <DependentUpon>202608041026198_UpdatePasswordLength.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202608051152564_UpdateValidations.cs" />
+    <Compile Include="Migrations\202608051152564_UpdateValidations.Designer.cs">
+      <DependentUpon>202608051152564_UpdateValidations.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\DTO\ApiResponse.cs" />
-    <Compile Include="Models\DTO\SignupRequestDto.cs" />
     <Compile Include="Models\Entities\UserAddress.cs" />
     <Compile Include="Models\Entities\MenuItem.cs" />
     <Compile Include="Models\Entities\OrderedItem.cs" />
@@ -171,14 +171,9 @@
     <Compile Include="Models\Enums\OrderStatus.cs" />
     <Compile Include="Models\Enums\UserRoles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repository\Users\IUserRepository.cs" />
-    <Compile Include="Repository\Users\UserRepository.cs" />
-    <Compile Include="Services\Password\IPasswordService.cs" />
-    <Compile Include="Services\Password\PasswordService.cs" />
-    <Compile Include="Services\Auth\IAuthService.cs" />
-    <Compile Include="Services\Auth\AuthService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ConnectionString.config" />
     <None Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -196,6 +191,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202608041026198_UpdatePasswordLength.resx">
       <DependentUpon>202608041026198_UpdatePasswordLength.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608051152564_UpdateValidations.resx">
+      <DependentUpon>202608051152564_UpdateValidations.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -35,6 +35,6 @@ namespace DotNet_Assignment.Models.Entities
 
         public virtual Restaurant Restaurant { get; set; }
 
-        public virtual ICollection<OrderedItem> OrderedItems {  get; set; } = new HashSet<Restaurant>();
+        public virtual ICollection<OrderedItem> OrderedItems {  get; set; } = new HashSet<OrderedItem>();
     }
 }
