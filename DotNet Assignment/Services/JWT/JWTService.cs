@@ -23,7 +23,7 @@ namespace DotNet_Assignment.Services.JWT
             var Credentials = new SigningCredentials(SecurityKey, SecurityAlgorithms.HmacSha256);
 
             var Claims = new List<Claim>() {
-                new Claim("UserID", user.Id.ToString()),
+                new Claim("UserID", user.UserId.ToString()),
                 new Claim("Email", user.Email),
                 new Claim("Role", user.Role.ToString())
             };

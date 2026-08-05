@@ -39,29 +39,24 @@ namespace DotNet_Assignment.Services.Auth
 
             var User = new User()
             {
-                Id = Guid.NewGuid(),
+                UserId = Guid.NewGuid(),
                 Email = requestDto.Email,
                 Password = _passwordService.HashPassword(requestDto.Password),
                 Name = requestDto.Name,
                 PhoneNumber = requestDto.PhoneNumber,
-                Balance = 1000m,
                 Role = requestDto.Role,
                 IsDeleted = false,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
             };
 
             var Address = new UserAddress()
             {
-                Id = Guid.NewGuid(),
+                UserAddressId = Guid.NewGuid(),
                 HouseNumber = requestDto.Address.HouseNumber,
                 Street = requestDto.Address.Street,
                 Landmark = requestDto.Address.Landmark,
                 City = requestDto.Address.City,
                 State = requestDto.Address.State,
                 Pincode = requestDto.Address.Pincode,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
                 User = User
             };
 
@@ -69,7 +64,14 @@ namespace DotNet_Assignment.Services.Auth
 
             _userRepository.AddUser(User);
 
-            _userRepository.Save();
+            try
+            {
+                _userRepository.Save();
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
 
             string AccessToken = _jWTService.GetAccessToken(User);
 
@@ -81,7 +83,7 @@ namespace DotNet_Assignment.Services.Auth
                 Token = RefreshToken,
                 CreatedAt = DateTime.UtcNow,
                 ExpiresAt = DateTime.UtcNow.AddDays(7),
-                UserId = User.Id
+                UserId = User.UserId
             };
 
             _refreshTokenRepository.AddRefreshToken(Refresh);

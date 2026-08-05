@@ -174,6 +174,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="Data\AppDbContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -186,16 +187,17 @@
     <Compile Include="Migrations\202608041026198_UpdatePasswordLength.Designer.cs">
       <DependentUpon>202608041026198_UpdatePasswordLength.cs</DependentUpon>
     </Compile>
-<<<<<<< HEAD
     <Compile Include="Migrations\202608051152564_UpdateValidations.cs" />
     <Compile Include="Migrations\202608051152564_UpdateValidations.Designer.cs">
       <DependentUpon>202608051152564_UpdateValidations.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
-=======
     <Compile Include="Migrations\202608041830443_AddRefreshTokenTable.cs" />
     <Compile Include="Migrations\202608041830443_AddRefreshTokenTable.Designer.cs">
       <DependentUpon>202608041830443_AddRefreshTokenTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202608051413490_UpdateMigrations.cs" />
+    <Compile Include="Migrations\202608051413490_UpdateMigrations.Designer.cs">
+      <DependentUpon>202608051413490_UpdateMigrations.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DTO\AddressDto.cs" />
@@ -203,7 +205,6 @@
     <Compile Include="Models\DTO\JWTResponseDto.cs" />
     <Compile Include="Models\DTO\SignupRequestDto.cs" />
     <Compile Include="Models\Entities\RefreshToken.cs" />
->>>>>>> 369ac89 ([OH_DA_01]Signup API- Completed Implementation)
     <Compile Include="Models\Entities\UserAddress.cs" />
     <Compile Include="Models\Entities\MenuItem.cs" />
     <Compile Include="Models\Entities\OrderedItem.cs" />
@@ -214,8 +215,6 @@
     <Compile Include="Models\Enums\OrderStatus.cs" />
     <Compile Include="Models\Enums\UserRoles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-<<<<<<< HEAD
-=======
     <Compile Include="Repository\RefreshTokens\IRefreshTokenRepository.cs" />
     <Compile Include="Repository\RefreshTokens\RefreshTokenRepository.cs" />
     <Compile Include="Repository\Users\IUserRepository.cs" />
@@ -226,11 +225,12 @@
     <Compile Include="Services\Password\PasswordService.cs" />
     <Compile Include="Services\Auth\IAuthService.cs" />
     <Compile Include="Services\Auth\AuthService.cs" />
->>>>>>> 369ac89 ([OH_DA_01]Signup API- Completed Implementation)
+    <Compile Include="Controllers\AuthController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ConnectionString.config" />
     <None Include="packages.config" />
+    <Content Include="Secrets.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -248,13 +248,14 @@
     <EmbeddedResource Include="Migrations\202608041026198_UpdatePasswordLength.resx">
       <DependentUpon>202608041026198_UpdatePasswordLength.cs</DependentUpon>
     </EmbeddedResource>
-<<<<<<< HEAD
     <EmbeddedResource Include="Migrations\202608051152564_UpdateValidations.resx">
       <DependentUpon>202608051152564_UpdateValidations.cs</DependentUpon>
-=======
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202608041830443_AddRefreshTokenTable.resx">
       <DependentUpon>202608041830443_AddRefreshTokenTable.cs</DependentUpon>
->>>>>>> 369ac89 ([OH_DA_01]Signup API- Completed Implementation)
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608051413490_UpdateMigrations.resx">
+      <DependentUpon>202608051413490_UpdateMigrations.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

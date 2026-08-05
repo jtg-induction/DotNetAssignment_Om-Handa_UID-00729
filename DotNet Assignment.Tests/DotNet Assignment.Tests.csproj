@@ -165,12 +165,6 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DotNet Assignment\DotNet Assignment.csproj">
-      <Project>{F06DB0F2-E7D1-49A0-962E-B3EB8BD9B66A}</Project>
-      <Name>DotNet Assignment</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
