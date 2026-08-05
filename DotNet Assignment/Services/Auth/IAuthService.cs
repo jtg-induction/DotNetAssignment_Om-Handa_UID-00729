@@ -10,5 +10,9 @@ namespace DotNet_Assignment.Services.Auth
     public interface IAuthService
     {
         JWTResponseDto Register(SignupRequestDto requestDto);
+
+        JWTResponseDto Login(LoginRequestDto loginRequest);
+
+        void Logout(LogoutRequestDto logoutRequest);
     }
 }

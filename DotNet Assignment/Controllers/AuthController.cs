@@ -35,5 +35,40 @@ namespace DotNet_Assignment.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("login")]
+        public ApiResponseDto<JWTResponseDto> Login(LoginRequestDto requestDto) {
+
+            if (!ModelState.IsValid)
+            {
+                throw new Exception("Wrong Details");
+            }
+
+            try
+            {
+                JWTResponseDto JWTResponse = _authService.Login(requestDto);
+                return new ApiResponseDto<JWTResponseDto>() { IsSuccess = true, Message = "User Logged In", Data = JWTResponse };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponseDto<JWTResponseDto>() { IsSuccess = false, Message = ex.Message };
+            }
+        }
+
+        [HttpPost]
+        [Route("logout")]
+        public ApiResponseDto<object> Logout(LogoutRequestDto requestDto)
+        {
+            try
+            {
+                _authService.Logout(requestDto);
+                return new ApiResponseDto<object>() { IsSuccess = true, Message = "User Logged Out"};
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponseDto<object>() { IsSuccess = false, Message = ex.Message };
+            }
+        }
+
     }
 }

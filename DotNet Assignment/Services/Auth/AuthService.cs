@@ -96,5 +96,53 @@ namespace DotNet_Assignment.Services.Auth
                 RefreshToken= RefreshToken,
             };
         }
+
+        public JWTResponseDto Login(LoginRequestDto loginRequest)
+        {
+            var User = _userRepository.GetUserByEmail(loginRequest.Email);
+
+            if (User == null) {
+                throw new Exception("Invalid Credentials");
+            }
+
+            if (!_passwordService.VerifyPassword(loginRequest.Password, User.Password))
+            {
+                throw new Exception("Invalid Credentials");
+            }
+
+            string AccessToken = _jWTService.GetAccessToken(User);
+            string RefreshToken = _jWTService.GetRefreshToken();
+
+            var Refresh = new RefreshToken()
+            {
+                RefreshTokenId = Guid.NewGuid(),
+                Token = RefreshToken,
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAt = DateTime.UtcNow.AddDays(7),
+                UserId = User.Id
+            };
+
+            _refreshTokenRepository.AddRefreshToken(Refresh);
+
+            _refreshTokenRepository.Save();
+
+            return new JWTResponseDto
+            {
+                AccessToken = AccessToken,
+                RefreshToken = RefreshToken,
+            };
+        }
+
+        public void Logout(LogoutRequestDto logoutRequest)
+        {
+            var RefreshToken = _refreshTokenRepository.GetRefreshToken(logoutRequest.RefreshToken);
+
+            if (RefreshToken == null) {
+                return;
+            }
+
+            _refreshTokenRepository.DeleteRefreshToken(RefreshToken);
+            _refreshTokenRepository.Save();
+        }
     }
 }

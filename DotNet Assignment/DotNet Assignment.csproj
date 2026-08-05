@@ -203,6 +203,8 @@
     <Compile Include="Models\DTO\AddressDto.cs" />
     <Compile Include="Models\DTO\ApiResponseDto.cs" />
     <Compile Include="Models\DTO\JWTResponseDto.cs" />
+    <Compile Include="Models\DTO\LoginRequestDto.cs" />
+    <Compile Include="Models\DTO\LogoutRequestDto.cs" />
     <Compile Include="Models\DTO\SignupRequestDto.cs" />
     <Compile Include="Models\Entities\RefreshToken.cs" />
     <Compile Include="Models\Entities\UserAddress.cs" />
@@ -228,7 +230,11 @@
     <Compile Include="Controllers\AuthController.cs" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <Content Include="ConnectionString.config" />
+=======
+    <None Include=".editorconfig" />
+>>>>>>> c798eef ([OH_DA_02]Login API Implemented)
     <None Include="packages.config" />
     <Content Include="Secrets.config" />
     <None Include="Web.Debug.config">
