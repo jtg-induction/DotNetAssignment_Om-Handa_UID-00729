@@ -6,7 +6,7 @@ namespace DotNet_Assignment.Models.Entities
     public class UserAddress
     {
         [Key]
-        public Guid Id { get; set; }
+        public Guid UserAddressId { get; set; }
 
         public string HouseNumber { get; set; }
 
@@ -24,11 +24,12 @@ namespace DotNet_Assignment.Models.Entities
 
         [Required]
         [StringLength(6)]
+        [RegularExpression(@"^[1-9][0-9]{5}$")]
         public string Pincode { get; set; }
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public DateTime UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public Guid UserId { get; set; }
 

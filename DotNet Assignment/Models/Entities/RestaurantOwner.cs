@@ -6,7 +6,7 @@ namespace DotNet_Assignment.Models.Entities
 {
     public class RestaurantOwner
     {
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }= DateTime.UtcNow;
 
         [Key]
         [Column(Order = 1)]

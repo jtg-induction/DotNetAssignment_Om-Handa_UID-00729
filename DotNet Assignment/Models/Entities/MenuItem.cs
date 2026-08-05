@@ -7,7 +7,7 @@ namespace DotNet_Assignment.Models.Entities
     public class MenuItem
     {
         [Key]
-        public Guid Id { get; set; }
+        public Guid MenuItemId { get; set; }
 
         [Required]
         [StringLength(100), MinLength(2)]
@@ -22,19 +22,19 @@ namespace DotNet_Assignment.Models.Entities
         public string Category { get; set; }
 
         [Required]
+        [Range (0, int.MaxValue)]
         public decimal Price { get; set; }
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public DateTime UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        [Required]
-        public bool InStock { get; set; }
+        public bool InStock { get; set; } = true;
 
         public Guid RestaurantId { get; set; }
 
         public virtual Restaurant Restaurant { get; set; }
 
-        public virtual ICollection<OrderedItem> OrderedItems {  get; set; }
+        public virtual ICollection<OrderedItem> OrderedItems {  get; set; } = new HashSet<Restaurant>();
     }
 }

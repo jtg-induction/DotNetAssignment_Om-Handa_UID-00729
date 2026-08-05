@@ -9,7 +9,7 @@ namespace DotNet_Assignment.Models.Entities
     public class User
     {
         [Required]
-        public Guid Id { get; set; }
+        public Guid UserId { get; set; }
 
         [Required]
         [EmailAddress]
@@ -30,21 +30,22 @@ namespace DotNet_Assignment.Models.Entities
         [StringLength(10)]
         public string PhoneNumber { get; set; }
 
-        public decimal Balance { get; set; }
+        [Range(0, int.MaxValue)]
+        public decimal Balance { get; set; } = 1000m;
 
         public UserRoles Role { get; set; }
 
         public bool IsDeleted { get; set; }
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }= DateTime.UtcNow;
 
-        public DateTime UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        public virtual ICollection<UserAddress> UserAddresses { get; set; }
+        public virtual ICollection<UserAddress> UserAddresses { get; set; }= new HashSet<UserAddress>();
 
-        public virtual ICollection<Order> Orders { get; set; }
+        public virtual ICollection<Order> Orders { get; set; }= new HashSet<Order>();
 
-        public virtual ICollection<RestaurantOwner> RestaurantOwners { get; set; }
+        public virtual ICollection<RestaurantOwner> RestaurantOwners { get; set; } = new HashSet<RestaurantOwner>();
 
 
     }
