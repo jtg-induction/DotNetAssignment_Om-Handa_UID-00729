@@ -70,5 +70,14 @@ namespace DotNet_Assignment.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("refresh")]
+        public ApiResponseDto<JWTResponseDto> Refresh(RefreshTokenDto refreshTokenDto)
+        {
+            JWTResponseDto JWTResponse = _authService.RefreshAccessToken(refreshTokenDto.RefreshToken);
+
+            return new ApiResponseDto<JWTResponseDto>() { IsSuccess = true, Message = "User Logged In", Data = JWTResponse };
+        }
+
     }
 }

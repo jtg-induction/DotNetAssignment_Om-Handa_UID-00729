@@ -14,5 +14,7 @@ namespace DotNet_Assignment.Services.Auth
         JWTResponseDto Login(LoginRequestDto loginRequest);
 
         void Logout(LogoutRequestDto logoutRequest);
+
+        JWTResponseDto RefreshAccessToken(string refreshToken);
     }
 }

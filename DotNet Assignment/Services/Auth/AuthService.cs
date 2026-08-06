@@ -105,6 +105,11 @@ namespace DotNet_Assignment.Services.Auth
                 throw new Exception("Invalid Credentials");
             }
 
+            if (User.IsDeleted)
+            {
+                throw new Exception("User Deactivated");
+            }
+
             if (!_passwordService.VerifyPassword(loginRequest.Password, User.Password))
             {
                 throw new Exception("Invalid Credentials");
@@ -119,7 +124,7 @@ namespace DotNet_Assignment.Services.Auth
                 Token = RefreshToken,
                 CreatedAt = DateTime.UtcNow,
                 ExpiresAt = DateTime.UtcNow.AddDays(7),
-                UserId = User.Id
+                UserId = User.UserId
             };
 
             _refreshTokenRepository.AddRefreshToken(Refresh);
@@ -143,6 +148,34 @@ namespace DotNet_Assignment.Services.Auth
 
             _refreshTokenRepository.DeleteRefreshToken(RefreshToken);
             _refreshTokenRepository.Save();
+        }
+
+
+        public JWTResponseDto RefreshAccessToken(string refreshToken)
+        {
+            var Token = _refreshTokenRepository.GetRefreshToken(refreshToken);
+
+            if (Token == null)
+            {
+                throw new Exception("Invalid Refresh Token");
+            }
+
+            if (Token.ExpiresAt < DateTime.UtcNow) 
+            {
+                throw new Exception("Refresh Token Expired");
+            }
+
+            if (Token.User.IsDeleted)
+            {
+                throw new Exception("User Account is Deactivated");
+            }
+
+            var AccessToken = _jWTService.GetAccessToken(Token.User);
+
+            return new JWTResponseDto { 
+                AccessToken= AccessToken,
+                RefreshToken= refreshToken
+            };
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using DotNet_Assignment.Data;
 using DotNet_Assignment.Models.Entities;
+using System;
 using System.Linq;
 
 namespace DotNet_Assignment.Repository.RefreshTokens
@@ -26,6 +27,13 @@ namespace DotNet_Assignment.Repository.RefreshTokens
         public void DeleteRefreshToken(RefreshToken refreshToken)
         {
             _context.RefreshTokens.Remove(refreshToken);
+        }
+
+        public void DeleteTokensByUserId(Guid userId)
+        {
+            var Tokens= _context.RefreshTokens.Where(u => u.UserId == userId).ToList();
+
+            _context.RefreshTokens.RemoveRange(Tokens);
         }
 
         public void Save()

@@ -11,6 +11,10 @@ namespace DotNet_Assignment.Repository.Users
     {
         User GetUserByEmail(string email);
 
+        User GetUserById(Guid userId);
+
+        UserAddress GetAddressById(Guid userAddressId,Guid userId);
+
         void AddUser(User user);
 
         void Save();

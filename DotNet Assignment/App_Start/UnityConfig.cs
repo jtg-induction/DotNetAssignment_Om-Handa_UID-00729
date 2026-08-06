@@ -7,6 +7,7 @@ using Unity;
 using Unity.AspNet.WebApi;
 using DotNet_Assignment.Services.JWT;
 using DotNet_Assignment.Repository.RefreshTokens;
+using DotNet_Assignment.Services.Users;
 
 namespace DotNet_Assignment.App_Start
 {
@@ -21,6 +22,7 @@ namespace DotNet_Assignment.App_Start
             Container.RegisterType<IPasswordService, PasswordService>();
             Container.RegisterType<IAuthService, AuthService>();
             Container.RegisterType<IJWTService, JWTService>();
+            Container.RegisterType<IUserService, UserService>();
 
             Container.RegisterType<IUserRepository, UserRepository>();
             Container.RegisterType<IRefreshTokenRepository, RefreshTokenRepository>();

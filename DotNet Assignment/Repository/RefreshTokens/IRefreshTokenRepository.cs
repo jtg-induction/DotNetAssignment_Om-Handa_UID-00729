@@ -15,6 +15,8 @@ namespace DotNet_Assignment.Repository.RefreshTokens
 
         void DeleteRefreshToken(RefreshToken refreshToken);
 
+        void DeleteTokensByUserId(Guid userId);
+
         void Save();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using DotNet_Assignment.Data;
 using DotNet_Assignment.Models.Entities;
+using System;
 using System.Linq;
 
 namespace DotNet_Assignment.Repository.Users
@@ -17,6 +18,16 @@ namespace DotNet_Assignment.Repository.Users
         public User GetUserByEmail(string email)
         {
             return _context.Users.SingleOrDefault(u => u.Email == email);
+        }
+
+        public User GetUserById(Guid userId)
+        {
+            return _context.Users.SingleOrDefault(u => u.UserId == userId);
+        }
+
+        public UserAddress GetAddressById(Guid userAddressId, Guid userId)
+        {
+            return _context.UserAddresses.SingleOrDefault(ua=> ua.UserAddressId== userAddressId && ua.UserId==userId);
         }
 
         public void AddUser(User user) { 
