@@ -1,7 +1,10 @@
 ﻿using DotNet_Assignment.Data;
+using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Models.Entities;
 using System;
+using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DotNet_Assignment.Repository.Users
 {
@@ -15,28 +18,32 @@ namespace DotNet_Assignment.Repository.Users
             _context = context;
         }
 
-        public User GetUserByEmail(string email)
+        public async Task<User> GetUserByEmailAsync(string email)
         {
-            return _context.Users.SingleOrDefault(u => u.Email == email);
+            return await _context.Users.SingleOrDefaultAsync(u => u.Email == email);
         }
 
-        public User GetUserById(Guid userId)
+        public async Task<bool> FindUserByEmailAsync(string email)
         {
-            return _context.Users.SingleOrDefault(u => u.UserId == userId);
+            return await _context.Users.AnyAsync(u => u.Email == email);
         }
 
-        public UserAddress GetAddressById(Guid userAddressId, Guid userId)
+        public async Task<User> GetUserByIdAsync(Guid userId)
         {
-            return _context.UserAddresses.SingleOrDefault(ua=> ua.UserAddressId== userAddressId && ua.UserId==userId);
+            return await _context.Users.SingleOrDefaultAsync(u => u.UserId == userId);
+        }
+
+        public async Task<UserAddress> GetAddressByIdAsync(Guid userAddressId, Guid userId)
+        {
+            return await _context.UserAddresses.SingleOrDefaultAsync(ua=> ua.UserAddressId== userAddressId && ua.UserId==userId);
         }
 
         public void AddUser(User user) { 
             _context.Users.Add(user);
         }
-
-        public void Save()
+        public void AddAddress(UserAddress userAddress)
         {
-            _context.SaveChanges();
+           _context.UserAddresses.Add(userAddress);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace DotNet_Assignment.Models.Entities
     public class Restaurant
     {
         [Key]
-        public Guid RestaurantId { get; set; }
+        public Guid RestaurantId { get; set; } = Guid.NewGuid();
 
         [Required]
         [StringLength(100)] 

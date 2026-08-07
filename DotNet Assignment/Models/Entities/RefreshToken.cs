@@ -9,13 +9,13 @@ namespace DotNet_Assignment.Models.Entities
     public class RefreshToken
     {
         [Key]
-        public Guid RefreshTokenId { get; set; }
+        public Guid RefreshTokenId { get; set; } = Guid.NewGuid();
 
         public string Token {  get; set; }
 
-        public DateTime ExpiresAt { get; set; } 
+        public DateTime ExpiresAt { get; set; } = DateTime.UtcNow.AddDays(7);
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public Guid UserId { get; set; }
 

@@ -10,10 +10,12 @@ namespace DotNet_Assignment.Services.Users
 {
     public interface IUserService
     {
-        void UpdateUser(Guid userId, UpdateUserDto updateUserDto);
+        Task UpdateUserAsync(Guid userId, UpdateUserDto updateUserDto);
 
-        void UpdateUserAddress(Guid userid, Guid userAddressId, UpdateAddressDto updateAddressDto);
+        Task UpdateUserAddressAsync(Guid userid, Guid userAddressId, UpdateAddressDto updateAddressDto);
 
-        void DeactivateUser(Guid userId);
+        Task DeactivateUserAsync(Guid userId);
+
+        Task AddUserAddressAsync(Guid userId, AddressDto addressDto);
     }
 }

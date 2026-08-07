@@ -1,87 +1,77 @@
-﻿using DotNet_Assignment.Models.DTO;
+﻿using DotNet_Assignment.Data;
+using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Models.Enums;
 using DotNet_Assignment.Repository.RefreshTokens;
 using DotNet_Assignment.Repository.Users;
 using DotNet_Assignment.Services.JWT;
-using DotNet_Assignment.Services.PasswordService;
+using DotNet_Assignment.Utils;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DotNet_Assignment.Services.Auth
 {
     public class AuthService : IAuthService
     {
         private readonly IUserRepository _userRepository;
-        private readonly IPasswordService _passwordService;
         private readonly IJWTService _jWTService;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
+        private readonly AppDbContext _context;
 
         public AuthService(
             IUserRepository userRepository, 
-            IPasswordService passwordService,
             IJWTService jWTService,
-            IRefreshTokenRepository refreshTokenRepository)
+            IRefreshTokenRepository refreshTokenRepository,
+            AppDbContext appDbContext)
         {
             _userRepository = userRepository;
-            _passwordService= passwordService;
             _jWTService= jWTService;
             _refreshTokenRepository = refreshTokenRepository;
+            _context = appDbContext;
         }
 
-        public JWTResponseDto Register(SignupRequestDto requestDto) {
+        public async Task<JWTResponseDto> RegisterAsync(SignupRequestDto requestDto) {
 
-            var ExistingUser = _userRepository.GetUserByEmail(requestDto.Email);
-
-            if (ExistingUser != null) {
-                throw new Exception("User Already Exists");
+            if (await _userRepository.FindUserByEmailAsync(requestDto.Email)){
+                throw new Exception("Email Already Exists");
             }
 
             var User = new User()
             {
-                UserId = Guid.NewGuid(),
                 Email = requestDto.Email,
-                Password = _passwordService.HashPassword(requestDto.Password),
+                Password = Hasher.Hash(requestDto.Password),
                 Name = requestDto.Name,
                 PhoneNumber = requestDto.PhoneNumber,
                 Role = requestDto.Role,
                 IsDeleted = false,
             };
 
-            var Address = new UserAddress()
-            {
-                UserAddressId = Guid.NewGuid(),
-                HouseNumber = requestDto.Address.HouseNumber,
-                Street = requestDto.Address.Street,
-                Landmark = requestDto.Address.Landmark,
-                City = requestDto.Address.City,
-                State = requestDto.Address.State,
-                Pincode = requestDto.Address.Pincode,
-                User = User
-            };
-
-            User.UserAddresses = new List<UserAddress>{ Address };
-
             _userRepository.AddUser(User);
 
+<<<<<<< HEAD
             _userRepository.Save();
 
+=======
+>>>>>>> 1001f690e1369c099a7bf3af1b3638ca15ad7372
             string AccessToken = _jWTService.GetAccessToken(User);
 
-            string RefreshToken = _jWTService.GetRefreshToken();
+            string RefreshToken = _jWTService.GenerateRefreshToken();
+
+            if(RefreshToken == null)
+            {
+                throw new Exception("Refresh Token Could not be Generated");
+            }
 
             var Refresh = new RefreshToken()
             {
-                RefreshTokenId = Guid.NewGuid(),
-                Token = RefreshToken,
-                CreatedAt = DateTime.UtcNow,
-                ExpiresAt = DateTime.UtcNow.AddDays(7),
+                Token = _refreshTokenRepository.HashRefreshToken(RefreshToken),
                 UserId = User.UserId
             };
 
             _refreshTokenRepository.AddRefreshToken(Refresh);
 
-            _refreshTokenRepository.Save();
+            await _context.SaveChangesAsync();
 
             return new JWTResponseDto
             {
@@ -90,9 +80,9 @@ namespace DotNet_Assignment.Services.Auth
             };
         }
 
-        public JWTResponseDto Login(LoginRequestDto loginRequest)
+        public async Task<JWTResponseDto> LoginAsync(LoginRequestDto loginRequest)
         {
-            var User = _userRepository.GetUserByEmail(loginRequest.Email);
+            var User = await _userRepository.GetUserByEmailAsync(loginRequest.Email);
 
             if (User == null) {
                 throw new Exception("Invalid Credentials");
@@ -103,26 +93,23 @@ namespace DotNet_Assignment.Services.Auth
                 throw new Exception("User Deactivated");
             }
 
-            if (!_passwordService.VerifyPassword(loginRequest.Password, User.Password))
+            if (!Hasher.Verify(loginRequest.Password, User.Password))
             {
                 throw new Exception("Invalid Credentials");
             }
 
             string AccessToken = _jWTService.GetAccessToken(User);
-            string RefreshToken = _jWTService.GetRefreshToken();
+            string RefreshToken = _jWTService.GenerateRefreshToken();
 
             var Refresh = new RefreshToken()
             {
-                RefreshTokenId = Guid.NewGuid(),
-                Token = RefreshToken,
-                CreatedAt = DateTime.UtcNow,
-                ExpiresAt = DateTime.UtcNow.AddDays(7),
+                Token = _refreshTokenRepository.HashRefreshToken(RefreshToken),
                 UserId = User.UserId
             };
 
             _refreshTokenRepository.AddRefreshToken(Refresh);
 
-            _refreshTokenRepository.Save();
+            _context.SaveChanges();
 
             return new JWTResponseDto
             {
@@ -131,22 +118,24 @@ namespace DotNet_Assignment.Services.Auth
             };
         }
 
-        public void Logout(LogoutRequestDto logoutRequest)
+        public async Task LogoutAsync(LogoutRequestDto logoutRequest)
         {
-            var RefreshToken = _refreshTokenRepository.GetRefreshToken(logoutRequest.RefreshToken);
+            var RefreshToken = await _refreshTokenRepository.GetRefreshTokenAsync(logoutRequest.RefreshToken);
 
             if (RefreshToken == null) {
                 return;
             }
 
             _refreshTokenRepository.DeleteRefreshToken(RefreshToken);
-            _refreshTokenRepository.Save();
+            _context.SaveChanges();
         }
 
 
-        public JWTResponseDto RefreshAccessToken(string refreshToken)
+        public async Task<JWTResponseDto> RefreshAccessTokenAsync(string refreshToken)
         {
-            var Token = _refreshTokenRepository.GetRefreshToken(refreshToken);
+            var HashedToken = _refreshTokenRepository.HashRefreshToken(refreshToken);
+
+            var Token = await _refreshTokenRepository.GetRefreshTokenAsync(HashedToken);
 
             if (Token == null)
             {

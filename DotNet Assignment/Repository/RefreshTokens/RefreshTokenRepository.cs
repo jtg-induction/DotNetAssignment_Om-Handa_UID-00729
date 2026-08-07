@@ -2,6 +2,11 @@
 using DotNet_Assignment.Models.Entities;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
+using DotNet_Assignment.Utils;
+using System.Data.Entity;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace DotNet_Assignment.Repository.RefreshTokens
 {
@@ -14,9 +19,9 @@ namespace DotNet_Assignment.Repository.RefreshTokens
             _context = context;
         }
 
-        public RefreshToken GetRefreshToken(string refreshToken)
+        public async Task<RefreshToken> GetRefreshTokenAsync(string refreshToken)
         {
-            return _context.RefreshTokens.SingleOrDefault(u => u.Token == refreshToken);
+            return await _context.RefreshTokens.SingleOrDefaultAsync(u => u.Token == refreshToken);
         }
 
         public void AddRefreshToken(RefreshToken refreshToken)
@@ -36,9 +41,16 @@ namespace DotNet_Assignment.Repository.RefreshTokens
             _context.RefreshTokens.RemoveRange(Tokens);
         }
 
-        public void Save()
+        public string HashRefreshToken(string refreshToken)
         {
-            _context.SaveChanges();
+            using(var sha256 = SHA256.Create())
+            {
+                var Bytes = Encoding.UTF8.GetBytes(refreshToken);
+
+                var Hash = sha256.ComputeHash(Bytes);
+
+                return Convert.ToBase64String(Hash);
+            }
         }
 
     }

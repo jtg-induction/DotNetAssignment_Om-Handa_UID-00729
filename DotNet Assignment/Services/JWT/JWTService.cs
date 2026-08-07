@@ -35,7 +35,7 @@ namespace DotNet_Assignment.Services.JWT
             return JWTtoken;
         }
 
-        public string GetRefreshToken()
+        public string GenerateRefreshToken()
         {
             byte[] Byte = new byte[64];
 

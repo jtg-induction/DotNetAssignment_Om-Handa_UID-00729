@@ -1,23 +1,24 @@
-﻿using DotNet_Assignment.Models.Entities;
+﻿using DotNet_Assignment.Models.DTO;
+using DotNet_Assignment.Models.Entities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DotNet_Assignment.Repository.Users
 {
     public interface IUserRepository
     {
-        User GetUserByEmail(string email);
+        Task<User> GetUserByEmailAsync(string email);
 
-        User GetUserById(Guid userId);
+        Task<bool> FindUserByEmailAsync(string email);
 
-        UserAddress GetAddressById(Guid userAddressId,Guid userId);
+        Task<User> GetUserByIdAsync(Guid userId);
+
+        Task<UserAddress> GetAddressByIdAsync(Guid userAddressId,Guid userId);
 
         void AddUser(User user);
 
-        void Save();
+        void AddAddress(UserAddress userAddress);
+
     }
 
 }

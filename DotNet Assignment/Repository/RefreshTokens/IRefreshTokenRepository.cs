@@ -1,15 +1,12 @@
 ﻿using DotNet_Assignment.Models.Entities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DotNet_Assignment.Repository.RefreshTokens
 {
     public interface IRefreshTokenRepository
     {
-        RefreshToken GetRefreshToken(string refreshToken);
+        Task<RefreshToken> GetRefreshTokenAsync(string refreshToken);
 
         void AddRefreshToken(RefreshToken refreshToken);
 
@@ -17,6 +14,7 @@ namespace DotNet_Assignment.Repository.RefreshTokens
 
         void DeleteTokensByUserId(Guid userId);
 
-        void Save();
+        string HashRefreshToken(string refreshToken);
+
     }
 }
