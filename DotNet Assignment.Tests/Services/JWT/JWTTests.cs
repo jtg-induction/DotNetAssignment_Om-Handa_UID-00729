@@ -27,19 +27,19 @@ namespace DotNet_Assignment.Tests.Services.JWT
         }
 
         [Test]
-        public void GetRefreshToken_ReturnsToken()
+        public void GenerateRefreshToken_ReturnsToken()
         {
-            var Token = _jWTService.GetRefreshToken();
+            var Token = _jWTService.GenerateRefreshToken();
 
             Assert.That(Token, Is.Not.Null);
             Assert.That(Token, Is.Not.Empty);
         }
 
         [Test]
-        public void GetRefreshToken_ReturnsUniqueToken()
+        public void GenerateRefreshToken_ReturnsUniqueToken()
         {
-            var Token1 = _jWTService.GetRefreshToken();
-            var Token2 = _jWTService.GetRefreshToken();
+            var Token1 = _jWTService.GenerateRefreshToken();
+            var Token2 = _jWTService.GenerateRefreshToken();
 
             Assert.That(Token1, Is.Not.EqualTo(Token2));
         }

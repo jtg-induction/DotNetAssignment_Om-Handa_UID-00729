@@ -32,21 +32,22 @@ namespace DotNet_Assignment.Tests.Utils
             };
         }
 
-        public static UpdateAddressDto CreateMockUpdateAddressDto()
+        public static AddressDto CreateMockAddressDto()
         {
-            return new UpdateAddressDto
+            return new AddressDto
             {
                 HouseNumber = "456",
                 Street = "Updated Street",
                 Landmark = "Updated Landmark",
                 City = "New Delhi",
                 State = "New Delhi",
-                Pincode = "111111"
+                Pincode = "111111",
             };
         }
 
         public static UserAddress CreateMockAddress()
         {
+            var user = CreateMockUser();
             return new UserAddress
             {
                 HouseNumber = "123",
@@ -54,7 +55,9 @@ namespace DotNet_Assignment.Tests.Utils
                 Landmark = "Landmark",
                 City = "Delhi",
                 State = "Delhi",
-                Pincode = "110001"
+                Pincode = "110001",
+                UserId = user.UserId,
+                User = user
             };
         }
     }

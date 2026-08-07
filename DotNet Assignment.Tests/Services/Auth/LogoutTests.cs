@@ -1,9 +1,9 @@
-﻿using DotNet_Assignment.Models.Entities;
+﻿using DotNet_Assignment.Data;
+using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Repository.RefreshTokens;
 using DotNet_Assignment.Repository.Users;
 using DotNet_Assignment.Services.Auth;
 using DotNet_Assignment.Services.JWT;
-using DotNet_Assignment.Services.PasswordService;
 using DotNet_Assignment.Tests.Utils;
 using Moq;
 using NUnit.Framework;
@@ -16,8 +16,8 @@ namespace DotNet_Assignment.Tests.Services.Auth
     {
         private Mock<IUserRepository> _userRepository;
         private Mock<IJWTService> _jWTService;
-        private Mock<IPasswordService> _passwordService;
         private Mock<IRefreshTokenRepository> _refreshTokenRepository;
+        private Mock<AppDbContext> _appDbContext;
         private AuthService _authService;
 
         [SetUp]
@@ -25,14 +25,14 @@ namespace DotNet_Assignment.Tests.Services.Auth
         {
             _userRepository = new Mock<IUserRepository>();
             _jWTService = new Mock<IJWTService>();
-            _passwordService = new Mock<IPasswordService>();
             _refreshTokenRepository = new Mock<IRefreshTokenRepository>();
+            _appDbContext = new Mock<AppDbContext>();
 
             _authService = new AuthService(
                 _userRepository.Object,
-                _passwordService.Object,
                 _jWTService.Object,
-                _refreshTokenRepository.Object
+                _refreshTokenRepository.Object,
+                _appDbContext.Object
             );
         }
 
@@ -43,17 +43,17 @@ namespace DotNet_Assignment.Tests.Services.Auth
             var request = AuthTestUtil.CreateMockLogoutRequestDto();
 
             _refreshTokenRepository
-                .Setup(x => x.GetRefreshToken(request.RefreshToken))
-                .Returns((RefreshToken)null);
+                .Setup(x => x.GetRefreshTokenAsync(request.RefreshToken))
+                .ReturnsAsync((RefreshToken)null);
 
-            _authService.Logout(request);
+            _authService.LogoutAsync(request);
 
             _refreshTokenRepository.Verify(
                 x => x.DeleteRefreshToken(It.IsAny<RefreshToken>()),
                 Times.Never);
 
-            _refreshTokenRepository.Verify(
-                x => x.Save(),
+            _appDbContext.Verify(
+                x => x.SaveChanges(),
                 Times.Never);
         }
 
@@ -71,10 +71,10 @@ namespace DotNet_Assignment.Tests.Services.Auth
             };
 
             _refreshTokenRepository
-                .Setup(x => x.GetRefreshToken(request.RefreshToken))
-                .Returns(refreshToken);
+                .Setup(x => x.GetRefreshTokenAsync(request.RefreshToken))
+                .ReturnsAsync(refreshToken);
 
-            _authService.Logout(request);
+            _authService.LogoutAsync(request);
 
             _refreshTokenRepository.Verify(
                 x => x.DeleteRefreshToken(refreshToken),
@@ -95,13 +95,13 @@ namespace DotNet_Assignment.Tests.Services.Auth
             };
 
             _refreshTokenRepository
-                .Setup(x => x.GetRefreshToken(request.RefreshToken))
-                .Returns(refreshToken);
+                .Setup(x => x.GetRefreshTokenAsync(request.RefreshToken))
+                .ReturnsAsync(refreshToken);
 
-            _authService.Logout(request);
+            _authService.LogoutAsync(request);
 
-            _refreshTokenRepository.Verify(
-                x => x.Save(),
+            _appDbContext.Verify(
+                x => x.SaveChanges(),
                 Times.Once);
         }
 

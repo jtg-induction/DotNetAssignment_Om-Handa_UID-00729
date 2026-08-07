@@ -49,11 +49,6 @@ namespace DotNet_Assignment.Services.Auth
 
             _userRepository.AddUser(User);
 
-<<<<<<< HEAD
-            _userRepository.Save();
-
-=======
->>>>>>> 1001f690e1369c099a7bf3af1b3638ca15ad7372
             string AccessToken = _jWTService.GetAccessToken(User);
 
             string RefreshToken = _jWTService.GenerateRefreshToken();

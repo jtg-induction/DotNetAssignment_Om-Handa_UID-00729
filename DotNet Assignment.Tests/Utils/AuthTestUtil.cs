@@ -17,14 +17,6 @@ namespace DotNet_Assignment.Tests.Utils
                 Email = "omhanda@test.com",
                 Password = "12345678",
                 PhoneNumber = "1234567890",
-                Address = new AddressDto{
-                    HouseNumber= "123",
-                    Street= "Test Street",
-                    Landmark= "Landmark",
-                    City="Delhi" ,
-                    State= "Delhi",
-                    Pincode= "110001"
-                }
             };
         }
 

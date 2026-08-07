@@ -6,6 +6,8 @@ using DotNet_Assignment.Models.Entities;
 using Moq;
 using NUnit.Framework;
 using System;
+using DotNet_Assignment.Data;
+using System.Threading.Tasks;
 
 namespace DotNet_Assignment.Tests.Services.Users
 {
@@ -14,6 +16,7 @@ namespace DotNet_Assignment.Tests.Services.Users
     {
         private Mock<IUserRepository> _userRepository;
         private Mock<IRefreshTokenRepository> _refreshTokenRepository;
+        private Mock<AppDbContext> _appDbContext;
         private UserService _userService;
 
         [SetUp]
@@ -21,10 +24,12 @@ namespace DotNet_Assignment.Tests.Services.Users
         {
             _userRepository = new Mock<IUserRepository>();
             _refreshTokenRepository = new Mock<IRefreshTokenRepository>();
+            _appDbContext = new Mock<AppDbContext>();
 
             _userService = new UserService(
                 _userRepository.Object,
-                _refreshTokenRepository.Object
+                _refreshTokenRepository.Object,
+                _appDbContext.Object
             );
         }
 
@@ -36,12 +41,12 @@ namespace DotNet_Assignment.Tests.Services.Users
             var UserId = Guid.NewGuid();
 
             _userRepository
-                .Setup(x => x.GetUserById(UserId))
-                .Returns((User)null);
+                .Setup(x => x.GetUserByIdAsync(UserId))
+                .ReturnsAsync((User)null);
 
-            Action action = () => _userService.UpdateUser(UserId, RequestDto);
+            Func<Task> action = () => _userService.UpdateUserAsync(UserId, RequestDto);
 
-            var Exception = Assert.Throws<Exception>(action);
+            var Exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(Exception.Message, Is.EqualTo("User not found"));
         }
@@ -54,10 +59,10 @@ namespace DotNet_Assignment.Tests.Services.Users
             var user = UserTestUtil.CreateMockUser();
 
             _userRepository
-                .Setup(x => x.GetUserById(userId))
-                .Returns(user);
+                .Setup(x => x.GetUserByIdAsync(userId))
+                .ReturnsAsync(user);
 
-            _userService.DeactivateUser(userId);
+            _userService.DeactivateUserAsync(userId);
 
             Assert.That(user.IsDeleted, Is.True);
         }
@@ -70,10 +75,10 @@ namespace DotNet_Assignment.Tests.Services.Users
             var user = UserTestUtil.CreateMockUser();
 
             _userRepository
-                .Setup(x => x.GetUserById(userId))
-                .Returns(user);
+                .Setup(x => x.GetUserByIdAsync(userId))
+                .ReturnsAsync(user);
 
-            _userService.DeactivateUser(userId);
+            _userService.DeactivateUserAsync(userId);
 
             _refreshTokenRepository.Verify(
                 x => x.DeleteTokensByUserId(userId),
@@ -81,40 +86,21 @@ namespace DotNet_Assignment.Tests.Services.Users
         }
 
         [Test]
-        public void DeactivateUser_SavesUserChanges()
+        public void DeactivateUser_SavesChanges()
         {
             var userId = Guid.NewGuid();
 
             var user = UserTestUtil.CreateMockUser();
 
             _userRepository
-                .Setup(x => x.GetUserById(userId))
-                .Returns(user);
+                .Setup(x => x.GetUserByIdAsync(userId))
+                .ReturnsAsync(user);
 
-            _userService.DeactivateUser(userId);
+            _userService.DeactivateUserAsync(userId);
 
-            _userRepository.Verify(
-                x => x.Save(),
+            _appDbContext.Verify(
+                x => x.SaveChangesAsync(),
                 Times.Once);
         }
-
-        [Test]
-        public void DeactivateUser_SavesRefreshTokenChanges()
-        {
-            var userId = Guid.NewGuid();
-
-            var user = UserTestUtil.CreateMockUser();
-
-            _userRepository
-                .Setup(x => x.GetUserById(userId))
-                .Returns(user);
-
-            _userService.DeactivateUser(userId);
-
-            _refreshTokenRepository.Verify(
-                x => x.Save(),
-                Times.Once);
-        }
-
     }
 }

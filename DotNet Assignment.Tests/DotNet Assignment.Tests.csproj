@@ -240,7 +240,7 @@
     <Compile Include="Services\Auth\SignupTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\JWT\JWTTests.cs" />
-    <Compile Include="Services\Password\PasswordTests.cs" />
+    <Compile Include="Services\Users\AddAddressTests.cs" />
     <Compile Include="Services\Users\DeactivateUserTests.cs" />
     <Compile Include="Services\Users\UpdateAddressTests.cs" />
     <Compile Include="Services\Users\UpdateUsersTests.cs" />

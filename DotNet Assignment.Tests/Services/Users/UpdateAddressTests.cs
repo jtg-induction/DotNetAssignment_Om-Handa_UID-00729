@@ -1,4 +1,5 @@
 ﻿
+using DotNet_Assignment.Data;
 using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Repository.RefreshTokens;
 using DotNet_Assignment.Repository.Users;
@@ -7,6 +8,7 @@ using DotNet_Assignment.Tests.Utils;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Threading.Tasks;
 
 namespace DotNet_Assignment.Tests.Services.Users
 {
@@ -15,6 +17,7 @@ namespace DotNet_Assignment.Tests.Services.Users
     {
         private Mock<IUserRepository> _userRepository;
         private Mock<IRefreshTokenRepository> _refreshTokenRepository;
+        private Mock<AppDbContext> _appDbContext;
         private UserService _userService;
 
         [SetUp]
@@ -22,35 +25,37 @@ namespace DotNet_Assignment.Tests.Services.Users
         {
             _userRepository = new Mock<IUserRepository>();
             _refreshTokenRepository = new Mock<IRefreshTokenRepository>();
+            _appDbContext = new Mock<AppDbContext>();
 
             _userService = new UserService(
                 _userRepository.Object,
-                _refreshTokenRepository.Object
+                _refreshTokenRepository.Object,
+                _appDbContext.Object
             );
         }
 
         [Test]
-        public void UpdateAddress_InvalidId_ThrowsException()
+        public async Task UpdateAddress_InvalidId_ThrowsException()
         {
-            var RequestDto = UserTestUtil.CreateMockUpdateAddressDto();
+            var RequestDto = UserTestUtil.CreateMockAddressDto();
 
             var UserAddressId = Guid.NewGuid();
 
             var UserId = Guid.NewGuid();
 
             _userRepository
-                .Setup(x => x.GetAddressById(UserAddressId, UserId))
-                .Returns((UserAddress)null);
+                .Setup(x => x.GetAddressByIdAsync(UserAddressId, UserId))
+                .ReturnsAsync((UserAddress)null);
 
-            Action action = () => _userService.UpdateUserAddress(UserId,UserAddressId, RequestDto);
+            Func<Task> action = () => _userService.UpdateUserAddressAsync(UserId,UserAddressId, RequestDto);
 
-            var Exception = Assert.Throws<Exception>(action);
+            var Exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(Exception.Message, Is.EqualTo("Address not Found"));
         }
 
         [Test]
-        public void UpdateUserAddress_ValidRequest_UpdatesAllFields()
+        public async Task UpdateUserAddress_ValidRequest_UpdatesAllFields()
         {
             var userId = Guid.NewGuid();
 
@@ -58,13 +63,13 @@ namespace DotNet_Assignment.Tests.Services.Users
 
             var UserAddressId = UserAddress.UserAddressId;
 
-            var Request = UserTestUtil.CreateMockUpdateAddressDto();
+            var Request = UserTestUtil.CreateMockAddressDto();
 
             _userRepository
-                .Setup(x => x.GetAddressById(UserAddressId, userId))
-                .Returns(UserAddress);
+                .Setup(x => x.GetAddressByIdAsync(UserAddressId, userId))
+                .ReturnsAsync(UserAddress);
 
-            _userService.UpdateUserAddress(userId, UserAddressId, Request);
+            await _userService.UpdateUserAddressAsync(userId, UserAddressId, Request);
 
             Assert.That(UserAddress.HouseNumber, Is.EqualTo(Request.HouseNumber));
             Assert.That(UserAddress.Street, Is.EqualTo(Request.Street));
@@ -75,7 +80,7 @@ namespace DotNet_Assignment.Tests.Services.Users
         }
 
         [Test]
-        public void UpdateUserAddress_EmptyHouseNumber_DoesNotUpdate()
+        public async Task UpdateUserAddress_EmptyHouseNumber_DoesNotUpdate()
         {
             var userId = Guid.NewGuid();
 
@@ -85,20 +90,20 @@ namespace DotNet_Assignment.Tests.Services.Users
 
             var original = UserAddress.HouseNumber;
 
-            var Request = UserTestUtil.CreateMockUpdateAddressDto();
+            var Request = UserTestUtil.CreateMockAddressDto();
             Request.HouseNumber = "";
 
             _userRepository
-                .Setup(x => x.GetAddressById(UserAddressId, userId))
-                .Returns(UserAddress);
+                .Setup(x => x.GetAddressByIdAsync(UserAddressId, userId))
+                .ReturnsAsync(UserAddress);
 
-            _userService.UpdateUserAddress(userId, UserAddressId, Request);
+            _userService.UpdateUserAddressAsync(userId, UserAddressId, Request);
 
             Assert.That(UserAddress.HouseNumber, Is.EqualTo(original));
         }
 
         [Test]
-        public void UpdateUserAddress_EmptyStreet_DoesNotUpdate()
+        public async Task UpdateUserAddress_EmptyStreet_DoesNotUpdate()
         {
             var userId = Guid.NewGuid();
 
@@ -108,21 +113,21 @@ namespace DotNet_Assignment.Tests.Services.Users
 
             var original = UserAddress.Street;
 
-            var Request = UserTestUtil.CreateMockUpdateAddressDto();
+            var Request = UserTestUtil.CreateMockAddressDto();
 
             Request.Street = "";
 
             _userRepository
-                .Setup(x => x.GetAddressById(UserAddressId, userId))
-                .Returns(UserAddress);
+                .Setup(x => x.GetAddressByIdAsync(UserAddressId, userId))
+                .ReturnsAsync(UserAddress);
 
-            _userService.UpdateUserAddress(userId, UserAddressId, Request);
+            _userService.UpdateUserAddressAsync(userId, UserAddressId, Request);
 
             Assert.That(UserAddress.Street, Is.EqualTo(original));
         }
 
         [Test]
-        public void UpdateUserAddress_EmptyLandmark_DoesNotUpdate()
+        public async Task UpdateUserAddress_EmptyLandmark_DoesNotUpdate()
         {
             var userId = Guid.NewGuid();
 
@@ -132,21 +137,21 @@ namespace DotNet_Assignment.Tests.Services.Users
 
             var original = UserAddress.Landmark;
 
-            var Request = UserTestUtil.CreateMockUpdateAddressDto();
+            var Request = UserTestUtil.CreateMockAddressDto();
 
             Request.Landmark = "";
 
             _userRepository
-                .Setup(x => x.GetAddressById(UserAddressId, userId))
-                .Returns(UserAddress);
+                .Setup(x => x.GetAddressByIdAsync(UserAddressId, userId))
+                .ReturnsAsync(UserAddress);
 
-            _userService.UpdateUserAddress(userId, UserAddressId, Request);
+            _userService.UpdateUserAddressAsync(userId, UserAddressId, Request);
 
             Assert.That(UserAddress.Landmark, Is.EqualTo(original));
         }
 
         [Test]
-        public void UpdateUserAddress_EmptyCity_DoesNotUpdate()
+        public async Task UpdateUserAddress_EmptyCity_DoesNotUpdate()
         {
             var userId = Guid.NewGuid();
 
@@ -156,21 +161,21 @@ namespace DotNet_Assignment.Tests.Services.Users
 
             var original = UserAddress.City;
 
-            var Request = UserTestUtil.CreateMockUpdateAddressDto();
+            var Request = UserTestUtil.CreateMockAddressDto();
 
             Request.City = "";
 
             _userRepository
-                .Setup(x => x.GetAddressById(UserAddressId, userId))
-                .Returns(UserAddress);
+                .Setup(x => x.GetAddressByIdAsync(UserAddressId, userId))
+                .ReturnsAsync(UserAddress);
 
-            _userService.UpdateUserAddress(userId, UserAddressId, Request);
+            _userService.UpdateUserAddressAsync(userId, UserAddressId, Request);
 
             Assert.That(UserAddress.City, Is.EqualTo(original));
         }
 
         [Test]
-        public void UpdateUserAddress_EmptyState_DoesNotUpdate()
+        public async Task UpdateUserAddress_EmptyState_DoesNotUpdate()
         {
             var userId = Guid.NewGuid();
 
@@ -180,21 +185,21 @@ namespace DotNet_Assignment.Tests.Services.Users
 
             var original = UserAddress.State;
 
-            var Request = UserTestUtil.CreateMockUpdateAddressDto();
+            var Request = UserTestUtil.CreateMockAddressDto();
 
             Request.State = "";
 
             _userRepository
-                .Setup(x => x.GetAddressById(UserAddressId, userId))
-                .Returns(UserAddress);
+                .Setup(x => x.GetAddressByIdAsync(UserAddressId, userId))
+                .ReturnsAsync(UserAddress);
 
-            _userService.UpdateUserAddress(userId, UserAddressId, Request);
+            _userService.UpdateUserAddressAsync(userId, UserAddressId, Request);
 
             Assert.That(UserAddress.State, Is.EqualTo(original));
         }
 
         [Test]
-        public void UpdateUserAddress_EmptyPincode_DoesNotUpdate()
+        public async Task UpdateUserAddress_EmptyPincode_DoesNotUpdate()
         {
             var userId = Guid.NewGuid();
 
@@ -204,21 +209,21 @@ namespace DotNet_Assignment.Tests.Services.Users
 
             var original = UserAddress.Pincode;
 
-            var Request = UserTestUtil.CreateMockUpdateAddressDto();
+            var Request = UserTestUtil.CreateMockAddressDto();
 
             Request.Pincode = "";
 
             _userRepository
-                .Setup(x => x.GetAddressById(UserAddressId, userId))
-                .Returns(UserAddress);
+                .Setup(x => x.GetAddressByIdAsync(UserAddressId, userId))
+                .ReturnsAsync(UserAddress);
 
-            _userService.UpdateUserAddress(userId, UserAddressId, Request);
+            _userService.UpdateUserAddressAsync(userId, UserAddressId, Request);
 
             Assert.That(UserAddress.Pincode, Is.EqualTo(original));
         }
 
         [Test]
-        public void UpdateUserAddress_ValidRequest_SavesChanges()
+        public async Task UpdateUserAddress_ValidRequest_SavesChanges()
         {
             var userId = Guid.NewGuid();
 
@@ -226,15 +231,17 @@ namespace DotNet_Assignment.Tests.Services.Users
 
             var UserAddressId = UserAddress.UserAddressId;
 
-            var Request = UserTestUtil.CreateMockUpdateAddressDto();
+            var Request = UserTestUtil.CreateMockAddressDto();
 
             _userRepository
-                .Setup(x => x.GetAddressById(UserAddressId, userId))
-                .Returns(UserAddress);
+                .Setup(x => x.GetAddressByIdAsync(UserAddressId, userId))
+                .ReturnsAsync(UserAddress);
 
-            _userService.UpdateUserAddress(userId, UserAddressId, Request);
+            await _userService.UpdateUserAddressAsync(userId, UserAddressId, Request);
 
-            _userRepository.Verify(x => x.Save(), Times.Once);
+            _appDbContext.Verify(
+                x => x.SaveChangesAsync(),
+                Times.Once);
         }
     }
 }
