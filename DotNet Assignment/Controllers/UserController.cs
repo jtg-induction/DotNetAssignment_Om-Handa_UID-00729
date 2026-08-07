@@ -136,7 +136,7 @@ namespace DotNet_Assignment.Controllers
         [Authorize]
         [HttpPost]
         [Route("address")]
-        public async Task<IHttpActionResult> UpdateAddressAsync(AddressDto addressDto)
+        public async Task<IHttpActionResult> AddAddressAsync(AddressDto addressDto)
         {
             try
             {
