@@ -1,6 +1,9 @@
 ﻿using DotNet_Assignment.Data;
 using DotNet_Assignment.Models.Entities;
+using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
+using DotNet_Assignment.Utils;
 
 namespace DotNet_Assignment.Repository.RefreshTokens
 {
@@ -13,24 +16,20 @@ namespace DotNet_Assignment.Repository.RefreshTokens
             _context = context;
         }
 
-        public RefreshToken GetRefreshToken(string refreshToken)
+        public async Task<RefreshToken> GetRefreshTokenAsync(string refreshToken)
         {
-            return _context.RefreshTokens.SingleOrDefault(u => u.Token == refreshToken);
+            return await _context.RefreshTokens.SingleOrDefaultAsync(u => u.Token == Hasher.Hash(refreshToken));
         }
 
         public void AddRefreshToken(RefreshToken refreshToken)
         {
+
             _context.RefreshTokens.Add(refreshToken);
         }
 
         public void DeleteRefreshToken(RefreshToken refreshToken)
         {
             _context.RefreshTokens.Remove(refreshToken);
-        }
-
-        public void Save()
-        {
-            _context.SaveChanges();
         }
 
     }

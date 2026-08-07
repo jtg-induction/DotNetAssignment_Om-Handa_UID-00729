@@ -6,7 +6,7 @@ namespace DotNet_Assignment.Models.Entities
     public class UserAddress
     {
         [Key]
-        public Guid UserAddressId { get; set; }
+        public Guid UserAddressId { get; set; } = Guid.NewGuid();
 
         public string HouseNumber { get; set; }
 

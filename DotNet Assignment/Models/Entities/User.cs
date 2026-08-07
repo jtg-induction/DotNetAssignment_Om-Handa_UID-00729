@@ -9,12 +9,12 @@ namespace DotNet_Assignment.Models.Entities
     public class User
     {
         [Required]
-        public Guid UserId { get; set; }
+        public Guid UserId { get; set; } = Guid.NewGuid();
 
         [Required]
         [EmailAddress]
         [Index("IX_User_Email", IsUnique = true)]
-        [StringLength(100)]
+        [StringLength(255)]
         public string Email { get; set; }
 
         [Required]
@@ -25,9 +25,9 @@ namespace DotNet_Assignment.Models.Entities
         [StringLength(100), MinLength(2)]
         public string Name { get; set; }
 
-        [Phone]
         [Required]
-        [StringLength(10)]
+        [StringLength(10), MinLength(10)]
+        [RegularExpression(@"^[0-9]{10}$")]
         public string PhoneNumber { get; set; }
 
         [Range(0, int.MaxValue)]
