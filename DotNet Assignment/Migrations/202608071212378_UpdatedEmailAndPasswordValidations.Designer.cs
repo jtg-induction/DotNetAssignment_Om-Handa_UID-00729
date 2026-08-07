@@ -7,13 +7,13 @@ namespace DotNet_Assignment.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.5.2")]
-    public sealed partial class AddRefreshTokenTable : IMigrationMetadata
+    public sealed partial class UpdatedEmailAndPasswordValidations : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddRefreshTokenTable));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(UpdatedEmailAndPasswordValidations));
         
         string IMigrationMetadata.Id
         {
-            get { return "202608041830443_AddRefreshTokenTable"; }
+            get { return "202608071212378_UpdatedEmailAndPasswordValidations"; }
         }
         
         string IMigrationMetadata.Source

@@ -9,7 +9,7 @@ namespace DotNet_Assignment.Services.Auth
 {
     public interface IAuthService
     {
-        JWTResponseDto Register(SignupRequestDto requestDto);
+        Task<JWTResponseDto> RegisterAsync(SignupRequestDto requestDto);
 
         JWTResponseDto Login(LoginRequestDto loginRequest);
 

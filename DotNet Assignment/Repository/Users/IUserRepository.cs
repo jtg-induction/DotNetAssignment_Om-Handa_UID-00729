@@ -9,15 +9,15 @@ namespace DotNet_Assignment.Repository.Users
 {
     public interface IUserRepository
     {
-        User GetUserByEmail(string email);
+        Task<User> GetUserByEmailAsync(string email);
+
+        Task<bool> FindUserByEmailAsync(string email);
 
         User GetUserById(Guid userId);
 
         UserAddress GetAddressById(Guid userAddressId,Guid userId);
 
         void AddUser(User user);
-
-        void Save();
     }
 
 }

@@ -211,13 +211,13 @@
     <Compile Include="Migrations\202608051152564_UpdateValidations.Designer.cs">
       <DependentUpon>202608051152564_UpdateValidations.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202608041830443_AddRefreshTokenTable.cs" />
-    <Compile Include="Migrations\202608041830443_AddRefreshTokenTable.Designer.cs">
-      <DependentUpon>202608041830443_AddRefreshTokenTable.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\202608051413490_UpdateMigrations.cs" />
     <Compile Include="Migrations\202608051413490_UpdateMigrations.Designer.cs">
       <DependentUpon>202608051413490_UpdateMigrations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202608071212378_UpdatedEmailAndPasswordValidations.cs" />
+    <Compile Include="Migrations\202608071212378_UpdatedEmailAndPasswordValidations.Designer.cs">
+      <DependentUpon>202608071212378_UpdatedEmailAndPasswordValidations.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DTO\AddressDto.cs" />
@@ -246,14 +246,16 @@
     <Compile Include="Repository\Users\UserRepository.cs" />
     <Compile Include="Services\JWT\IJWTService.cs" />
     <Compile Include="Services\JWT\JWTService.cs" />
-    <Compile Include="Services\Password\IPasswordService.cs" />
-    <Compile Include="Services\Password\PasswordService.cs" />
     <Compile Include="Services\Auth\IAuthService.cs" />
     <Compile Include="Services\Auth\AuthService.cs" />
     <Compile Include="Controllers\AuthController.cs" />
+<<<<<<< HEAD
     <Compile Include="Services\Users\IUserService.cs" />
     <Compile Include="Services\Users\UserService.cs" />
     <Compile Include="Startup.cs" />
+=======
+    <Compile Include="Utils\Hasher.cs" />
+>>>>>>> 40a55b1df87b4a3f706858ea3b83a69f4b0edcb9
   </ItemGroup>
   <ItemGroup>
     <Content Include="ConnectionString.config" />
@@ -279,11 +281,11 @@
     <EmbeddedResource Include="Migrations\202608051152564_UpdateValidations.resx">
       <DependentUpon>202608051152564_UpdateValidations.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202608041830443_AddRefreshTokenTable.resx">
-      <DependentUpon>202608041830443_AddRefreshTokenTable.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202608051413490_UpdateMigrations.resx">
       <DependentUpon>202608051413490_UpdateMigrations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608071212378_UpdatedEmailAndPasswordValidations.resx">
+      <DependentUpon>202608071212378_UpdatedEmailAndPasswordValidations.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

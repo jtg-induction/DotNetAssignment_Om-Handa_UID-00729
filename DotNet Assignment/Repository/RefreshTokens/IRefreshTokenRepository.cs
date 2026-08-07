@@ -9,7 +9,7 @@ namespace DotNet_Assignment.Repository.RefreshTokens
 {
     public interface IRefreshTokenRepository
     {
-        RefreshToken GetRefreshToken(string refreshToken);
+        Task<RefreshToken> GetRefreshTokenAsync(string refreshToken);
 
         void AddRefreshToken(RefreshToken refreshToken);
 
@@ -17,6 +17,5 @@ namespace DotNet_Assignment.Repository.RefreshTokens
 
         void DeleteTokensByUserId(Guid userId);
 
-        void Save();
     }
 }

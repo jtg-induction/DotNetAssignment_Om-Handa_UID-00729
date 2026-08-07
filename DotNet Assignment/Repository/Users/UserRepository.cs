@@ -2,6 +2,7 @@
 using DotNet_Assignment.Models.Entities;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DotNet_Assignment.Repository.Users
 {
@@ -15,9 +16,14 @@ namespace DotNet_Assignment.Repository.Users
             _context = context;
         }
 
-        public User GetUserByEmail(string email)
+        public async Task<User> GetUserByEmailAsync(string email)
         {
-            return _context.Users.SingleOrDefault(u => u.Email == email);
+            return await _context.Users.SingleOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task<bool> FindUserByEmailAsync(string email)
+        {
+            return await _context.Users.AnyAsync(u => u.Email == email);
         }
 
         public User GetUserById(Guid userId)
@@ -32,11 +38,6 @@ namespace DotNet_Assignment.Repository.Users
 
         public void AddUser(User user) { 
             _context.Users.Add(user);
-        }
-
-        public void Save()
-        {
-            _context.SaveChanges();
         }
     }
 }
