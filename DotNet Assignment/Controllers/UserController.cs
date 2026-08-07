@@ -65,7 +65,7 @@ namespace DotNet_Assignment.Controllers
         [Authorize]
         [HttpPatch]
         [Route("address/{addressId:guid}")]
-        public async Task<IHttpActionResult> UpdateAddressAsync(Guid addressId, UpdateAddressDto updateAddressDto)
+        public async Task<IHttpActionResult> UpdateAddressAsync(Guid addressId, AddressDto addressDto)
         {
             if (!ModelState.IsValid)
             {
@@ -80,7 +80,7 @@ namespace DotNet_Assignment.Controllers
             {
                 var UserId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst("UserID").Value);
 
-                await _userService.UpdateUserAddressAsync(UserId, addressId, updateAddressDto);
+                await _userService.UpdateUserAddressAsync(UserId, addressId, addressDto);
 
                 var Response = new ApiResponseDto<object>()
                 {

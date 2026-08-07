@@ -284,7 +284,6 @@
     <Compile Include="Models\DTO\LogoutRequestDto.cs" />
     <Compile Include="Models\DTO\RefreshTokenDto.cs" />
     <Compile Include="Models\DTO\SignupRequestDto.cs" />
-    <Compile Include="Models\DTO\UpdateAddressDto.cs" />
     <Compile Include="Models\DTO\UpdateUserDto.cs" />
     <Compile Include="Models\Entities\RefreshToken.cs" />
     <Compile Include="Models\Entities\UserAddress.cs" />

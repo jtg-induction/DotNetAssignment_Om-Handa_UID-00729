@@ -24,6 +24,7 @@ namespace DotNet_Assignment.Models.DTO
 
         [Required]
         [StringLength(6)]
+        [RegularExpression(@"^[1-9][0-9]{5}$")]
         public string Pincode { get; set; }
 
     }
