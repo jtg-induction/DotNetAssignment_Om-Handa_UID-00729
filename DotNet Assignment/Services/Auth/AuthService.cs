@@ -64,14 +64,7 @@ namespace DotNet_Assignment.Services.Auth
 
             _userRepository.AddUser(User);
 
-            try
-            {
-                _userRepository.Save();
-            }
-            catch(Exception ex)
-            {
-                throw;
-            }
+            _userRepository.Save();
 
             string AccessToken = _jWTService.GetAccessToken(User);
 
