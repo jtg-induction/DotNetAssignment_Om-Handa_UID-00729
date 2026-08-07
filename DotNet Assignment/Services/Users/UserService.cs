@@ -51,7 +51,7 @@ namespace DotNet_Assignment.Services.Users
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateUserAddressAsync(Guid userid, Guid userAddressId, UpdateAddressDto updateAddressDto)
+        public async Task UpdateUserAddressAsync(Guid userid, Guid userAddressId, AddressDto addressDto)
         {
             var Address = await _userRepository.GetAddressByIdAsync(userAddressId, userid);
 
@@ -64,34 +64,34 @@ namespace DotNet_Assignment.Services.Users
                 throw new Exception("User is Deactivated");
             }
 
-            if (!string.IsNullOrWhiteSpace(updateAddressDto.HouseNumber))
+            if (!string.IsNullOrWhiteSpace(addressDto.HouseNumber))
             {
-                Address.HouseNumber = updateAddressDto.HouseNumber;
+                Address.HouseNumber = addressDto.HouseNumber;
             }
 
-            if (!string.IsNullOrWhiteSpace(updateAddressDto.Pincode))
+            if (!string.IsNullOrWhiteSpace(addressDto.Pincode))
             {
-                Address.Pincode = updateAddressDto.Pincode;
+                Address.Pincode = addressDto.Pincode;
             }
 
-            if (!string.IsNullOrWhiteSpace(updateAddressDto.Landmark))
+            if (!string.IsNullOrWhiteSpace(addressDto.Landmark))
             {
-                Address.Landmark = updateAddressDto.Landmark;
+                Address.Landmark = addressDto.Landmark;
             }
 
-            if (!string.IsNullOrWhiteSpace(updateAddressDto.Street))
+            if (!string.IsNullOrWhiteSpace(addressDto.Street))
             {
-                Address.Street = updateAddressDto.Street;
+                Address.Street = addressDto.Street;
             }
 
-            if (!string.IsNullOrWhiteSpace(updateAddressDto.State))
+            if (!string.IsNullOrWhiteSpace(addressDto.State))
             {
-                Address.State = updateAddressDto.State;
+                Address.State = addressDto.State;
             }
 
-            if (!string.IsNullOrWhiteSpace(updateAddressDto.City))
+            if (!string.IsNullOrWhiteSpace(addressDto.City))
             {
-                Address.City = updateAddressDto.City;
+                Address.City = addressDto.City;
             }
 
             await _context.SaveChangesAsync();

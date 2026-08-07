@@ -12,7 +12,7 @@ namespace DotNet_Assignment.Services.Users
     {
         Task UpdateUserAsync(Guid userId, UpdateUserDto updateUserDto);
 
-        Task UpdateUserAddressAsync(Guid userid, Guid userAddressId, UpdateAddressDto updateAddressDto);
+        Task UpdateUserAddressAsync(Guid userid, Guid userAddressId, AddressDto addressDto);
 
         Task DeactivateUserAsync(Guid userId);
 
