@@ -13,9 +13,9 @@ namespace DotNet_Assignment.Models.Entities
 
         public string Token {  get; set; }
 
-        public DateTime ExpiresAt { get; set; } = DateTime.UtcNow;
+        public DateTime ExpiresAt { get; set; } = DateTime.UtcNow.AddDays(7);
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddDays(7);
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public Guid UserId { get; set; }
 

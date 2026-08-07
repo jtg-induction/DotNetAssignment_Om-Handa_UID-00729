@@ -46,46 +46,56 @@ namespace DotNet_Assignment.Controllers
 
         [HttpPost]
         [Route("login")]
-        public ApiResponseDto<JWTResponseDto> Login(LoginRequestDto requestDto) {
+        public async Task<IHttpActionResult> LoginAsync(LoginRequestDto requestDto) {
 
             if (!ModelState.IsValid)
             {
-                throw new Exception("Wrong Details");
+                var Errors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage).ToList();
+
+                var Response = new ApiResponseDto<object>() { IsSuccess = false, Message = "Invalid Credentials", Data = Errors };
+
+                return Content(HttpStatusCode.BadRequest, Response);
             }
 
             try
             {
-                JWTResponseDto JWTResponse = _authService.Login(requestDto);
-                return new ApiResponseDto<JWTResponseDto>() { IsSuccess = true, Message = "User Logged In", Data = JWTResponse };
+                JWTResponseDto JWTResponse = await _authService.LoginAsync(requestDto);
+                var Response = new ApiResponseDto<JWTResponseDto>() { IsSuccess = true, Message = "User Logged In", Data = JWTResponse };
+                return Ok(Response);
             }
             catch (Exception ex)
             {
-                return new ApiResponseDto<JWTResponseDto>() { IsSuccess = false, Message = ex.Message };
+                var Response = new ApiResponseDto<JWTResponseDto>() { IsSuccess = false, Message = ex.Message };
+                return Content(HttpStatusCode.BadRequest, Response);
             }
         }
 
         [HttpPost]
         [Route("logout")]
-        public ApiResponseDto<object> Logout(LogoutRequestDto requestDto)
+        public async Task<IHttpActionResult> LogoutAsync(LogoutRequestDto requestDto)
         {
             try
             {
-                _authService.Logout(requestDto);
-                return new ApiResponseDto<object>() { IsSuccess = true, Message = "User Logged Out"};
+                await _authService.LogoutAsync(requestDto);
+
+                var Response=  new ApiResponseDto<object>() { IsSuccess = true, Message = "User Logged Out"};
+                return Ok(Response);
             }
             catch (Exception ex)
             {
-                return new ApiResponseDto<object>() { IsSuccess = false, Message = ex.Message };
+                var Response = new ApiResponseDto<object>() { IsSuccess = false, Message = ex.Message };
+                return Content(HttpStatusCode.BadRequest, Response);
             }
         }
 
         [HttpPost]
         [Route("refresh")]
-        public ApiResponseDto<JWTResponseDto> Refresh(RefreshTokenDto refreshTokenDto)
+        public async Task<IHttpActionResult> RefreshAsync(RefreshTokenDto refreshTokenDto)
         {
-            JWTResponseDto JWTResponse = _authService.RefreshAccessToken(refreshTokenDto.RefreshToken);
+            JWTResponseDto JWTResponse = await _authService.RefreshAccessTokenAsync(refreshTokenDto.RefreshToken);
 
-            return new ApiResponseDto<JWTResponseDto>() { IsSuccess = true, Message = "User Logged In", Data = JWTResponse };
+            var Response = new ApiResponseDto<JWTResponseDto>() { IsSuccess = true, Message = "New Token Generated", Data = JWTResponse };
+            return Ok(Response);
         }
 
     }

@@ -60,21 +60,13 @@ namespace DotNet_Assignment.Services.Auth
 
             var Refresh = new RefreshToken()
             {
-                Token = Hasher.Hash(RefreshToken),
+                Token = _refreshTokenRepository.HashRefreshToken(RefreshToken),
                 UserId = User.UserId
             };
 
             _refreshTokenRepository.AddRefreshToken(Refresh);
 
-            try
-            {
             await _context.SaveChangesAsync();
-
-            }
-            catch(Exception ex)
-            {
-                throw;
-            }
 
             return new JWTResponseDto
             {
@@ -83,9 +75,9 @@ namespace DotNet_Assignment.Services.Auth
             };
         }
 
-        public JWTResponseDto Login(LoginRequestDto loginRequest)
+        public async Task<JWTResponseDto> LoginAsync(LoginRequestDto loginRequest)
         {
-            var User = _userRepository.GetUserByEmail(loginRequest.Email);
+            var User = await _userRepository.GetUserByEmailAsync(loginRequest.Email);
 
             if (User == null) {
                 throw new Exception("Invalid Credentials");
@@ -96,26 +88,23 @@ namespace DotNet_Assignment.Services.Auth
                 throw new Exception("User Deactivated");
             }
 
-            if (!_passwordService.VerifyPassword(loginRequest.Password, User.Password))
+            if (!Hasher.Verify(loginRequest.Password, User.Password))
             {
                 throw new Exception("Invalid Credentials");
             }
 
             string AccessToken = _jWTService.GetAccessToken(User);
-            string RefreshToken = _jWTService.GetRefreshToken();
+            string RefreshToken = _jWTService.GenerateRefreshToken();
 
             var Refresh = new RefreshToken()
             {
-                RefreshTokenId = Guid.NewGuid(),
-                Token = RefreshToken,
-                CreatedAt = DateTime.UtcNow,
-                ExpiresAt = DateTime.UtcNow.AddDays(7),
+                Token = _refreshTokenRepository.HashRefreshToken(RefreshToken),
                 UserId = User.UserId
             };
 
             _refreshTokenRepository.AddRefreshToken(Refresh);
 
-            _refreshTokenRepository.Save();
+            _context.SaveChanges();
 
             return new JWTResponseDto
             {
@@ -124,22 +113,24 @@ namespace DotNet_Assignment.Services.Auth
             };
         }
 
-        public void Logout(LogoutRequestDto logoutRequest)
+        public async Task LogoutAsync(LogoutRequestDto logoutRequest)
         {
-            var RefreshToken = _refreshTokenRepository.GetRefreshToken(logoutRequest.RefreshToken);
+            var RefreshToken = await _refreshTokenRepository.GetRefreshTokenAsync(logoutRequest.RefreshToken);
 
             if (RefreshToken == null) {
                 return;
             }
 
             _refreshTokenRepository.DeleteRefreshToken(RefreshToken);
-            _refreshTokenRepository.Save();
+            _context.SaveChanges();
         }
 
 
-        public JWTResponseDto RefreshAccessToken(string refreshToken)
+        public async Task<JWTResponseDto> RefreshAccessTokenAsync(string refreshToken)
         {
-            var Token = _refreshTokenRepository.GetRefreshToken(refreshToken);
+            var HashedToken = _refreshTokenRepository.HashRefreshToken(refreshToken);
+
+            var Token = await _refreshTokenRepository.GetRefreshTokenAsync(HashedToken);
 
             if (Token == null)
             {

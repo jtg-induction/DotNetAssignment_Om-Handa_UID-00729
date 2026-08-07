@@ -1,8 +1,6 @@
-﻿using DotNet_Assignment.Models.Entities;
+﻿using DotNet_Assignment.Models.DTO;
+using DotNet_Assignment.Models.Entities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DotNet_Assignment.Repository.Users
@@ -13,11 +11,14 @@ namespace DotNet_Assignment.Repository.Users
 
         Task<bool> FindUserByEmailAsync(string email);
 
-        User GetUserById(Guid userId);
+        Task<User> GetUserByIdAsync(Guid userId);
 
-        UserAddress GetAddressById(Guid userAddressId,Guid userId);
+        Task<UserAddress> GetAddressByIdAsync(Guid userAddressId,Guid userId);
 
         void AddUser(User user);
+
+        void AddAddress(UserAddress userAddress);
+
     }
 
 }

@@ -11,10 +11,10 @@ namespace DotNet_Assignment.Services.Auth
     {
         Task<JWTResponseDto> RegisterAsync(SignupRequestDto requestDto);
 
-        JWTResponseDto Login(LoginRequestDto loginRequest);
+        Task<JWTResponseDto> LoginAsync(LoginRequestDto loginRequest);
 
-        void Logout(LogoutRequestDto logoutRequest);
+        Task LogoutAsync(LogoutRequestDto logoutRequest);
 
-        JWTResponseDto RefreshAccessToken(string refreshToken);
+        Task<JWTResponseDto> RefreshAccessTokenAsync(string refreshToken);
     }
 }

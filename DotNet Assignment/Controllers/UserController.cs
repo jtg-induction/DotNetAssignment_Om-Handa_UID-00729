@@ -1,12 +1,10 @@
 ﻿using DotNet_Assignment.Models.DTO;
-using DotNet_Assignment.Services.Auth;
 using DotNet_Assignment.Services.Users;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace DotNet_Assignment.Controllers
@@ -25,49 +23,145 @@ namespace DotNet_Assignment.Controllers
         [Authorize]
         [HttpPatch]
         [Route("update")]
-        public ApiResponseDto<object> UpdateUser(UpdateUserDto updateUserDto)
+        public async Task<IHttpActionResult> UpdateUserAsync(UpdateUserDto updateUserDto)
         {
-            var UserId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst("UserID").Value);
 
-            _userService.UpdateUser(UserId, updateUserDto);
-
-            return new ApiResponseDto<object>()
+            if (!ModelState.IsValid)
             {
-                IsSuccess = true,
-                Message = "Profile Updated"
-            };
+                var Errors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage).ToList();
+
+                var Response = new ApiResponseDto<object>() { IsSuccess = false, Message = "Invalid Credentials", Data = Errors };
+
+                return Content(HttpStatusCode.BadRequest, Response);
+            }
+
+            try
+            {
+                var UserId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst("UserID").Value);
+
+                await _userService.UpdateUserAsync(UserId, updateUserDto);
+
+                var Response = new ApiResponseDto<object>()
+                {
+                    IsSuccess = true,
+                    Message = "Profile Updated"
+                };
+
+                return Ok(Response);
+            }
+            catch (Exception ex)
+            {
+
+                var Response = new ApiResponseDto<object>()
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                };
+
+                return Content(HttpStatusCode.BadRequest, Response);
+            }
         }
 
         [Authorize]
         [HttpPatch]
         [Route("address/{addressId:guid}")]
-        public ApiResponseDto<object> UpdateAddress(Guid addressId, UpdateAddressDto updateAddressDto)
+        public async Task<IHttpActionResult> UpdateAddressAsync(Guid addressId, UpdateAddressDto updateAddressDto)
         {
-            var UserId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst("UserID").Value);
-
-            _userService.UpdateUserAddress(UserId, addressId, updateAddressDto);
-
-            return new ApiResponseDto<object>()
+            if (!ModelState.IsValid)
             {
-                IsSuccess = true,
-                Message = "Address Updated Successfully"
-            };
+                var Errors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage).ToList();
+
+                var Response = new ApiResponseDto<object>() { IsSuccess = false, Message = "Invalid Credentials", Data = Errors };
+
+                return Content(HttpStatusCode.BadRequest, Response);
+            }
+
+            try
+            {
+                var UserId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst("UserID").Value);
+
+                await _userService.UpdateUserAddressAsync(UserId, addressId, updateAddressDto);
+
+                var Response = new ApiResponseDto<object>()
+                {
+                    IsSuccess = true,
+                    Message = "Address Updated Successfully"
+                };
+
+                return Ok(Response);
+            }
+            catch (Exception ex) {
+
+                var Response = new ApiResponseDto<object>()
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                };
+
+                return Content(HttpStatusCode.BadRequest, Response);
+            }
         }
 
         [Authorize]
         [HttpPatch]
         [Route("deactivate")]
-        public ApiResponseDto<object> DeactivateUser()
+        public async Task<IHttpActionResult> DeactivateUserAsync()
         {
-            var UserId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst("UserID").Value);
-
-            _userService.DeactivateUser(UserId);
-
-            return new ApiResponseDto<object>()
+           try
             {
-                IsSuccess = true,
-                Message = "User Deactivated"
-            };
+                var UserId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst("UserID").Value);
+
+                await _userService.DeactivateUserAsync(UserId);
+
+                var Response = new ApiResponseDto<object>()
+                {
+                    IsSuccess = true,
+                    Message = "User Deactivated"
+                };
+
+                return Ok(Response);
+           }
+           catch (Exception ex)
+           {
+                var Response = new ApiResponseDto<object>()
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                };
+
+                return Content(HttpStatusCode.BadRequest, Response);
+           }
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("address")]
+        public async Task<IHttpActionResult> UpdateAddressAsync(AddressDto addressDto)
+        {
+            try
+            {
+                var UserId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst("UserID").Value);
+
+                await _userService.AddUserAddressAsync(UserId, addressDto);
+
+                var Response = new ApiResponseDto<object>()
+                {
+                    IsSuccess = true,
+                    Message = "Address Added Successfully"
+                };
+
+                return Ok(Response);
+            }
+            catch (Exception ex)
+            {
+                var Response = new ApiResponseDto<object>()
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                };
+
+                return Content(HttpStatusCode.BadRequest, Response);
+            }
         }
     }
 }

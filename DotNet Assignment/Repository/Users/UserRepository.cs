@@ -1,6 +1,8 @@
 ﻿using DotNet_Assignment.Data;
+using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Models.Entities;
 using System;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,18 +28,22 @@ namespace DotNet_Assignment.Repository.Users
             return await _context.Users.AnyAsync(u => u.Email == email);
         }
 
-        public User GetUserById(Guid userId)
+        public async Task<User> GetUserByIdAsync(Guid userId)
         {
-            return _context.Users.SingleOrDefault(u => u.UserId == userId);
+            return await _context.Users.SingleOrDefaultAsync(u => u.UserId == userId);
         }
 
-        public UserAddress GetAddressById(Guid userAddressId, Guid userId)
+        public async Task<UserAddress> GetAddressByIdAsync(Guid userAddressId, Guid userId)
         {
-            return _context.UserAddresses.SingleOrDefault(ua=> ua.UserAddressId== userAddressId && ua.UserId==userId);
+            return await _context.UserAddresses.SingleOrDefaultAsync(ua=> ua.UserAddressId== userAddressId && ua.UserId==userId);
         }
 
         public void AddUser(User user) { 
             _context.Users.Add(user);
+        }
+        public void AddAddress(UserAddress userAddress)
+        {
+           _context.UserAddresses.Add(userAddress);
         }
     }
 }

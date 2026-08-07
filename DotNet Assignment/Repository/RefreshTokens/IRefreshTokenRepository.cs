@@ -1,8 +1,5 @@
 ﻿using DotNet_Assignment.Models.Entities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DotNet_Assignment.Repository.RefreshTokens
@@ -16,6 +13,8 @@ namespace DotNet_Assignment.Repository.RefreshTokens
         void DeleteRefreshToken(RefreshToken refreshToken);
 
         void DeleteTokensByUserId(Guid userId);
+
+        string HashRefreshToken(string refreshToken);
 
     }
 }

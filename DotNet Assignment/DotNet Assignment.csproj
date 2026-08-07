@@ -249,13 +249,10 @@
     <Compile Include="Services\Auth\IAuthService.cs" />
     <Compile Include="Services\Auth\AuthService.cs" />
     <Compile Include="Controllers\AuthController.cs" />
-<<<<<<< HEAD
     <Compile Include="Services\Users\IUserService.cs" />
     <Compile Include="Services\Users\UserService.cs" />
     <Compile Include="Startup.cs" />
-=======
     <Compile Include="Utils\Hasher.cs" />
->>>>>>> 40a55b1df87b4a3f706858ea3b83a69f4b0edcb9
   </ItemGroup>
   <ItemGroup>
     <Content Include="ConnectionString.config" />
