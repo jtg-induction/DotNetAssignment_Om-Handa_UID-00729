@@ -179,6 +179,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Handlers\GlobalExceptionHandler.cs" />
+    <Compile Include="Handlers\ModelStateHandler.cs" />
     <Compile Include="Migrations\202608011106215_InitialCreate.cs" />
     <Compile Include="Migrations\202608011106215_InitialCreate.Designer.cs">
       <DependentUpon>202608011106215_InitialCreate.cs</DependentUpon>
@@ -243,15 +245,19 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202608011106215_InitialCreate.resx">
       <DependentUpon>202608011106215_InitialCreate.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202608041026198_UpdatePasswordLength.resx">
       <DependentUpon>202608041026198_UpdatePasswordLength.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202608051152564_UpdateValidations.resx">
       <DependentUpon>202608051152564_UpdateValidations.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202608051413490_UpdateMigrations.resx">
       <DependentUpon>202608051413490_UpdateMigrations.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202608071212378_UpdatedEmailAndPasswordValidations.resx">
       <DependentUpon>202608071212378_UpdatedEmailAndPasswordValidations.cs</DependentUpon>

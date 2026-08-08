@@ -8,7 +8,6 @@ namespace DotNet_Assignment.Models.Entities
 {
     public class RefreshToken
     {
-        [Key]
         public Guid RefreshTokenId { get; set; } = Guid.NewGuid();
 
         public string Token {  get; set; }

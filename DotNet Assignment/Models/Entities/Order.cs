@@ -7,7 +7,6 @@ namespace DotNet_Assignment.Models.Entities
 {
     public class Order
     {
-        [Key]
         public Guid OrderId { get; set; } = Guid.NewGuid();
 
         public decimal TotalPrice { get; set; }

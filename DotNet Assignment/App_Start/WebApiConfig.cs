@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http;
+﻿using System.Web.Http;
+using System.Web.Http.ExceptionHandling;
+using DotNet_Assignment.Handlers;
 
 namespace DotNet_Assignment
 {
@@ -19,6 +18,11 @@ namespace DotNet_Assignment
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
+
+            config.Services.Replace(
+                typeof(IExceptionHandler), new GlobalExceptionHandler());
+
+            config.Filters.Add(new ModelStateHandler());
         }
     }
 }
