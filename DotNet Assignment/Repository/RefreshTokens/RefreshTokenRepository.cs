@@ -36,20 +36,20 @@ namespace DotNet_Assignment.Repository.RefreshTokens
 
         public void DeleteTokensByUserId(Guid userId)
         {
-            var Tokens= _context.RefreshTokens.Where(u => u.UserId == userId).ToList();
+            var tokens= _context.RefreshTokens.Where(u => u.UserId == userId).ToList();
 
-            _context.RefreshTokens.RemoveRange(Tokens);
+            _context.RefreshTokens.RemoveRange(tokens);
         }
 
         public string HashRefreshToken(string refreshToken)
         {
             using(var sha256 = SHA256.Create())
             {
-                var Bytes = Encoding.UTF8.GetBytes(refreshToken);
+                var bytes = Encoding.UTF8.GetBytes(refreshToken);
 
-                var Hash = sha256.ComputeHash(Bytes);
+                var hash = sha256.ComputeHash(bytes);
 
-                return Convert.ToBase64String(Hash);
+                return Convert.ToBase64String(hash);
             }
         }
 

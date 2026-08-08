@@ -60,13 +60,8 @@ namespace DotNet_Assignment.Services.Auth
 
             var refresh = new RefreshToken()
             {
-<<<<<<< HEAD
-                Token = _refreshTokenRepository.HashRefreshToken(RefreshToken),
-                UserId = User.UserId
-=======
                 Token = Hasher.Hash(RefreshToken),
-                UserId = user.UserId
->>>>>>> b6f1693048ee4dbc96dc16cb9cea427cd08c5b37
+                UserId = user.UserId,
             };
 
             _refreshTokenRepository.AddRefreshToken(refresh);

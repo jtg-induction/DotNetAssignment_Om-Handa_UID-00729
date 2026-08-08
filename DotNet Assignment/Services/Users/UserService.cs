@@ -3,6 +3,7 @@ using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Repository.RefreshTokens;
 using DotNet_Assignment.Repository.Users;
+using DotNet_Assignment.Utils;
 using System;
 using System.Threading.Tasks;
 
@@ -26,92 +27,45 @@ namespace DotNet_Assignment.Services.Users
 
         public async Task UpdateUserAsync(Guid userId, UpdateUserDto updateUserDto)
         {
-            var User = await _userRepository.GetUserByIdAsync(userId);
+            var user = await _userRepository.GetUserByIdAsync(userId);
 
-            if (User == null)
+            if (user == null)
             {
                 throw new Exception("User not found");
             }
 
-            if (User.IsDeleted)
+            if (user.IsDeleted)
             {
                 throw new Exception("User is Deactivated");
             }
 
             if (!string.IsNullOrWhiteSpace(updateUserDto.Name))
             {
-                User.Name = updateUserDto.Name;
+                user.Name = updateUserDto.Name;
             }
 
             if (!string.IsNullOrWhiteSpace(updateUserDto.PhoneNumber))
             {
-                User.PhoneNumber = updateUserDto.PhoneNumber;
+                user.PhoneNumber = updateUserDto.PhoneNumber;
             }
 
             await _context.SaveChangesAsync();
-        }
-
-        public async Task UpdateUserAddressAsync(Guid userid, Guid userAddressId, AddressDto addressDto)
-        {
-            var Address = await _userRepository.GetAddressByIdAsync(userAddressId, userid);
-
-            if (Address == null)
-            {
-                throw new Exception("Address not Found");
-            }
-
-            if (Address.User.IsDeleted) {
-                throw new Exception("User is Deactivated");
-            }
-
-            if (!string.IsNullOrWhiteSpace(addressDto.HouseNumber))
-            {
-                Address.HouseNumber = addressDto.HouseNumber;
-            }
-
-            if (!string.IsNullOrWhiteSpace(addressDto.Pincode))
-            {
-                Address.Pincode = addressDto.Pincode;
-            }
-
-            if (!string.IsNullOrWhiteSpace(addressDto.Landmark))
-            {
-                Address.Landmark = addressDto.Landmark;
-            }
-
-            if (!string.IsNullOrWhiteSpace(addressDto.Street))
-            {
-                Address.Street = addressDto.Street;
-            }
-
-            if (!string.IsNullOrWhiteSpace(addressDto.State))
-            {
-                Address.State = addressDto.State;
-            }
-
-            if (!string.IsNullOrWhiteSpace(addressDto.City))
-            {
-                Address.City = addressDto.City;
-            }
-
-            await _context.SaveChangesAsync();
-
         }
 
         public async Task DeactivateUserAsync(Guid userId) {
-            var User = await _userRepository.GetUserByIdAsync(userId);
+            var user = await _userRepository.GetUserByIdAsync(userId);
 
-            if (User == null)
+            if (user == null)
             {
                 throw new Exception("User not found");
             }
 
-            if (User.IsDeleted)
+            if (user.IsDeleted)
             {
                 throw new Exception("User Already Deactivated");
             }
 
-            User.IsDeleted = true;
+            user.IsDeleted = true;
 
             _refreshTokenRepository.DeleteTokensByUserId(userId);
 
@@ -119,33 +73,26 @@ namespace DotNet_Assignment.Services.Users
 
         }
 
-        public async Task AddUserAddressAsync(Guid userId, AddressDto addressDto)
+        public async Task ChangePasswordAsync(Guid userId, ChangePasswordDto changePasswordDto)
         {
-            var User= await _userRepository.GetUserByIdAsync(userId);
+            var user = await _userRepository.GetUserByIdAsync(userId);
 
-
-            if (User == null)
+            if (user == null)
             {
                 throw new Exception("User not found");
             }
 
-            if (User.IsDeleted)
+            if (user.IsDeleted)
             {
                 throw new Exception("User Already Deactivated");
             }
 
-            var Address = new UserAddress
+            if(!Hasher.Verify(changePasswordDto.OldPassword, user.Password))
             {
-                UserId = userId,
-                HouseNumber = addressDto.HouseNumber,
-                Street = addressDto.Street,
-                City = addressDto.City,
-                Pincode = addressDto.Pincode,
-                Landmark = addressDto.Landmark,
-                State = addressDto.State,
-            };
+                throw new Exception("Old Password is Incorrect");
+            }
 
-            _userRepository.AddAddress(Address);
+            user.Password = Hasher.Hash(changePasswordDto.NewPassword);
 
             await _context.SaveChangesAsync();
         }

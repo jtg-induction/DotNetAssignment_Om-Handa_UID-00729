@@ -6,15 +6,13 @@ using System.Web;
 
 namespace DotNet_Assignment.Models.DTO
 {
-    public class UpdateUserDto
+    public class ChangePasswordDto
     {
         [Required]
-        [StringLength(100), MinLength(2)]
-        public string Name { get; set; }
+        public string OldPassword { get; set; }
 
-        [Phone]
         [Required]
-        [StringLength(10)]
-        public string PhoneNumber { get; set; }
+        [StringLength(50), MinLength(8)]
+        public string NewPassword { get; set; }
     }
 }

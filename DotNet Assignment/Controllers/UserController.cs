@@ -25,81 +25,17 @@ namespace DotNet_Assignment.Controllers
         [Route("update")]
         public async Task<IHttpActionResult> UpdateUserAsync(UpdateUserDto updateUserDto)
         {
+             var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            if (!ModelState.IsValid)
-            {
-                var Errors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage).ToList();
+             await _userService.UpdateUserAsync(userId, updateUserDto);
 
-                var Response = new ApiResponseDto<object>() { IsSuccess = false, Message = "Invalid Credentials", Data = Errors };
+             var response = new ApiResponseDto<object>()
+             {
+                  IsSuccess = true,
+                  Message = "Profile Updated"
+             };
 
-                return Content(HttpStatusCode.BadRequest, Response);
-            }
-
-            try
-            {
-                var UserId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst("UserID").Value);
-
-                await _userService.UpdateUserAsync(UserId, updateUserDto);
-
-                var Response = new ApiResponseDto<object>()
-                {
-                    IsSuccess = true,
-                    Message = "Profile Updated"
-                };
-
-                return Ok(Response);
-            }
-            catch (Exception ex)
-            {
-
-                var Response = new ApiResponseDto<object>()
-                {
-                    IsSuccess = false,
-                    Message = ex.Message
-                };
-
-                return Content(HttpStatusCode.BadRequest, Response);
-            }
-        }
-
-        [Authorize]
-        [HttpPatch]
-        [Route("address/{addressId:guid}")]
-        public async Task<IHttpActionResult> UpdateAddressAsync(Guid addressId, AddressDto addressDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                var Errors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage).ToList();
-
-                var Response = new ApiResponseDto<object>() { IsSuccess = false, Message = "Invalid Credentials", Data = Errors };
-
-                return Content(HttpStatusCode.BadRequest, Response);
-            }
-
-            try
-            {
-                var UserId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst("UserID").Value);
-
-                await _userService.UpdateUserAddressAsync(UserId, addressId, addressDto);
-
-                var Response = new ApiResponseDto<object>()
-                {
-                    IsSuccess = true,
-                    Message = "Address Updated Successfully"
-                };
-
-                return Ok(Response);
-            }
-            catch (Exception ex) {
-
-                var Response = new ApiResponseDto<object>()
-                {
-                    IsSuccess = false,
-                    Message = ex.Message
-                };
-
-                return Content(HttpStatusCode.BadRequest, Response);
-            }
+             return Ok(response);
         }
 
         [Authorize]
@@ -107,61 +43,35 @@ namespace DotNet_Assignment.Controllers
         [Route("deactivate")]
         public async Task<IHttpActionResult> DeactivateUserAsync()
         {
-           try
-            {
-                var UserId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst("UserID").Value);
+                var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                await _userService.DeactivateUserAsync(UserId);
+                await _userService.DeactivateUserAsync(userId);
 
-                var Response = new ApiResponseDto<object>()
+                var response = new ApiResponseDto<object>()
                 {
                     IsSuccess = true,
                     Message = "User Deactivated"
                 };
 
-                return Ok(Response);
-           }
-           catch (Exception ex)
-           {
-                var Response = new ApiResponseDto<object>()
-                {
-                    IsSuccess = false,
-                    Message = ex.Message
-                };
-
-                return Content(HttpStatusCode.BadRequest, Response);
-           }
+                return Ok(response);
         }
 
         [Authorize]
-        [HttpPost]
-        [Route("address")]
-        public async Task<IHttpActionResult> AddAddressAsync(AddressDto addressDto)
+        [HttpPatch]
+        [Route("change-password")]
+        public async Task<IHttpActionResult> ChangePassword(ChangePasswordDto changePasswordDto)
         {
-            try
+            var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            await _userService.ChangePasswordAsync(userId, changePasswordDto);
+
+            var response = new ApiResponseDto<object>()
             {
-                var UserId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst("UserID").Value);
+                IsSuccess = true,
+                Message = "Password Changed"
+            };
 
-                await _userService.AddUserAddressAsync(UserId, addressDto);
-
-                var Response = new ApiResponseDto<object>()
-                {
-                    IsSuccess = true,
-                    Message = "Address Added Successfully"
-                };
-
-                return Ok(Response);
-            }
-            catch (Exception ex)
-            {
-                var Response = new ApiResponseDto<object>()
-                {
-                    IsSuccess = false,
-                    Message = ex.Message
-                };
-
-                return Content(HttpStatusCode.BadRequest, Response);
-            }
+            return Ok(response);
         }
     }
 }

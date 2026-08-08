@@ -19,7 +19,7 @@ namespace DotNet_Assignment
 
         public void ConfigureJwt(IAppBuilder app) {
 
-            var Key = ConfigurationManager.AppSettings["JwtKey"];
+            var key = ConfigurationManager.AppSettings["JwtKey"];
 
             app.UseJwtBearerAuthentication(new JwtBearerAuthenticationOptions
             {
@@ -28,7 +28,7 @@ namespace DotNet_Assignment
                 TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey= new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key)), 
+                    IssuerSigningKey= new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)), 
                     ValidateIssuer=false,
                     ValidateAudience=false,
                     ValidateLifetime=true

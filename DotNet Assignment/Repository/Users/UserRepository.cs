@@ -10,7 +10,6 @@ namespace DotNet_Assignment.Repository.Users
 {
     public class UserRepository : IUserRepository
     {
-
         private readonly AppDbContext _context;
 
         public UserRepository(AppDbContext context)
@@ -33,17 +32,8 @@ namespace DotNet_Assignment.Repository.Users
             return await _context.Users.SingleOrDefaultAsync(u => u.UserId == userId);
         }
 
-        public async Task<UserAddress> GetAddressByIdAsync(Guid userAddressId, Guid userId)
-        {
-            return await _context.UserAddresses.SingleOrDefaultAsync(ua=> ua.UserAddressId== userAddressId && ua.UserId==userId);
-        }
-
         public void AddUser(User user) { 
             _context.Users.Add(user);
-        }
-        public void AddAddress(UserAddress userAddress)
-        {
-           _context.UserAddresses.Add(userAddress);
         }
     }
 }
