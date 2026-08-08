@@ -5,7 +5,6 @@ namespace DotNet_Assignment.Models.Entities
 {
     public class OrderedItem
     {
-        [Key]
         public Guid OrderedItemId { get; set; } = Guid.NewGuid();
 
         [Range(1, int.MaxValue)]

@@ -37,7 +37,7 @@ namespace DotNet_Assignment.Services.Auth
                 throw new Exception("Email Already Exists");
             }
 
-            var User = new User()
+            var user = new User()
             {
                 Email = requestDto.Email,
                 Password = Hasher.Hash(requestDto.Password),
@@ -47,9 +47,9 @@ namespace DotNet_Assignment.Services.Auth
                 IsDeleted = false,
             };
 
-            _userRepository.AddUser(User);
+            _userRepository.AddUser(user);
 
-            string AccessToken = _jWTService.GetAccessToken(User);
+            string AccessToken = _jWTService.GetAccessToken(user);
 
             string RefreshToken = _jWTService.GenerateRefreshToken();
 
@@ -58,13 +58,18 @@ namespace DotNet_Assignment.Services.Auth
                 throw new Exception("Refresh Token Could not be Generated");
             }
 
-            var Refresh = new RefreshToken()
+            var refresh = new RefreshToken()
             {
+<<<<<<< HEAD
                 Token = _refreshTokenRepository.HashRefreshToken(RefreshToken),
                 UserId = User.UserId
+=======
+                Token = Hasher.Hash(RefreshToken),
+                UserId = user.UserId
+>>>>>>> b6f1693048ee4dbc96dc16cb9cea427cd08c5b37
             };
 
-            _refreshTokenRepository.AddRefreshToken(Refresh);
+            _refreshTokenRepository.AddRefreshToken(refresh);
 
             await _context.SaveChangesAsync();
 

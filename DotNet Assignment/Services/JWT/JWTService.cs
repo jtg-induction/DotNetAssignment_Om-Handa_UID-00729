@@ -14,25 +14,25 @@ namespace DotNet_Assignment.Services.JWT
     {
         public string GetAccessToken(User user )
         {
-            var Key = ConfigurationManager.AppSettings["JwtKey"];
+            var key = ConfigurationManager.AppSettings["JwtKey"];
 
-            var Issuer = ConfigurationManager.AppSettings["JwtIssuer"];
+            var issuer = ConfigurationManager.AppSettings["JwtIssuer"];
 
-            var SecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
 
-            var Credentials = new SigningCredentials(SecurityKey, SecurityAlgorithms.HmacSha256);
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var Claims = new List<Claim>() {
-                new Claim("UserID", user.UserId.ToString()),
-                new Claim("Email", user.Email),
-                new Claim("Role", user.Role.ToString())
+            var claims = new List<Claim>() {
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
-            var token = new JwtSecurityToken(Issuer, Issuer, Claims, expires: DateTime.UtcNow.AddMinutes(15), signingCredentials: Credentials);
+            var token = new JwtSecurityToken(issuer, issuer, claims, expires: DateTime.UtcNow.AddMinutes(15), signingCredentials: credentials);
 
-            var JWTtoken = new JwtSecurityTokenHandler().WriteToken(token);
+            var jWTtoken = new JwtSecurityTokenHandler().WriteToken(token);
 
-            return JWTtoken;
+            return jWTtoken;
         }
 
         public string GenerateRefreshToken()

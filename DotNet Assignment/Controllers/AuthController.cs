@@ -22,26 +22,9 @@ namespace DotNet_Assignment.Controllers
         [Route("signup")]
         public async Task<IHttpActionResult> SignUpAsync(SignupRequestDto requestDto)
         {
-            if (!ModelState.IsValid)
-            {
-                var Errors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage).ToList();
-
-                var Response = new ApiResponseDto<object>() { IsSuccess = false, Message = "Invalid Credentials", Data = Errors };
-
-                return Content(HttpStatusCode.BadRequest, Response);
-            }
-
-            try
-            {
-                JWTResponseDto JWTResponse= await _authService.RegisterAsync(requestDto);
-                var Response = new ApiResponseDto<JWTResponseDto>() { IsSuccess = true, Message = "User Signed In", Data = JWTResponse };
-                return Ok(Response);
-            }
-            catch(Exception ex)
-            {
-                var Response = new ApiResponseDto<object>() { IsSuccess = false, Message = ex.Message };
-                return Content(HttpStatusCode.BadRequest, Response);
-            }
+            JWTResponseDto JWTResponse= await _authService.RegisterAsync(requestDto);
+            var response = new ApiResponseDto<JWTResponseDto>() { IsSuccess = true, Message = "User Signed In", Data = JWTResponse };
+            return Ok(response);
         }
 
         [HttpPost]

@@ -15,20 +15,25 @@ namespace DotNet_Assignment.App_Start
     {
         public static IUnityContainer RegisterComponents()
         {
-            var Container = new UnityContainer();
+            var container = new UnityContainer();
 
-            Container.RegisterType<AppDbContext>(new HierarchicalLifetimeManager());
+            container.RegisterType<AppDbContext>(new HierarchicalLifetimeManager());
 
+<<<<<<< HEAD
             Container.RegisterType<IAuthService, AuthService>();
             Container.RegisterType<IJWTService, JWTService>();
             Container.RegisterType<IUserService, UserService>();
+=======
+            container.RegisterType<IAuthService, AuthService>(new HierarchicalLifetimeManager());
+            container.RegisterType<IJWTService, JWTService>(new ContainerControlledLifetimeManager());
+>>>>>>> b6f1693048ee4dbc96dc16cb9cea427cd08c5b37
 
-            Container.RegisterType<IUserRepository, UserRepository>(new HierarchicalLifetimeManager());
-            Container.RegisterType<IRefreshTokenRepository, RefreshTokenRepository>(new HierarchicalLifetimeManager());
+            container.RegisterType<IUserRepository, UserRepository>(new HierarchicalLifetimeManager());
+            container.RegisterType<IRefreshTokenRepository, RefreshTokenRepository>(new HierarchicalLifetimeManager());
 
-            GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(Container);
+            GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);
 
-            return Container;
+            return container;
         }
     }
 }

@@ -6,7 +6,6 @@ namespace DotNet_Assignment.Models.Entities
 {
     public class MenuItem
     {
-        [Key]
         public Guid MenuItemId { get; set; } = Guid.NewGuid();
 
         [Required]
