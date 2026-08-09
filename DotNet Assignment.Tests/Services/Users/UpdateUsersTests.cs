@@ -38,138 +38,138 @@ namespace DotNet_Assignment.Tests.Services.Users
         [Test]
         public async Task UpdateUser_InvalidId_ThrowsException()
         {
-            var RequestDto = UserTestUtil.CreateMockUpdateUserDto();
+            var requestDto = UserTestUtil.CreateMockUpdateUserDto();
 
-            var UserId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
 
             _userRepository
-                .Setup(x=> x.GetUserByIdAsync(UserId))
+                .Setup(x=> x.GetUserByIdAsync(userId))
                 .ReturnsAsync((User)null);
 
-            Func<Task> action =() => _userService.UpdateUserAsync(UserId, RequestDto);
+            Func<Task> action =() => _userService.UpdateUserAsync(userId, requestDto);
 
-            var Exception = Assert.CatchAsync<Exception>(action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
-            Assert.That(Exception.Message, Is.EqualTo("User not found"));
+            Assert.That(exception.Message, Is.EqualTo("User not found"));
         }
 
         [Test]
         public async Task UpdateUser_ValidName_UpdatesName()
         {
-            var User = UserTestUtil.CreateMockUser();
+            var user = UserTestUtil.CreateMockUser();
 
-            var UserId = User.UserId;
+            var userId = user.UserId;
 
-            var RequestDto = UserTestUtil.CreateMockUpdateUserDto();
+            var requestDto = UserTestUtil.CreateMockUpdateUserDto();
 
-            RequestDto.PhoneNumber = null;
+            requestDto.PhoneNumber = null;
 
             _userRepository
-                .Setup(x => x.GetUserByIdAsync(UserId))
-                .ReturnsAsync(User);
+                .Setup(x => x.GetUserByIdAsync(userId))
+                .ReturnsAsync(user);
 
-            await _userService.UpdateUserAsync(UserId, RequestDto)  ;
+            await _userService.UpdateUserAsync(userId, requestDto)  ;
 
-            Assert.That(User.Name, Is.EqualTo(RequestDto.Name));
+            Assert.That(user.Name, Is.EqualTo(requestDto.Name));
         }
 
         [Test]
         public async Task UpdateUser_ValidPhoneNumber_UpdatesPhoneNumber()
         {
-            var User = UserTestUtil.CreateMockUser();
+            var user = UserTestUtil.CreateMockUser();
 
-            var UserId = User.UserId;
+            var userId = user.UserId;
 
-            var RequestDto = UserTestUtil.CreateMockUpdateUserDto();
+            var requestDto = UserTestUtil.CreateMockUpdateUserDto();
 
-            RequestDto.Name = null;
+            requestDto.Name = null;
 
             _userRepository
-                .Setup(x => x.GetUserByIdAsync(UserId))
-                .ReturnsAsync(User);
+                .Setup(x => x.GetUserByIdAsync(userId))
+                .ReturnsAsync(user);
 
-            await _userService.UpdateUserAsync(UserId, RequestDto);
+            await _userService.UpdateUserAsync(userId, requestDto);
 
-            Assert.That(User.PhoneNumber, Is.EqualTo(RequestDto.PhoneNumber));
+            Assert.That(user.PhoneNumber, Is.EqualTo(requestDto.PhoneNumber));
         }
 
         [Test]
         public async Task UpdateUser_ValidNameAndPhoneNumber_UpdatesBothFields()
         {
-            var User = UserTestUtil.CreateMockUser();
+            var user = UserTestUtil.CreateMockUser();
 
-            var UserId = User.UserId;
+            var userId = user.UserId;
 
-            var RequestDto = UserTestUtil.CreateMockUpdateUserDto();
+            var requestDto = UserTestUtil.CreateMockUpdateUserDto();
 
             _userRepository
-                .Setup(x => x.GetUserByIdAsync(UserId))
-                .ReturnsAsync(User);
+                .Setup(x => x.GetUserByIdAsync(userId))
+                .ReturnsAsync(user);
 
-            await _userService.UpdateUserAsync(UserId, RequestDto);
+            await _userService.UpdateUserAsync(userId, requestDto);
 
-            Assert.That(User.Name, Is.EqualTo(RequestDto.Name));
+            Assert.That(user.Name, Is.EqualTo(requestDto.Name));
 
-            Assert.That(User.PhoneNumber, Is.EqualTo(RequestDto.PhoneNumber));
+            Assert.That(user.PhoneNumber, Is.EqualTo(requestDto.PhoneNumber));
         }
 
         [Test]
         public async Task UpdateUser_NullName_DoesNotUpdateName()
         {
-            var User = UserTestUtil.CreateMockUser();
+            var user = UserTestUtil.CreateMockUser();
 
-            var UserId = User.UserId;
+            var userId = user.UserId;
 
-            var originalName = User.Name;
+            var originalName = user.Name;
 
-            var RequestDto = UserTestUtil.CreateMockUpdateUserDto();
+            var requestDto = UserTestUtil.CreateMockUpdateUserDto();
 
-            RequestDto.Name = "";
+            requestDto.Name = "";
 
             _userRepository
-                .Setup(x => x.GetUserByIdAsync(UserId))
-                .ReturnsAsync(User);
+                .Setup(x => x.GetUserByIdAsync(userId))
+                .ReturnsAsync(user);
 
-            await _userService.UpdateUserAsync(UserId, RequestDto);
+            await _userService.UpdateUserAsync(userId, requestDto);
 
-            Assert.That(User.Name, Is.EqualTo(originalName));
+            Assert.That(user.Name, Is.EqualTo(originalName));
         }
 
         [Test]
         public async Task UpdateUser_NullPhoneNumber_DoesNotUpdatePhoneNumber()
         {
-            var User = UserTestUtil.CreateMockUser();
+            var user = UserTestUtil.CreateMockUser();
 
-            var UserId = User.UserId;
+            var userId = user.UserId;
 
-            var originalPhone = User.PhoneNumber;
+            var originalPhone = user.PhoneNumber;
 
-            var RequestDto = UserTestUtil.CreateMockUpdateUserDto();
-            RequestDto.PhoneNumber = "";
+            var requestDto = UserTestUtil.CreateMockUpdateUserDto();
+            requestDto.PhoneNumber = "";
 
             _userRepository
-                .Setup(x => x.GetUserByIdAsync(UserId))
-                .ReturnsAsync(User);
+                .Setup(x => x.GetUserByIdAsync(userId))
+                .ReturnsAsync(user);
 
-            await _userService.UpdateUserAsync(UserId, RequestDto);
+            await _userService.UpdateUserAsync(userId, requestDto);
 
-            Assert.That(User.PhoneNumber, Is.EqualTo(originalPhone));
+            Assert.That(user.PhoneNumber, Is.EqualTo(originalPhone));
         }
 
         [Test]
         public async Task UpdateUser_ValidRequest_SavesChanges()
         {
-            var User = UserTestUtil.CreateMockUser();
+            var user = UserTestUtil.CreateMockUser();
 
-            var UserId = User.UserId;
+            var userId = user.UserId;
 
-            var RequestDto = UserTestUtil.CreateMockUpdateUserDto();
+            var requestDto = UserTestUtil.CreateMockUpdateUserDto();
 
             _userRepository
-                .Setup(x => x.GetUserByIdAsync(UserId))
-                .ReturnsAsync(User);
+                .Setup(x => x.GetUserByIdAsync(userId))
+                .ReturnsAsync(user);
 
-            await _userService.UpdateUserAsync(UserId, RequestDto);
+            await _userService.UpdateUserAsync(userId, requestDto);
 
             _appDbContext.Verify(
                 x => x.SaveChangesAsync(),

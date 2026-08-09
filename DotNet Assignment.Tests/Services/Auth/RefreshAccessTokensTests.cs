@@ -41,32 +41,32 @@ namespace DotNet_Assignment.Tests.Services.Auth
         [Test]
         public async Task RefreshAccessToken_InvalidRefreshToken_ThrowsException()
         {
-            var RefreshToken = "RefreshToken";
-            var HashedToken = "HashedRefreshToken";
+            var refreshToken = "RefreshToken";
+            var hashedToken = "HashedRefreshToken";
 
             _refreshTokenRepository
-                .Setup(x => x.HashRefreshToken(RefreshToken))
-                .Returns(HashedToken);
+                .Setup(x => x.HashRefreshToken(refreshToken))
+                .Returns(hashedToken);
 
             _refreshTokenRepository
-                .Setup(x => x.GetRefreshTokenAsync(HashedToken))
+                .Setup(x => x.GetRefreshTokenAsync(hashedToken))
                 .ReturnsAsync((RefreshToken)null);
 
-            Func<Task> action = async () => await _authService.RefreshAccessTokenAsync(RefreshToken);
+            Func<Task> action = async () => await _authService.RefreshAccessTokenAsync(refreshToken);
 
-            var Exception = Assert.CatchAsync<Exception>(action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
-            Assert.That(Exception.Message, Is.EqualTo("Invalid Refresh Token"));
+            Assert.That(exception.Message, Is.EqualTo("Invalid Refresh Token"));
         }
 
         [Test]
         public async Task RefreshAccessToken_ExpiredRefreshToken_ThrowsException()
         {
-            var RefreshToken = "RefreshToken";
+            var refreshToken = "RefreshToken";
             var HashedToken = "HashedRefreshToken";
 
             _refreshTokenRepository
-                .Setup(x => x.HashRefreshToken(RefreshToken))
+                .Setup(x => x.HashRefreshToken(refreshToken))
                 .Returns(HashedToken);
 
             var token = new RefreshToken
@@ -80,7 +80,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
                 .Setup(x => x.GetRefreshTokenAsync(HashedToken))
                 .ReturnsAsync(token);
 
-            Func<Task> action = async () => await _authService.RefreshAccessTokenAsync(RefreshToken);
+            Func<Task> action = async () => await _authService.RefreshAccessTokenAsync(refreshToken);
 
             var Exception = Assert.CatchAsync<Exception>(action);
 
@@ -90,16 +90,16 @@ namespace DotNet_Assignment.Tests.Services.Auth
         [Test]
         public async Task RefreshAccessToken_DeactivatedUser_ThrowsException()
         {
-            var RefreshToken = "RefreshToken";
-            var HashedToken = "HashedRefreshToken";
+            var refreshToken = "RefreshToken";
+            var hashedToken = "HashedRefreshToken";
 
             _refreshTokenRepository
-                .Setup(x => x.HashRefreshToken(RefreshToken))
-                .Returns(HashedToken);
+                .Setup(x => x.HashRefreshToken(refreshToken))
+                .Returns(hashedToken);
 
             var token = new RefreshToken
             {
-                Token = HashedToken,
+                Token = hashedToken,
                 ExpiresAt = DateTime.UtcNow.AddDays(7),
                 User = new User
                 {
@@ -108,25 +108,25 @@ namespace DotNet_Assignment.Tests.Services.Auth
             };
 
             _refreshTokenRepository
-                .Setup(x => x.GetRefreshTokenAsync(HashedToken))
+                .Setup(x => x.GetRefreshTokenAsync(hashedToken))
                 .ReturnsAsync(token);
 
-            Func<Task> action = async () => await _authService.RefreshAccessTokenAsync(RefreshToken);
+            Func<Task> action = async () => await _authService.RefreshAccessTokenAsync(refreshToken);
 
-            var Exception = Assert.CatchAsync<Exception>(action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
-            Assert.That(Exception.Message, Is.EqualTo("User Account is Deactivated"));
+            Assert.That(exception.Message, Is.EqualTo("User Account is Deactivated"));
         }
 
         [Test]
         public async Task RefreshAccessToken_ValidToken_ReturnsNewAccessToken()
         {
-            var RefreshToken = "RefreshToken";
-            var HashedToken = "HashedRefreshToken";
+            var refreshToken = "RefreshToken";
+            var hashedToken = "HashedRefreshToken";
 
             _refreshTokenRepository
-                .Setup(x => x.HashRefreshToken(RefreshToken))
-                .Returns(HashedToken);
+                .Setup(x => x.HashRefreshToken(refreshToken))
+                .Returns(hashedToken);
 
             var user = new User
             {
@@ -136,34 +136,34 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             var token = new RefreshToken
             {
-                Token = HashedToken,
+                Token = hashedToken,
                 ExpiresAt = DateTime.UtcNow.AddDays(7),
                 User = user
             };
 
             _refreshTokenRepository
-                .Setup(x => x.GetRefreshTokenAsync(HashedToken))
+                .Setup(x => x.GetRefreshTokenAsync(hashedToken))
                 .ReturnsAsync(token);
 
             _jWTService
                 .Setup(x => x.GetAccessToken(user))
                 .Returns("NewAccessToken");
 
-            var response = await _authService.RefreshAccessTokenAsync(RefreshToken);
+            var response = await _authService.RefreshAccessTokenAsync(refreshToken);
 
             Assert.That(response.AccessToken, Is.EqualTo("NewAccessToken"));
-            Assert.That(response.RefreshToken, Is.EqualTo(RefreshToken));
+            Assert.That(response.RefreshToken, Is.EqualTo(refreshToken));
         }
 
         [Test]
         public async Task RefreshAccessToken_GeneratesNewAccessToken()
         {
-            var RefreshToken = "RefreshToken";
-            var HashedToken = "HashedRefreshToken";
+            var refreshToken = "RefreshToken";
+            var hashedToken = "HashedRefreshToken";
 
             _refreshTokenRepository
-                .Setup(x => x.HashRefreshToken(RefreshToken))
-                .Returns(HashedToken);
+                .Setup(x => x.HashRefreshToken(refreshToken))
+                .Returns(hashedToken);
 
             var user = new User
             {
@@ -173,20 +173,20 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             var token = new RefreshToken
             {
-                Token = HashedToken,
+                Token = hashedToken,
                 ExpiresAt = DateTime.UtcNow.AddDays(7),
                 User = user
             };
 
             _refreshTokenRepository
-                .Setup(x => x.GetRefreshTokenAsync(HashedToken))
+                .Setup(x => x.GetRefreshTokenAsync(hashedToken))
                 .ReturnsAsync(token);
 
             _jWTService
                 .Setup(x => x.GetAccessToken(user))
                 .Returns("NewAccessToken");
 
-            await _authService.RefreshAccessTokenAsync(RefreshToken);
+            await _authService.RefreshAccessTokenAsync(refreshToken);
 
             _jWTService.Verify(
                 x => x.GetAccessToken(user),

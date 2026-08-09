@@ -232,6 +232,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\Address\AddressControllerTests.cs" />
     <Compile Include="Controllers\Auth\AuthControllerTests.cs" />
     <Compile Include="Controllers\Users\UserControllerTests.cs" />
     <Compile Include="Services\Auth\LoginTests.cs" />
@@ -240,9 +241,10 @@
     <Compile Include="Services\Auth\SignupTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\JWT\JWTTests.cs" />
-    <Compile Include="Services\Users\AddAddressTests.cs" />
+    <Compile Include="Services\Address\AddAddressTests.cs" />
+    <Compile Include="Services\Users\ChangePasswordTests.cs" />
     <Compile Include="Services\Users\DeactivateUserTests.cs" />
-    <Compile Include="Services\Users\UpdateAddressTests.cs" />
+    <Compile Include="Services\Address\UpdateAddressTests.cs" />
     <Compile Include="Services\Users\UpdateUsersTests.cs" />
     <Compile Include="Utils\AuthTestUtil.cs" />
     <Compile Include="Utils\UserTestUtil.cs" />

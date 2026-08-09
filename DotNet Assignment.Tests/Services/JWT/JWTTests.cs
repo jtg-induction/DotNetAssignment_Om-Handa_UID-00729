@@ -18,30 +18,30 @@ namespace DotNet_Assignment.Tests.Services.JWT
         [Test]
         public void GetAccessToken_ReturnsToken()
         {
-            var User = UserTestUtil.CreateMockUser();
+            var user = UserTestUtil.CreateMockUser();
 
-            var Token = _jWTService.GetAccessToken(User);
+            var token = _jWTService.GetAccessToken(user);
 
-            Assert.That(Token, Is.Not.Null);
-            Assert.That(Token, Is.Not.Empty);
+            Assert.That(token, Is.Not.Null);
+            Assert.That(token, Is.Not.Empty);
         }
 
         [Test]
         public void GenerateRefreshToken_ReturnsToken()
         {
-            var Token = _jWTService.GenerateRefreshToken();
+            var token = _jWTService.GenerateRefreshToken();
 
-            Assert.That(Token, Is.Not.Null);
-            Assert.That(Token, Is.Not.Empty);
+            Assert.That(token, Is.Not.Null);
+            Assert.That(token, Is.Not.Empty);
         }
 
         [Test]
         public void GenerateRefreshToken_ReturnsUniqueToken()
         {
-            var Token1 = _jWTService.GenerateRefreshToken();
-            var Token2 = _jWTService.GenerateRefreshToken();
+            var token1 = _jWTService.GenerateRefreshToken();
+            var token2 = _jWTService.GenerateRefreshToken();
 
-            Assert.That(Token1, Is.Not.EqualTo(Token2));
+            Assert.That(token1, Is.Not.EqualTo(token2));
         }
     }
 }

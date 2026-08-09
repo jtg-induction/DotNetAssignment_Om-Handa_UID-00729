@@ -41,26 +41,26 @@ namespace DotNet_Assignment.Tests.Services.Auth
         [Test]
         public async Task Register_EmailAlreadyExists_ThrowsException()
         {
-            var RequestDto = new SignupRequestDto
+            var requestDto = new SignupRequestDto
             {
                 Email = "unittest@gmail.com"
             };
 
             _userRepository.
-                Setup(x => x.FindUserByEmailAsync(RequestDto.Email)).
+                Setup(x => x.FindUserByEmailAsync(requestDto.Email)).
                 ReturnsAsync(true);
 
-            Func<Task> Action= async() => await _authService.RegisterAsync(RequestDto);
+            Func<Task> Action= async() => await _authService.RegisterAsync(requestDto);
 
-            var Exception= Assert.CatchAsync<Exception>(Action);
+            var exception= Assert.CatchAsync<Exception>(Action);
 
-            Assert.That(Exception.Message, Is.EqualTo("Email Already Exists"));
+            Assert.That(exception.Message, Is.EqualTo("Email Already Exists"));
         }
 
         [Test]
         public async Task Register_ValidUser_HashesPassword()
         {
-            var RequestDto = AuthTestUtil.CreateMockSignupRequestDto();
+            var requestDto = AuthTestUtil.CreateMockSignupRequestDto();
 
             _userRepository.Setup(x => x.FindUserByEmailAsync(It.IsAny<string>())).
                 ReturnsAsync(false);
@@ -73,13 +73,13 @@ namespace DotNet_Assignment.Tests.Services.Auth
                 Setup(x => x.GenerateRefreshToken()).
                 Returns("RefreshToken");
 
-            await _authService.RegisterAsync(RequestDto);
+            await _authService.RegisterAsync(requestDto);
         }
 
         [Test]
         public async Task Register_AddsUser()
         {
-            var RequestDto = AuthTestUtil.CreateMockSignupRequestDto();
+            var requestDto = AuthTestUtil.CreateMockSignupRequestDto();
 
             _userRepository.Setup(x => x.FindUserByEmailAsync(It.IsAny<string>())).
                 ReturnsAsync(false);
@@ -92,7 +92,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
                 .Setup(x => x.GenerateRefreshToken())
                 .Returns("RefreshToken");
 
-            await _authService.RegisterAsync(RequestDto);
+            await _authService.RegisterAsync(requestDto);
 
             _userRepository.Verify(
                 x => x.AddUser(It.IsAny<User>()),
@@ -102,7 +102,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
         [Test]
         public async Task Register_ValidUser_GeneratesAccessToken()
         {
-            var RequestDto = AuthTestUtil.CreateMockSignupRequestDto();
+            var requestDto = AuthTestUtil.CreateMockSignupRequestDto();
 
             _userRepository.Setup(x => x.FindUserByEmailAsync(It.IsAny<string>())).
                 ReturnsAsync(false);
@@ -115,7 +115,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
                 .Setup(x => x.GenerateRefreshToken())
                 .Returns("RefreshToken");
 
-            await _authService.RegisterAsync(RequestDto);
+            await _authService.RegisterAsync(requestDto);
 
             _jWTService.Verify(x => x.GetAccessToken(It.IsAny<User>()),Times.Once);
         }
@@ -123,7 +123,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
         [Test]
         public async Task Register_ValidUser_GeneratesRefreshToken()
         {
-            var RequestDto = AuthTestUtil.CreateMockSignupRequestDto();
+            var requestDto = AuthTestUtil.CreateMockSignupRequestDto();
 
             _userRepository.Setup(x => x.FindUserByEmailAsync(It.IsAny<string>())).
                 ReturnsAsync(false);
@@ -136,7 +136,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
                 .Setup(x => x.GenerateRefreshToken())
                 .Returns("RefreshToken");
 
-            await _authService.RegisterAsync(RequestDto);
+            await _authService.RegisterAsync(requestDto);
 
             _jWTService.Verify(x => x.GenerateRefreshToken(),Times.Once);
         }
@@ -144,7 +144,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
         [Test]
         public async Task Register_ValidUser_AddsRefreshToken()
         {
-            var RequestDto = AuthTestUtil.CreateMockSignupRequestDto();
+            var requestDto = AuthTestUtil.CreateMockSignupRequestDto();
 
             _userRepository.Setup(x => x.FindUserByEmailAsync(It.IsAny<string>())).
                 ReturnsAsync(false);
@@ -157,7 +157,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
                 .Setup(x => x.GenerateRefreshToken())
                 .Returns("RefreshToken");
 
-            await _authService.RegisterAsync(RequestDto);
+            await _authService.RegisterAsync(requestDto);
 
             _refreshTokenRepository.Verify(x => x.AddRefreshToken(It.IsAny<RefreshToken>()),Times.Once);
         }
@@ -165,7 +165,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
         [Test]
         public async Task Register_SavesChanges()
         {
-            var RequestDto = AuthTestUtil.CreateMockSignupRequestDto();
+            var requestDto = AuthTestUtil.CreateMockSignupRequestDto();
 
             _userRepository.Setup(x => x.FindUserByEmailAsync(It.IsAny<string>())).
                 ReturnsAsync(false);
@@ -178,7 +178,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
                 .Setup(x => x.GenerateRefreshToken())
                 .Returns("RefreshToken");
 
-            await _authService.RegisterAsync(RequestDto);
+            await _authService.RegisterAsync(requestDto);
 
             _appDbContext.Verify(x => x.SaveChangesAsync(),Times.Once);
         }
@@ -186,7 +186,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
         [Test]
         public async Task Register_ValidUser_ReturnTokens()
         {
-            var RequestDto = AuthTestUtil.CreateMockSignupRequestDto();
+            var requestDto = AuthTestUtil.CreateMockSignupRequestDto();
 
             _userRepository.Setup(x => x.FindUserByEmailAsync(It.IsAny<string>())).
                 ReturnsAsync(false);
@@ -199,11 +199,11 @@ namespace DotNet_Assignment.Tests.Services.Auth
                 .Setup(x => x.GenerateRefreshToken())
                 .Returns("RefreshToken");
 
-            var Response = await _authService.RegisterAsync(RequestDto);
+            var response = await _authService.RegisterAsync(requestDto);
 
-            Assert.That(Response.AccessToken, Is.EqualTo("AccessToken"));
+            Assert.That(response.AccessToken, Is.EqualTo("AccessToken"));
 
-            Assert.That(Response.RefreshToken, Is.EqualTo("RefreshToken"));
+            Assert.That(response.RefreshToken, Is.EqualTo("RefreshToken"));
 
         }
     }

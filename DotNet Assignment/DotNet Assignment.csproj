@@ -251,11 +251,14 @@
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="App_Start\UnityConfig.cs" />
+    <Compile Include="Controllers\AddressController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Data\AppDbContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Handlers\GlobalExceptionHandler.cs" />
+    <Compile Include="Handlers\ModelStateHandler.cs" />
     <Compile Include="Migrations\202608011106215_InitialCreate.cs" />
     <Compile Include="Migrations\202608011106215_InitialCreate.Designer.cs">
       <DependentUpon>202608011106215_InitialCreate.cs</DependentUpon>
@@ -279,6 +282,7 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DTO\AddressDto.cs" />
     <Compile Include="Models\DTO\ApiResponseDto.cs" />
+    <Compile Include="Models\DTO\ChangePasswordDto.cs" />
     <Compile Include="Models\DTO\JWTResponseDto.cs" />
     <Compile Include="Models\DTO\LoginRequestDto.cs" />
     <Compile Include="Models\DTO\LogoutRequestDto.cs" />
@@ -296,10 +300,14 @@
     <Compile Include="Models\Enums\OrderStatus.cs" />
     <Compile Include="Models\Enums\UserRoles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\Address\AddressRepository.cs" />
+    <Compile Include="Repository\Address\IAddressRepository.cs" />
     <Compile Include="Repository\RefreshTokens\IRefreshTokenRepository.cs" />
     <Compile Include="Repository\RefreshTokens\RefreshTokenRepository.cs" />
     <Compile Include="Repository\Users\IUserRepository.cs" />
     <Compile Include="Repository\Users\UserRepository.cs" />
+    <Compile Include="Services\Address\AddressService.cs" />
+    <Compile Include="Services\Address\IAddressService.cs" />
     <Compile Include="Services\JWT\IJWTService.cs" />
     <Compile Include="Services\JWT\JWTService.cs" />
     <Compile Include="Services\Auth\IAuthService.cs" />
@@ -327,15 +335,19 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202608011106215_InitialCreate.resx">
       <DependentUpon>202608011106215_InitialCreate.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202608041026198_UpdatePasswordLength.resx">
       <DependentUpon>202608041026198_UpdatePasswordLength.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202608051152564_UpdateValidations.resx">
       <DependentUpon>202608051152564_UpdateValidations.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202608051413490_UpdateMigrations.resx">
       <DependentUpon>202608051413490_UpdateMigrations.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202608071212378_UpdatedEmailAndPasswordValidations.resx">
       <DependentUpon>202608071212378_UpdatedEmailAndPasswordValidations.cs</DependentUpon>

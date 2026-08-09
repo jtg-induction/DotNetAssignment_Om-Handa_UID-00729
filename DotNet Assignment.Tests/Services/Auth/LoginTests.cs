@@ -43,13 +43,13 @@ namespace DotNet_Assignment.Tests.Services.Auth
         [Test]
         public async Task Login_UserDoesNotExist_ThrowsInvalidCredentialsException()
         {
-            var Request = AuthTestUtil.CreateMockLoginRequestDto();
+            var request = AuthTestUtil.CreateMockLoginRequestDto();
 
             _userRepository
-                .Setup(x => x.GetUserByEmailAsync(Request.Email))
+                .Setup(x => x.GetUserByEmailAsync(request.Email))
                 .ReturnsAsync((User)null);
 
-            Func<Task> action = async () => await _authService.LoginAsync(Request);
+            Func<Task> action = async () => await _authService.LoginAsync(request);
 
             var exception = Assert.CatchAsync<Exception>(action);
 
@@ -59,20 +59,20 @@ namespace DotNet_Assignment.Tests.Services.Auth
         [Test]
         public async Task Login_UserIsDeactivated_ThrowsUserDeactivatedException()
         {
-            var Request = AuthTestUtil.CreateMockLoginRequestDto();
+            var request = AuthTestUtil.CreateMockLoginRequestDto();
 
-            var User = new User
+            var user = new User
             {
-                Email = Request.Email,
+                Email = request.Email,
                 Password = "HashedPassword",
                 IsDeleted = true
             };
 
             _userRepository
-                .Setup(x => x.GetUserByEmailAsync(Request.Email))
-                .ReturnsAsync(User);
+                .Setup(x => x.GetUserByEmailAsync(request.Email))
+                .ReturnsAsync(user);
 
-            Func<Task> action = async () => await _authService.LoginAsync(Request);
+            Func<Task> action = async () => await _authService.LoginAsync(request);
 
             var exception = Assert.CatchAsync<Exception>(action);
 
@@ -82,20 +82,20 @@ namespace DotNet_Assignment.Tests.Services.Auth
         [Test]
         public async Task Login_InvalidPassword_ThrowsInvalidCredentialsException()
         {
-            var Request = AuthTestUtil.CreateMockLoginRequestDto();
+            var request = AuthTestUtil.CreateMockLoginRequestDto();
 
-            var User = new User
+            var user = new User
             {
-                Email = Request.Email,
+                Email = request.Email,
                 Password = Hasher.Hash("Password"),    
                 IsDeleted = false
             };
 
             _userRepository
-                .Setup(x => x.GetUserByEmailAsync(Request.Email))
-                .ReturnsAsync(User);
+                .Setup(x => x.GetUserByEmailAsync(request.Email))
+                .ReturnsAsync(user);
 
-            Func<Task> action = async () => await _authService.LoginAsync(Request);
+            Func<Task> action = async () => await _authService.LoginAsync(request);
 
             var exception = Assert.CatchAsync<Exception>(action);
 
@@ -105,11 +105,11 @@ namespace DotNet_Assignment.Tests.Services.Auth
         [Test]
         public async Task Login_ValidCredentials_ReturnsAccessAndRefreshTokens()
         {
-            var Request = AuthTestUtil.CreateMockLoginRequestDto();
+            var request = AuthTestUtil.CreateMockLoginRequestDto();
 
-            ValidLoginHelper(Request);
+            ValidLoginHelper(request);
 
-            var response = await _authService.LoginAsync(Request);
+            var response = await _authService.LoginAsync(request);
 
             Assert.That(response.AccessToken, Is.EqualTo("AccessToken"));
             Assert.That(response.RefreshToken, Is.EqualTo("RefreshToken"));
@@ -118,24 +118,24 @@ namespace DotNet_Assignment.Tests.Services.Auth
         [Test]
         public async Task Login_ValidCredentials_VerifiesPassword()
         {
-            var Request = AuthTestUtil.CreateMockLoginRequestDto();
+            var request = AuthTestUtil.CreateMockLoginRequestDto();
 
-            var User = ValidLoginHelper(Request);
+            var User = ValidLoginHelper(request);
 
-            await _authService.LoginAsync(Request);
+            await _authService.LoginAsync(request);
 
-            Hasher.Verify(Request.Password, User.Password);
+            Hasher.Verify(request.Password, User.Password);
         }
 
         [Test]
         public async Task Login_ValidCredentials_GeneratesAccessToken()
         {
             
-            var Request = AuthTestUtil.CreateMockLoginRequestDto();
+            var request = AuthTestUtil.CreateMockLoginRequestDto();
 
-            ValidLoginHelper(Request);
+            ValidLoginHelper(request);
 
-            _authService.LoginAsync(Request);
+            _authService.LoginAsync(request);
 
             _jWTService.Verify(
                 x => x.GetAccessToken(It.IsAny<User>()),
@@ -145,11 +145,11 @@ namespace DotNet_Assignment.Tests.Services.Auth
         public async Task Login_ValidCredentials_GeneratesRefreshToken()
         {
             
-            var Request = AuthTestUtil.CreateMockLoginRequestDto();
+            var request = AuthTestUtil.CreateMockLoginRequestDto();
 
-            ValidLoginHelper(Request);
+            ValidLoginHelper(request);
 
-            _authService.LoginAsync(Request);
+            _authService.LoginAsync(request);
 
             _jWTService.Verify(
                 x => x.GenerateRefreshToken(),
@@ -159,11 +159,11 @@ namespace DotNet_Assignment.Tests.Services.Auth
         public async Task Login_ValidCredentials_AddsRefreshToken()
         {
             
-            var Request = AuthTestUtil.CreateMockLoginRequestDto();
+            var request = AuthTestUtil.CreateMockLoginRequestDto();
 
-            ValidLoginHelper(Request);
+            ValidLoginHelper(request);
 
-            _authService.LoginAsync(Request);
+            _authService.LoginAsync(request);
 
             _refreshTokenRepository.Verify(
                 x => x.AddRefreshToken(It.IsAny<RefreshToken>()),
@@ -173,11 +173,11 @@ namespace DotNet_Assignment.Tests.Services.Auth
         public async Task Login_ValidCredentials_SavesRefreshToken()
         {
             
-            var Request = AuthTestUtil.CreateMockLoginRequestDto();
+            var request = AuthTestUtil.CreateMockLoginRequestDto();
 
-            ValidLoginHelper(Request);
+            ValidLoginHelper(request);
 
-            _authService.LoginAsync(Request);
+            _authService.LoginAsync(request);
 
             _appDbContext.Verify(
                 x => x.SaveChanges(),
@@ -186,7 +186,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
         private User ValidLoginHelper(LoginRequestDto RequestDto)
         {
-            var User = new User
+            var user = new User
             {
                 UserId = Guid.NewGuid(),
                 Email = RequestDto.Email,
@@ -196,7 +196,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             _userRepository
                 .Setup(x => x.GetUserByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync(User);
+                .ReturnsAsync(user);
 
             _jWTService
                 .Setup(x => x.GetAccessToken(It.IsAny<User>()))
@@ -206,7 +206,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
                 .Setup(x => x.GenerateRefreshToken())
                 .Returns("RefreshToken");
 
-            return User;
+            return user;
         }
     }
 }

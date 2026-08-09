@@ -12,10 +12,8 @@ namespace DotNet_Assignment.Services.Users
     {
         Task UpdateUserAsync(Guid userId, UpdateUserDto updateUserDto);
 
-        Task UpdateUserAddressAsync(Guid userid, Guid userAddressId, AddressDto addressDto);
-
         Task DeactivateUserAsync(Guid userId);
 
-        Task AddUserAddressAsync(Guid userId, AddressDto addressDto);
+        Task ChangePasswordAsync(Guid userId, ChangePasswordDto changePasswordDto);
     }
 }

@@ -36,7 +36,7 @@ namespace DotNet_Assignment.Tests.Services.Users
         [Test]
         public void DeactivateUser_InvalidId_ThrowsException()
         {
-            var RequestDto = UserTestUtil.CreateMockUpdateUserDto();
+            var requestDto = UserTestUtil.CreateMockUpdateUserDto();
 
             var UserId = Guid.NewGuid();
 
@@ -44,7 +44,7 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(UserId))
                 .ReturnsAsync((User)null);
 
-            Func<Task> action = () => _userService.UpdateUserAsync(UserId, RequestDto);
+            Func<Task> action = () => _userService.UpdateUserAsync(UserId, requestDto);
 
             var Exception = Assert.CatchAsync<Exception>(action);
 

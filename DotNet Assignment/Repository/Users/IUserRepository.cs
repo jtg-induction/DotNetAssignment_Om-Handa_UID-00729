@@ -13,12 +13,7 @@ namespace DotNet_Assignment.Repository.Users
 
         Task<User> GetUserByIdAsync(Guid userId);
 
-        Task<UserAddress> GetAddressByIdAsync(Guid userAddressId,Guid userId);
-
         void AddUser(User user);
-
-        void AddAddress(UserAddress userAddress);
-
     }
 
 }

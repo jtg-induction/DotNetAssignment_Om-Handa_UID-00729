@@ -1,7 +1,9 @@
 ﻿using DotNet_Assignment.Data;
 using DotNet_Assignment.Models.Entities;
+using DotNet_Assignment.Repository.Address;
 using DotNet_Assignment.Repository.RefreshTokens;
 using DotNet_Assignment.Repository.Users;
+using DotNet_Assignment.Services.Address;
 using DotNet_Assignment.Services.Users;
 using DotNet_Assignment.Tests.Utils;
 using Moq;
@@ -17,21 +19,21 @@ namespace DotNet_Assignment.Tests.Services.Users
 {
     public class AddAddressTests
     {
+        private Mock<IAddressRepository> _addressRepository;
         private Mock<IUserRepository> _userRepository;
-        private Mock<IRefreshTokenRepository> _refreshTokenRepository;
         private Mock<AppDbContext> _appDbContext;
-        private UserService _userService;
+        private AddressService _addressService;
 
         [SetUp]
         public void Setup()
         {
+            _addressRepository = new Mock<IAddressRepository>();
             _userRepository = new Mock<IUserRepository>();
-            _refreshTokenRepository = new Mock<IRefreshTokenRepository>();
             _appDbContext = new Mock<AppDbContext>();
 
-            _userService = new UserService(
+            _addressService = new AddressService(
+                _addressRepository.Object,
                 _userRepository.Object,
-                _refreshTokenRepository.Object,
                 _appDbContext.Object
             );
         }
@@ -41,53 +43,53 @@ namespace DotNet_Assignment.Tests.Services.Users
         {
             var userId = Guid.NewGuid();
 
-            var Request = UserTestUtil.CreateMockAddressDto();
+            var request = UserTestUtil.CreateMockAddressDto();
 
             _userRepository
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync((User)null);
 
-            Func<Task> action = async () => await _userService.AddUserAddressAsync(userId, Request);
+            Func<Task> action = async () => await _addressService.AddUserAddressAsync(userId, request);
 
-            var Exception = Assert.CatchAsync<Exception>(action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
-            Assert.That(Exception.Message, Is.EqualTo("User not found"));
+            Assert.That(exception.Message, Is.EqualTo("User not found"));
         }
 
         [Test]
         public async Task AddUserAddress_UserDeactivated_ThrowsException()
         {
-            var User = UserTestUtil.CreateMockUser();
+            var user = UserTestUtil.CreateMockUser();
 
-            User.IsDeleted = true;
+            user.IsDeleted = true;
 
-            var Request = UserTestUtil.CreateMockAddressDto();
+            var request = UserTestUtil.CreateMockAddressDto();
 
             _userRepository
-                .Setup(x => x.GetUserByIdAsync(User.UserId))
-                .ReturnsAsync(User);
+                .Setup(x => x.GetUserByIdAsync(user.UserId))
+                .ReturnsAsync(user);
 
-            Func<Task> action = async () => await _userService.AddUserAddressAsync(User.UserId, Request);
+            Func<Task> action = async () => await _addressService.AddUserAddressAsync(user.UserId, request);
 
-            var Exception = Assert.CatchAsync<Exception>(action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
-            Assert.That(Exception.Message, Is.EqualTo("User Already Deactivated"));
+            Assert.That(exception.Message, Is.EqualTo("User Already Deactivated"));
         }
 
         [Test]
         public async Task AddUserAddress_ValidRequest_AddsAddress()
         {
-            var User = UserTestUtil.CreateMockUser();
+            var user = UserTestUtil.CreateMockUser();
 
-            var Request = UserTestUtil.CreateMockAddressDto();
+            var request = UserTestUtil.CreateMockAddressDto();
 
             _userRepository
-                .Setup(x => x.GetUserByIdAsync(User.UserId))
-                .ReturnsAsync(User);
+                .Setup(x => x.GetUserByIdAsync(user.UserId))
+                .ReturnsAsync(user);
 
-            await _userService.AddUserAddressAsync(User.UserId, Request);
+            await _addressService.AddUserAddressAsync(user.UserId, request);
 
-            _userRepository.Verify(
+            _addressRepository.Verify(
                 x => x.AddAddress(It.IsAny<UserAddress>()),
                 Times.Once);
         }
@@ -95,15 +97,15 @@ namespace DotNet_Assignment.Tests.Services.Users
         [Test]
         public async Task AddUserAddress_ValidRequest_SavesChanges()
         {
-            var User = UserTestUtil.CreateMockUser();
+            var user = UserTestUtil.CreateMockUser();
 
-            var Request = UserTestUtil.CreateMockAddressDto();
+            var request = UserTestUtil.CreateMockAddressDto();
 
             _userRepository
-                .Setup(x => x.GetUserByIdAsync(User.UserId))
-                .ReturnsAsync(User);
+                .Setup(x => x.GetUserByIdAsync(user.UserId))
+                .ReturnsAsync(user);
 
-            await _userService.AddUserAddressAsync(User.UserId, Request);
+            await _addressService.AddUserAddressAsync(user.UserId, request);
 
             _appDbContext.Verify(
                 x => x.SaveChangesAsync(),

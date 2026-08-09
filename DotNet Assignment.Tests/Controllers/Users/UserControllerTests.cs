@@ -37,13 +37,13 @@ namespace DotNet_Assignment.Tests.Controllers.Users
 
             var dto = UserTestUtil.CreateMockUpdateUserDto();
 
-            var Result = await _userController.UpdateUserAsync(dto);
+            var result = await _userController.UpdateUserAsync(dto);
 
-            var OkResult = Result as OkNegotiatedContentResult<ApiResponseDto<object>>;
+            var okResult = result as OkNegotiatedContentResult<ApiResponseDto<object>>;
 
-            Assert.That(OkResult, Is.Not.Null);
-            Assert.That(OkResult.Content.IsSuccess, Is.True);
-            Assert.That(OkResult.Content.Message, Is.EqualTo("Profile Updated"));
+            Assert.That(okResult, Is.Not.Null);
+            Assert.That(okResult.Content.IsSuccess, Is.True);
+            Assert.That(okResult.Content.Message, Is.EqualTo("Profile Updated"));
 
             _userService.Verify(x => x.UpdateUserAsync(userId, dto), Times.Once);
         }
@@ -60,100 +60,11 @@ namespace DotNet_Assignment.Tests.Controllers.Users
             _userService.Setup(x => x.UpdateUserAsync(userId, dto))
                         .ThrowsAsync(new Exception("User Not Found"));
 
-            var Result = await _userController.UpdateUserAsync(dto);
+            Func<Task> Action = async () => await _userController.UpdateUserAsync(dto);
 
-            var BadRequest = Result as NegotiatedContentResult<ApiResponseDto<object>>;
+            var exception = Assert.CatchAsync<Exception>(Action);
 
-            Assert.That(BadRequest, Is.Not.Null);
-            Assert.That(BadRequest.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(BadRequest.Content.IsSuccess, Is.False);
-            Assert.That(BadRequest.Content.Message, Is.EqualTo("User Not Found"));
-        }
-
-        [Test]
-        public async Task UpdateUser_InvalidModelState_ReturnsFailure()
-        {
-            var userId = Guid.NewGuid();
-
-            SetUser(userId);
-
-            var dto = UserTestUtil.CreateMockUpdateUserDto();
-
-            _userController.ModelState.AddModelError("Email", "Required");
-
-            var Result = await _userController.UpdateUserAsync(dto);
-
-            var BadRequest = Result as NegotiatedContentResult<ApiResponseDto<object>>;
-
-            Assert.That(BadRequest, Is.Not.Null);
-            Assert.That(BadRequest.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(BadRequest.Content.IsSuccess, Is.False);
-            Assert.That(BadRequest.Content.Message, Is.EqualTo("Invalid Credentials"));
-        }
-
-        [Test]
-        public async Task UpdateAddress_ValidRequest_ReturnsSuccess()
-        {
-            var userId = Guid.NewGuid();
-            var addressId = Guid.NewGuid();
-
-            SetUser(userId);
-
-            var dto = UserTestUtil.CreateMockAddressDto();
-
-            var Result = await _userController.UpdateAddressAsync(addressId, dto);
-
-            var OkResult = Result as OkNegotiatedContentResult<ApiResponseDto<object>>;
-
-            Assert.That(OkResult, Is.Not.Null);
-            Assert.That(OkResult.Content.IsSuccess, Is.True);
-            Assert.That(OkResult.Content.Message, Is.EqualTo("Address Updated Successfully"));
-
-            _userService.Verify(x => x.UpdateUserAddressAsync(userId, addressId, dto), Times.Once);
-        }
-
-        [Test]
-        public async Task UpdateAddress_ServiceThrows_ReturnsFailure()
-        {
-            var userId = Guid.NewGuid();
-            var addressId = Guid.NewGuid();
-
-            SetUser(userId);
-
-            var dto = UserTestUtil.CreateMockAddressDto();
-
-            _userService.Setup(x => x.UpdateUserAddressAsync(userId, addressId, dto))
-                        .ThrowsAsync(new Exception("Address Not Found"));
-
-            var Result = await _userController.UpdateAddressAsync(addressId, dto);
-
-            var BadRequest = Result as NegotiatedContentResult<ApiResponseDto<object>>;
-
-            Assert.That(BadRequest, Is.Not.Null);
-            Assert.That(BadRequest.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(BadRequest.Content.IsSuccess, Is.False);
-            Assert.That(BadRequest.Content.Message, Is.EqualTo("Address Not Found"));
-        }
-        [Test]
-        public async Task UpdateAddress_InvalidModelState_ReturnsFailure()
-        {
-            var userId = Guid.NewGuid();
-            var addressId = Guid.NewGuid();
-
-            SetUser(userId);
-
-            var dto = UserTestUtil.CreateMockAddressDto();
-
-            _userController.ModelState.AddModelError("City", "Required");
-
-            var Result = await _userController.UpdateAddressAsync(addressId, dto);
-
-            var BadRequest = Result as NegotiatedContentResult<ApiResponseDto<object>>;
-
-            Assert.That(BadRequest, Is.Not.Null);
-            Assert.That(BadRequest.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(BadRequest.Content.IsSuccess, Is.False);
-            Assert.That(BadRequest.Content.Message, Is.EqualTo("Invalid Credentials"));
+            Assert.That(exception.Message, Is.EqualTo("User Not Found"));
         }
 
         [Test]
@@ -163,13 +74,13 @@ namespace DotNet_Assignment.Tests.Controllers.Users
 
             SetUser(userId);
 
-            var Result = await _userController.DeactivateUserAsync();
+            var result = await _userController.DeactivateUserAsync();
 
-            var OkResult = Result as OkNegotiatedContentResult<ApiResponseDto<object>>;
+            var okResult = result as OkNegotiatedContentResult<ApiResponseDto<object>>;
 
-            Assert.That(OkResult, Is.Not.Null);
-            Assert.That(OkResult.Content.IsSuccess, Is.True);
-            Assert.That(OkResult.Content.Message, Is.EqualTo("User Deactivated"));
+            Assert.That(okResult, Is.Not.Null);
+            Assert.That(okResult.Content.IsSuccess, Is.True);
+            Assert.That(okResult.Content.Message, Is.EqualTo("User Deactivated"));
 
             _userService.Verify(x => x.DeactivateUserAsync(userId), Times.Once);
         }
@@ -184,63 +95,18 @@ namespace DotNet_Assignment.Tests.Controllers.Users
             _userService.Setup(x => x.DeactivateUserAsync(userId))
                         .ThrowsAsync(new Exception("User Not Found"));
 
-            var Result = await _userController.DeactivateUserAsync();
+            Func<Task> Action = async()=> await _userController.DeactivateUserAsync();
 
-            var BadRequest = Result as NegotiatedContentResult<ApiResponseDto<object>>;
+            var exception = Assert.CatchAsync<Exception>(Action);
 
-            Assert.That(BadRequest, Is.Not.Null);
-            Assert.That(BadRequest.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(BadRequest.Content.IsSuccess, Is.False);
-            Assert.That(BadRequest.Content.Message, Is.EqualTo("User Not Found"));
-        }
-
-        [Test]
-        public async Task AddAddress_ValidRequest_ReturnsSuccess()
-        {
-            var userId = Guid.NewGuid();
-
-            SetUser(userId);
-
-            var dto = UserTestUtil.CreateMockAddressDto();
-
-            var Result = await _userController.AddAddressAsync(dto);
-
-            var OkResult = Result as OkNegotiatedContentResult<ApiResponseDto<object>>;
-
-            Assert.That(OkResult, Is.Not.Null);
-            Assert.That(OkResult.Content.IsSuccess, Is.True);
-            Assert.That(OkResult.Content.Message, Is.EqualTo("Address Added Successfully"));
-
-            _userService.Verify(x => x.AddUserAddressAsync(userId, dto), Times.Once);
-        }
-
-        [Test]
-        public async Task AddAddress_ServiceThrows_ReturnsFailure()
-        {
-            var userId = Guid.NewGuid();
-
-            SetUser(userId);
-
-            var dto = UserTestUtil.CreateMockAddressDto();
-
-            _userService.Setup(x => x.AddUserAddressAsync(userId, dto))
-                        .ThrowsAsync(new Exception("Unable To Add Address"));
-
-            var Result = await _userController.AddAddressAsync(dto);
-
-            var BadRequest = Result as NegotiatedContentResult<ApiResponseDto<object>>;
-
-            Assert.That(BadRequest, Is.Not.Null);
-            Assert.That(BadRequest.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(BadRequest.Content.IsSuccess, Is.False);
-            Assert.That(BadRequest.Content.Message, Is.EqualTo("Unable To Add Address"));
+            Assert.That(exception.Message, Is.EqualTo("User Not Found"));
         }
 
         private void SetUser(Guid userId)
         {
             var identity = new ClaimsIdentity(new[]
             {
-                new Claim("UserID", userId.ToString())
+                new Claim(ClaimTypes.NameIdentifier, userId.ToString())
             });
 
             _userController.ControllerContext = new HttpControllerContext();
