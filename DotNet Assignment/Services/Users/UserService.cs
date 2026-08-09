@@ -84,7 +84,7 @@ namespace DotNet_Assignment.Services.Users
 
             if (user.IsDeleted)
             {
-                throw new Exception("User Already Deactivated");
+                throw new Exception("User is Deactivated");
             }
 
             if(!Hasher.Verify(changePasswordDto.OldPassword, user.Password))
