@@ -1,4 +1,5 @@
-﻿using DotNet_Assignment.Data;
+﻿using DotNet_Assignment.Constants;
+using DotNet_Assignment.Data;
 using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Models.Enums;
@@ -31,10 +32,16 @@ namespace DotNet_Assignment.Services.Auth
             _context = appDbContext;
         }
 
+        /// <summary>
+        /// Registers a user, hashes its password and generated JWT Response
+        /// </summary>
+        /// <param name="requestDto">Signup details of user</param>
+        /// <returns><see cref="JWTResponseDto"/> containing Access and Refresh Token</returns>
+        /// <exception cref="Exception">Throws if user already exists or Refresh token was not generated</exception>
         public async Task<JWTResponseDto> RegisterAsync(SignupRequestDto requestDto) {
 
             if (await _userRepository.FindUserByEmailAsync(requestDto.Email)){
-                throw new Exception("Email Already Exists");
+                throw new Exception(ExceptionMessages.EmailAlreadyExists);
             }
 
             var user = new User()
@@ -55,7 +62,7 @@ namespace DotNet_Assignment.Services.Auth
 
             if(RefreshToken == null)
             {
-                throw new Exception("Refresh Token Could not be Generated");
+                throw new Exception(ExceptionMessages.RefreshTokenNotGenerated);
             }
 
             var refresh = new RefreshToken()
@@ -75,34 +82,39 @@ namespace DotNet_Assignment.Services.Auth
             };
         }
 
+        /// <summary>
+        /// validates and logs a user in
+        /// </summary>
+        /// <param name="loginRequest">Email and password of a user</param>
+        /// <exception cref="Exception">If user not found, user deactivated or wrong password</exception>
         public async Task<JWTResponseDto> LoginAsync(LoginRequestDto loginRequest)
         {
-            var User = await _userRepository.GetUserByEmailAsync(loginRequest.Email);
+            var user = await _userRepository.GetUserByEmailAsync(loginRequest.Email);
 
-            if (User == null) {
-                throw new Exception("Invalid Credentials");
+            if (user == null) {
+                throw new Exception(ExceptionMessages.InvalidCredentials);
             }
 
-            if (User.IsDeleted)
+            if (user.IsDeleted)
             {
-                throw new Exception("User Deactivated");
+                throw new Exception(ExceptionMessages.UserDeactivated);
             }
 
-            if (!Hasher.Verify(loginRequest.Password, User.Password))
+            if (!Hasher.Verify(loginRequest.Password, user.Password))
             {
-                throw new Exception("Invalid Credentials");
+                throw new Exception(ExceptionMessages.InvalidCredentials);
             }
 
-            string AccessToken = _jWTService.GetAccessToken(User);
+            string AccessToken = _jWTService.GetAccessToken(user);
             string RefreshToken = _jWTService.GenerateRefreshToken();
 
-            var Refresh = new RefreshToken()
+            var refresh = new RefreshToken()
             {
                 Token = _refreshTokenRepository.HashRefreshToken(RefreshToken),
-                UserId = User.UserId
+                UserId = user.UserId
             };
 
-            _refreshTokenRepository.AddRefreshToken(Refresh);
+            _refreshTokenRepository.AddRefreshToken(refresh);
 
             _context.SaveChanges();
 
@@ -113,44 +125,54 @@ namespace DotNet_Assignment.Services.Auth
             };
         }
 
+        /// <summary>
+        /// Validates and logs out a user
+        /// </summary>
+        /// <param name="logoutRequest">Refresh token to be removed</param>
+        /// <exception cref="Exception">If refresh token is null</exception>
         public async Task LogoutAsync(LogoutRequestDto logoutRequest)
         {
-            var RefreshToken = await _refreshTokenRepository.GetRefreshTokenAsync(logoutRequest.RefreshToken);
+            var refreshToken = await _refreshTokenRepository.GetRefreshTokenAsync(logoutRequest.RefreshToken);
 
-            if (RefreshToken == null) {
-                return;
+            if (refreshToken == null) {
+                throw new Exception(ExceptionMessages.RefreshTokenNotFound);
             }
 
-            _refreshTokenRepository.DeleteRefreshToken(RefreshToken);
+            _refreshTokenRepository.DeleteRefreshToken(refreshToken);
             _context.SaveChanges();
         }
 
-
+        /// <summary>
+        /// Generates a new access Token
+        /// </summary>
+        /// <param name="refreshToken"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception">If refresh token is invalid or expired or user is deactivated</exception>
         public async Task<JWTResponseDto> RefreshAccessTokenAsync(string refreshToken)
         {
-            var HashedToken = _refreshTokenRepository.HashRefreshToken(refreshToken);
+            var hashedToken = _refreshTokenRepository.HashRefreshToken(refreshToken);
 
-            var Token = await _refreshTokenRepository.GetRefreshTokenAsync(HashedToken);
+            var token = await _refreshTokenRepository.GetRefreshTokenAsync(hashedToken);
 
-            if (Token == null)
-            {
-                throw new Exception("Invalid Refresh Token");
+            if (token == null)
+            { 
+                throw new Exception(ExceptionMessages.RefreshTokenInvalid);
             }
 
-            if (Token.ExpiresAt < DateTime.UtcNow) 
+            if (token.ExpiresAt < DateTime.UtcNow) 
             {
-                throw new Exception("Refresh Token Expired");
+                throw new Exception(ExceptionMessages.RefreshTokenExpired);
             }
 
-            if (Token.User.IsDeleted)
+            if (token.User.IsDeleted)
             {
-                throw new Exception("User Account is Deactivated");
+                throw new Exception(ExceptionMessages.UserDeactivated);
             }
 
-            var AccessToken = _jWTService.GetAccessToken(Token.User);
+            var accessToken = _jWTService.GetAccessToken(token.User);
 
             return new JWTResponseDto { 
-                AccessToken= AccessToken,
+                AccessToken= accessToken,
                 RefreshToken= refreshToken
             };
         }

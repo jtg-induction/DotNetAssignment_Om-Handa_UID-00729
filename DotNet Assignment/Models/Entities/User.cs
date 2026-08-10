@@ -8,13 +8,14 @@ namespace DotNet_Assignment.Models.Entities
 {
     public class User
     {
-        [Required]
-        public Guid UserId { get; set; } = Guid.NewGuid();
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid UserId { get; set; }
 
         [Required]
         [EmailAddress]
         [Index("IX_User_Email", IsUnique = true)]
         [StringLength(255)]
+        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")]
         public string Email { get; set; }
 
         [Required]
