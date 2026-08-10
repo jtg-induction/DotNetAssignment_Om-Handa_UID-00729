@@ -116,6 +116,8 @@ namespace DotNet_Assignment.Services.Address
                 address.City = addressDto.City;
             }
 
+            address.UpdatedAt = DateTime.UtcNow;
+
             await _context.SaveChangesAsync();
 
         }
