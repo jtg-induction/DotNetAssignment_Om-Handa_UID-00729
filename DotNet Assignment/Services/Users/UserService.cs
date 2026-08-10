@@ -61,6 +61,8 @@ namespace DotNet_Assignment.Services.Users
                 user.PhoneNumber = updateUserDto.PhoneNumber;
             }
 
+            user.UpdatedAt = DateTime.UtcNow;
+
             await _context.SaveChangesAsync();
         }
 
