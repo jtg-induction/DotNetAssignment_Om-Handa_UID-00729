@@ -15,6 +15,9 @@ namespace DotNet_Assignment.App_Start
 {
     public class UnityConfig
     {
+        /// <summary>
+        /// Registers Dependencies and configures them globally
+        /// </summary>
         public static IUnityContainer RegisterComponents()
         {
             var container = new UnityContainer();

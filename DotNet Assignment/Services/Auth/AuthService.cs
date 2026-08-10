@@ -1,4 +1,5 @@
-﻿using DotNet_Assignment.Data;
+﻿using DotNet_Assignment.Constants;
+using DotNet_Assignment.Data;
 using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Models.Enums;
@@ -31,10 +32,16 @@ namespace DotNet_Assignment.Services.Auth
             _context = appDbContext;
         }
 
+        /// <summary>
+        /// Registers a user, hashes its password and generated JWT Response
+        /// </summary>
+        /// <param name="requestDto">Signup details of user</param>
+        /// <returns><see cref="JWTResponseDto"/> containing Access and Refresh Token</returns>
+        /// <exception cref="Exception">Throws if user already exists or Refresh token was not generated</exception>
         public async Task<JWTResponseDto> RegisterAsync(SignupRequestDto requestDto) {
 
             if (await _userRepository.FindUserByEmailAsync(requestDto.Email)){
-                throw new Exception("Email Already Exists");
+                throw new Exception(ExceptionMessages.EmailAlreadyExists);
             }
 
             var user = new User()
@@ -55,7 +62,7 @@ namespace DotNet_Assignment.Services.Auth
 
             if(RefreshToken == null)
             {
-                throw new Exception("Refresh Token Could not be Generated");
+                throw new Exception(ExceptionMessages.RefreshTokenNotGenerated);
             }
 
             var refresh = new RefreshToken()

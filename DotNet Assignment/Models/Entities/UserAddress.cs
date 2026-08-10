@@ -1,11 +1,13 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DotNet_Assignment.Models.Entities
 {
     public class UserAddress
     {
-        public Guid UserAddressId { get; set; } = Guid.NewGuid();
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid UserAddressId { get; set; }
 
         public string HouseNumber { get; set; }
 

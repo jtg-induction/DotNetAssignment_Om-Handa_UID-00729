@@ -10,6 +10,12 @@ namespace DotNet_Assignment.Handlers
 {
     public class GlobalExceptionHandler : ExceptionHandler
     {
+        /// <summary>
+        /// Handles all Exceptions and return them as ApiResponseDto
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>HTTP request with exception message</returns>
         public override Task HandleAsync(ExceptionHandlerContext context, CancellationToken cancellationToken)
         {
             var response = new ApiResponseDto<object>
