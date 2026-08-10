@@ -175,6 +175,8 @@
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="App_Start\UnityConfig.cs" />
+    <Compile Include="Constants\ExceptionMessages.cs" />
+    <Compile Include="Constants\SuccessMessages.cs" />
     <Compile Include="Data\AppDbContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -200,6 +202,10 @@
     <Compile Include="Migrations\202608071212378_UpdatedEmailAndPasswordValidations.cs" />
     <Compile Include="Migrations\202608071212378_UpdatedEmailAndPasswordValidations.Designer.cs">
       <DependentUpon>202608071212378_UpdatedEmailAndPasswordValidations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202608100753042_AddedSequentialGuid.cs" />
+    <Compile Include="Migrations\202608100753042_AddedSequentialGuid.Designer.cs">
+      <DependentUpon>202608100753042_AddedSequentialGuid.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DTO\AddressDto.cs" />
@@ -261,6 +267,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202608071212378_UpdatedEmailAndPasswordValidations.resx">
       <DependentUpon>202608071212378_UpdatedEmailAndPasswordValidations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608100753042_AddedSequentialGuid.resx">
+      <DependentUpon>202608100753042_AddedSequentialGuid.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

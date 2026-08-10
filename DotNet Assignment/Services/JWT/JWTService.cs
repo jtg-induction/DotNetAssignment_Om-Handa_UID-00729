@@ -12,6 +12,11 @@ namespace DotNet_Assignment.Services.JWT
 {
     public class JWTService : IJWTService
     {
+        /// <summary>
+        /// Generates an access token using user credentials and secret key
+        /// </summary>
+        /// <param name="user">Users details to add to claims</param>
+        /// <returns>A JWT Access Token</returns>
         public string GetAccessToken(User user )
         {
             var key = ConfigurationManager.AppSettings["JwtKey"];
@@ -35,6 +40,10 @@ namespace DotNet_Assignment.Services.JWT
             return jWTtoken;
         }
 
+        /// <summary>
+        /// Generates a random Refresh Token string
+        /// </summary>
+        /// <returns>A random Refresh Token</returns>
         public string GenerateRefreshToken()
         {
             byte[] Byte = new byte[64];
