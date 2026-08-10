@@ -1,4 +1,5 @@
-﻿using DotNet_Assignment.Models.DTO;
+﻿using DotNet_Assignment.Constants;
+using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Services.Address;
 using DotNet_Assignment.Services.Auth;
 using System;
@@ -22,6 +23,11 @@ namespace DotNet_Assignment.Controllers
             _addressService = addressService;
         }
 
+        /// <summary>
+        /// Adds User Address 
+        /// </summary>
+        /// <param name="addressDto">Details of user address</param>
+        /// <returns>Https status code with success message</returns>
         [Authorize]
         [HttpPost]
         [Route("add")]
@@ -34,12 +40,18 @@ namespace DotNet_Assignment.Controllers
             var response = new ApiResponseDto<object>()
             {
                 IsSuccess = true,
-                Message = "Address Added Successfully"
+                Message = SuccessMessages.AddressAddedSuccessfully
             };
 
             return Ok(response);
         }
 
+        /// <summary>
+        ///  Updates a Users Address based on AddressId
+        /// </summary>
+        /// <param name="addressId">Address ID of a specific address</param>
+        /// <param name="addressDto">New Address Details</param>
+        /// <returns></returns>
         [Authorize]
         [HttpPatch]
         [Route("update/{addressId:guid}")]
@@ -52,7 +64,7 @@ namespace DotNet_Assignment.Controllers
             var response = new ApiResponseDto<object>()
             {
                 IsSuccess = true,
-                Message = "Address Updated Successfully"
+                Message = SuccessMessages.AddressUpdatedSuccessfully
             };
 
             return Ok(response);

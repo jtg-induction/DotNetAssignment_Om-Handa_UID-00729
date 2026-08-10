@@ -18,11 +18,21 @@ namespace DotNet_Assignment.Repository.Address
             _context = context;
         }
 
+        /// <summary>
+        /// Gets User Address from DB context
+        /// </summary>
+        /// <param name="userAddressId">Users Address ID to search</param>
+        /// <param name="userId">user ID</param>
+        /// <returns>User Address if Found else null</returns>
         public async Task<UserAddress> GetAddressByIdAsync(Guid userAddressId, Guid userId)
         {
             return await _context.UserAddresses.SingleOrDefaultAsync(ua => ua.UserAddressId == userAddressId && ua.UserId == userId);
         }
 
+        /// <summary>
+        /// Adds User address to DB context
+        /// </summary>
+        /// <param name="userAddress">User address Details</param>
         public void AddAddress(UserAddress userAddress)
         {
             _context.UserAddresses.Add(userAddress);

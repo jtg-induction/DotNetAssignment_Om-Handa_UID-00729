@@ -47,6 +47,10 @@ namespace DotNet_Assignment.Repository.RefreshTokens
             _context.RefreshTokens.Remove(refreshToken);
         }
 
+        /// <summary>
+        /// Deletes all refresh token of a specific user
+        /// </summary>
+        /// <param name="userId">User id to find tokens</param>
         public void DeleteTokensByUserId(Guid userId)
         {
             var tokens= _context.RefreshTokens.Where(u => u.UserId == userId).ToList();
@@ -54,6 +58,11 @@ namespace DotNet_Assignment.Repository.RefreshTokens
             _context.RefreshTokens.RemoveRange(tokens);
         }
 
+        /// <summary>
+        /// Hashes a refresh token using SHA256
+        /// </summary>
+        /// <param name="refreshToken">Unhashed Refresh token string</param>
+        /// <returns>Hashed refresh Token String</returns>
         public string HashRefreshToken(string refreshToken)
         {
             using(var sha256 = SHA256.Create())

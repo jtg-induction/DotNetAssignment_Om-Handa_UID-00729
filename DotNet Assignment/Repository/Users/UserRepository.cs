@@ -37,6 +37,11 @@ namespace DotNet_Assignment.Repository.Users
             return await _context.Users.AnyAsync(u => u.Email == email);
         }
 
+        /// <summary>
+        /// Finds user using user ID and returns it
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <returns>User if found else null</returns>
         public async Task<User> GetUserByIdAsync(Guid userId)
         {
             return await _context.Users.SingleOrDefaultAsync(u => u.UserId == userId);

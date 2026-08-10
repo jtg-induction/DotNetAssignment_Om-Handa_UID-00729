@@ -1,4 +1,5 @@
-﻿using DotNet_Assignment.Data;
+﻿using DotNet_Assignment.Constants;
+using DotNet_Assignment.Data;
 using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Repository.Address;
@@ -28,18 +29,24 @@ namespace DotNet_Assignment.Services.Address
             _context = appDbContext;
         }
 
+        /// <summary>
+        /// Validates and adds user address for a user
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <param name="addressDto">Address details</param>
+        /// <exception cref="Exception">if user not found or user deactivated</exception>
         public async Task AddUserAddressAsync(Guid userId, AddressDto addressDto)
         {
             var user = await _userRepository.GetUserByIdAsync(userId);
 
             if (user == null)
             {
-                throw new Exception("User not found");
+                throw new Exception(ExceptionMessages.UserNotFound);
             }
 
             if (user.IsDeleted)
             {
-                throw new Exception("User Already Deactivated");
+                throw new Exception(ExceptionMessages.UserDeactivated);
             }
 
             var address = new UserAddress
@@ -57,19 +64,26 @@ namespace DotNet_Assignment.Services.Address
 
             await _context.SaveChangesAsync();
         }
-
+        
+        /// <summary>
+        /// Updates a users address
+        /// </summary>
+        /// <param name="userid">User ID</param>
+        /// <param name="userAddressId">User Address ID</param>
+        /// <param name="addressDto">Address details to be updated</param>
+        /// <exception cref="Exception">If address not found or user deactivated</exception>
         public async Task UpdateUserAddressAsync(Guid userid, Guid userAddressId, AddressDto addressDto)
         {
             var address = await _addressRepository.GetAddressByIdAsync(userAddressId, userid);
 
             if (address == null)
             {
-                throw new Exception("Address not Found");
+                throw new Exception(ExceptionMessages.AddressNotFound);
             }
 
             if (address.User.IsDeleted)
             {
-                throw new Exception("User is Deactivated");
+                throw new Exception(ExceptionMessages.UserDeactivated);
             }
 
             if (!string.IsNullOrWhiteSpace(addressDto.HouseNumber))
