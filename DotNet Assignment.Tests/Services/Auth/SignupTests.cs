@@ -54,7 +54,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             var exception= Assert.CatchAsync<Exception>(Action);
 
-            Assert.That(exception.Message, Is.EqualTo("Email Already Exists"));
+            Assert.That(exception.Message, Is.EqualTo("Email already exists"));
         }
 
         [Test]

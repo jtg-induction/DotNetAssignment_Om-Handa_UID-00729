@@ -53,7 +53,7 @@ namespace DotNet_Assignment.Tests.Services.Users
 
             var exception = Assert.CatchAsync<Exception>(action);
 
-            Assert.That(exception.Message, Is.EqualTo("Address not Found"));
+            Assert.That(exception.Message, Is.EqualTo("Address not found"));
         }
 
         [Test]

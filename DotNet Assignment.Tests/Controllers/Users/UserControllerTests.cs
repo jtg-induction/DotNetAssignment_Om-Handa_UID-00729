@@ -43,7 +43,7 @@ namespace DotNet_Assignment.Tests.Controllers.Users
 
             Assert.That(okResult, Is.Not.Null);
             Assert.That(okResult.Content.IsSuccess, Is.True);
-            Assert.That(okResult.Content.Message, Is.EqualTo("Profile Updated"));
+            Assert.That(okResult.Content.Message, Is.EqualTo("Profile updated"));
 
             _userService.Verify(x => x.UpdateUserAsync(userId, dto), Times.Once);
         }
@@ -80,7 +80,7 @@ namespace DotNet_Assignment.Tests.Controllers.Users
 
             Assert.That(okResult, Is.Not.Null);
             Assert.That(okResult.Content.IsSuccess, Is.True);
-            Assert.That(okResult.Content.Message, Is.EqualTo("User Deactivated"));
+            Assert.That(okResult.Content.Message, Is.EqualTo("User deactivated"));
 
             _userService.Verify(x => x.DeactivateUserAsync(userId), Times.Once);
         }

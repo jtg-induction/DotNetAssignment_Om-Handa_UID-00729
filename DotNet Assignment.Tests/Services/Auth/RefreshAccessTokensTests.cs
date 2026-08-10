@@ -56,35 +56,35 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             var exception = Assert.CatchAsync<Exception>(action);
 
-            Assert.That(exception.Message, Is.EqualTo("Invalid Refresh Token"));
+            Assert.That(exception.Message, Is.EqualTo("Refresh token invalid"));
         }
 
         [Test]
         public async Task RefreshAccessToken_ExpiredRefreshToken_ThrowsException()
         {
             var refreshToken = "RefreshToken";
-            var HashedToken = "HashedRefreshToken";
+            var hashedToken = "HashedRefreshToken";
 
             _refreshTokenRepository
                 .Setup(x => x.HashRefreshToken(refreshToken))
-                .Returns(HashedToken);
+                .Returns(hashedToken);
 
             var token = new RefreshToken
             {
-                Token = HashedToken,
+                Token = hashedToken,
                 ExpiresAt = DateTime.UtcNow.AddMinutes(-5),
                 User = new User()
             };
 
             _refreshTokenRepository
-                .Setup(x => x.GetRefreshTokenAsync(HashedToken))
+                .Setup(x => x.GetRefreshTokenAsync(hashedToken))
                 .ReturnsAsync(token);
 
             Func<Task> action = async () => await _authService.RefreshAccessTokenAsync(refreshToken);
 
             var Exception = Assert.CatchAsync<Exception>(action);
 
-            Assert.That(Exception.Message, Is.EqualTo("Refresh Token Expired"));
+            Assert.That(Exception.Message, Is.EqualTo("Refresh token Expired"));
         }
 
         [Test]
@@ -115,7 +115,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             var exception = Assert.CatchAsync<Exception>(action);
 
-            Assert.That(exception.Message, Is.EqualTo("User Account is Deactivated"));
+            Assert.That(exception.Message, Is.EqualTo("User is deactivated"));
         }
 
         [Test]

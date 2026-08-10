@@ -235,6 +235,9 @@
     <Compile Include="Controllers\Address\AddressControllerTests.cs" />
     <Compile Include="Controllers\Auth\AuthControllerTests.cs" />
     <Compile Include="Controllers\Users\UserControllerTests.cs" />
+    <Compile Include="Repository\AddressRepositoryTests.cs" />
+    <Compile Include="Repository\RefreshTokenRepositoryTests.cs" />
+    <Compile Include="Repository\UserRepositoryTests.cs" />
     <Compile Include="Services\Auth\LoginTests.cs" />
     <Compile Include="Services\Auth\LogoutTests.cs" />
     <Compile Include="Services\Auth\RefreshAccessTokensTests.cs" />
@@ -247,6 +250,9 @@
     <Compile Include="Services\Address\UpdateAddressTests.cs" />
     <Compile Include="Services\Users\UpdateUsersTests.cs" />
     <Compile Include="Utils\AuthTestUtil.cs" />
+    <Compile Include="Utils\RepositoryHelpers\TestDbAsyncEnumerable.cs" />
+    <Compile Include="Utils\RepositoryHelpers\TestDbAsyncEnumerator.cs" />
+    <Compile Include="Utils\RepositoryHelpers\TestDbAsyncQueryProvider.cs" />
     <Compile Include="Utils\UserTestUtil.cs" />
   </ItemGroup>
   <ItemGroup>

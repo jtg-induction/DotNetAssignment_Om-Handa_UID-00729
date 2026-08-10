@@ -30,23 +30,23 @@ namespace DotNet_Assignment.Tests.Controllers.Auth
         {
             var requestDto = AuthTestUtil.CreateMockSignupRequestDto();
 
-            var Response = new JWTResponseDto
+            var response = new JWTResponseDto
             {
                 AccessToken = "AccessToken",
                 RefreshToken = "RefreshToken"
             };
 
             _authService.Setup(x => x.RegisterAsync(requestDto))
-                        .ReturnsAsync(Response);
+                        .ReturnsAsync(response);
 
-            var Result = await _authController.SignUpAsync(requestDto);
+            var result = await _authController.SignUpAsync(requestDto);
 
-            var OkResult = Result as OkNegotiatedContentResult<ApiResponseDto<JWTResponseDto>>;
+            var okResult = result as OkNegotiatedContentResult<ApiResponseDto<JWTResponseDto>>;
 
-            Assert.That(OkResult, Is.Not.Null);
-            Assert.That(OkResult.Content.IsSuccess, Is.True);
-            Assert.That(OkResult.Content.Message, Is.EqualTo("User Signed In"));
-            Assert.That(OkResult.Content.Data, Is.EqualTo(Response));
+            Assert.That(okResult, Is.Not.Null);
+            Assert.That(okResult.Content.IsSuccess, Is.True);
+            Assert.That(okResult.Content.Message, Is.EqualTo("User signed in"));
+            Assert.That(okResult.Content.Data, Is.EqualTo(response));
         }
 
         [Test]
@@ -69,23 +69,23 @@ namespace DotNet_Assignment.Tests.Controllers.Auth
         {
             var requestDto = AuthTestUtil.CreateMockLoginRequestDto();
 
-            var Response = new JWTResponseDto
+            var response = new JWTResponseDto
             {
                 AccessToken = "AccessToken",
                 RefreshToken = "RefreshToken"
             };
 
             _authService.Setup(x => x.LoginAsync(requestDto))
-                        .ReturnsAsync(Response);
+                        .ReturnsAsync(response);
 
-            var Result = await _authController.LoginAsync(requestDto);
+            var result = await _authController.LoginAsync(requestDto);
 
-            var OkResult = Result as OkNegotiatedContentResult<ApiResponseDto<JWTResponseDto>>;
+            var okResult = result as OkNegotiatedContentResult<ApiResponseDto<JWTResponseDto>>;
 
-            Assert.That(OkResult, Is.Not.Null);
-            Assert.That(OkResult.Content.IsSuccess, Is.True);
-            Assert.That(OkResult.Content.Message, Is.EqualTo("User Logged In"));
-            Assert.That(OkResult.Content.Data, Is.EqualTo(Response));
+            Assert.That(okResult, Is.Not.Null);
+            Assert.That(okResult.Content.IsSuccess, Is.True);
+            Assert.That(okResult.Content.Message, Is.EqualTo("User logged in"));
+            Assert.That(okResult.Content.Data, Is.EqualTo(response));
         }
 
         [Test]
@@ -112,13 +112,13 @@ namespace DotNet_Assignment.Tests.Controllers.Auth
                 RefreshToken = "RefreshToken"
             };
 
-            var Result = await _authController.LogoutAsync(requestDto);
+            var result = await _authController.LogoutAsync(requestDto);
 
-            var OkResult = Result as OkNegotiatedContentResult<ApiResponseDto<object>>;
+            var okResult = result as OkNegotiatedContentResult<ApiResponseDto<object>>;
 
-            Assert.That(OkResult, Is.Not.Null);
-            Assert.That(OkResult.Content.IsSuccess, Is.True);
-            Assert.That(OkResult.Content.Message, Is.EqualTo("User Logged Out"));
+            Assert.That(okResult, Is.Not.Null);
+            Assert.That(okResult.Content.IsSuccess, Is.True);
+            Assert.That(okResult.Content.Message, Is.EqualTo("User logged out"));
 
             _authService.Verify(x => x.LogoutAsync(requestDto), Times.Once);
         }
@@ -149,23 +149,23 @@ namespace DotNet_Assignment.Tests.Controllers.Auth
                 RefreshToken = "RefreshToken"
             };
 
-            var Response = new JWTResponseDto
+            var response = new JWTResponseDto
             {
                 AccessToken = "NewAccessToken",
                 RefreshToken = "RefreshToken"
             };
 
             _authService.Setup(x => x.RefreshAccessTokenAsync(requestDto.RefreshToken))
-                        .ReturnsAsync(Response);
+                        .ReturnsAsync(response);
 
-            var Result = await _authController.RefreshAsync(requestDto);
+            var result = await _authController.RefreshAsync(requestDto);
 
-            var OkResult = Result as OkNegotiatedContentResult<ApiResponseDto<JWTResponseDto>>;
+            var okResult = result as OkNegotiatedContentResult<ApiResponseDto<JWTResponseDto>>;
 
-            Assert.That(OkResult, Is.Not.Null);
-            Assert.That(OkResult.Content.IsSuccess, Is.True);
-            Assert.That(OkResult.Content.Message, Is.EqualTo("New Token Generated"));
-            Assert.That(OkResult.Content.Data, Is.EqualTo(Response));
+            Assert.That(okResult, Is.Not.Null);
+            Assert.That(okResult.Content.IsSuccess, Is.True);
+            Assert.That(okResult.Content.Message, Is.EqualTo("New token generated"));
+            Assert.That(okResult.Content.Data, Is.EqualTo(response));
         }
 
         [Test]
@@ -179,10 +179,11 @@ namespace DotNet_Assignment.Tests.Controllers.Auth
             _authService.Setup(x => x.RefreshAccessTokenAsync(requestDto.RefreshToken))
                         .ThrowsAsync(new Exception("Invalid Refresh Token"));
 
-            var Exception = Assert.ThrowsAsync<Exception>((AsyncTestDelegate)(async () =>
-                await _authController.RefreshAsync(requestDto)));
+            Func<Task> Action = async () => await _authController.RefreshAsync(requestDto);
 
-            Assert.That(Exception.Message, Is.EqualTo("Invalid Refresh Token"));
+            var exception = Assert.CatchAsync<Exception>(Action);
+
+            Assert.That(exception.Message, Is.EqualTo("Invalid Refresh Token"));
         }
     }
 }

@@ -47,7 +47,7 @@ namespace DotNet_Assignment.Tests.Controllers.Address
 
             Assert.That(okResult, Is.Not.Null);
             Assert.That(okResult.Content.IsSuccess, Is.True);
-            Assert.That(okResult.Content.Message, Is.EqualTo("Address Updated Successfully"));
+            Assert.That(okResult.Content.Message, Is.EqualTo("Address updated successfully"));
 
             _addressService.Verify(x => x.UpdateUserAddressAsync(userId, addressId, dto), Times.Once);
         }
@@ -87,7 +87,7 @@ namespace DotNet_Assignment.Tests.Controllers.Address
 
             Assert.That(okResult, Is.Not.Null);
             Assert.That(okResult.Content.IsSuccess, Is.True);
-            Assert.That(okResult.Content.Message, Is.EqualTo("Address Added Successfully"));
+            Assert.That(okResult.Content.Message, Is.EqualTo("Address added successfully"));
 
             _addressService.Verify(x => x.AddUserAddressAsync(userId, dto), Times.Once);
         }

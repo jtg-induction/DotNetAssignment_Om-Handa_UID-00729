@@ -53,7 +53,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             var exception = Assert.CatchAsync<Exception>(action);
 
-            Assert.That(exception.Message, Is.EqualTo("Invalid Credentials"));
+            Assert.That(exception.Message, Is.EqualTo("Invalid credentials"));
         }
 
         [Test]
@@ -76,7 +76,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             var exception = Assert.CatchAsync<Exception>(action);
 
-            Assert.That(exception.Message, Is.EqualTo("User Deactivated"));
+            Assert.That(exception.Message, Is.EqualTo("User is deactivated"));
         }
 
         [Test]
@@ -99,7 +99,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             var exception = Assert.CatchAsync<Exception>(action);
 
-            Assert.That(exception.Message, Is.EqualTo("Invalid Credentials"));
+            Assert.That(exception.Message, Is.EqualTo("Invalid credentials"));
         }
 
         [Test]

@@ -73,7 +73,7 @@ namespace DotNet_Assignment.Tests.Services.Users
 
             var exception = Assert.CatchAsync<Exception>(action);
 
-            Assert.That(exception.Message, Is.EqualTo("User Already Deactivated"));
+            Assert.That(exception.Message, Is.EqualTo("User is deactivated"));
         }
 
         [Test]
