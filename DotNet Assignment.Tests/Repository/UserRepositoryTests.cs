@@ -20,6 +20,10 @@ namespace DotNet_Assignment.Tests.Repository
     [TestFixture]
     public class UserRepositoryTests
     {
+        /// <summary>
+        /// GetUserByEmailAsync Function  Found user - Returns User
+        /// </summary>
+        /// <returns>User</returns>
         [Test]
         public async Task GetUserByEmailAsync_ReturnsUser()
         {
@@ -50,6 +54,10 @@ namespace DotNet_Assignment.Tests.Repository
             Assert.That(result, Is.Not.Null);
         }
 
+        /// <summary>
+        /// GetUserByEmailAsync Function - Did not Find user - Returns null
+        /// </summary>
+        /// <returns>null</returns>
         [Test]
         public async Task GetUserByEmailAsync_ReturnsNull()
         {
@@ -80,6 +88,10 @@ namespace DotNet_Assignment.Tests.Repository
             Assert.That(result, Is.Null);
         }
 
+        /// <summary>
+        /// FindUserByEmailAsync Function - Found user - Returns True
+        /// </summary>
+        /// <returns>true</returns>
         [Test]
         public async Task FindUserByEmailAsync_ReturnsTrue()
         {
@@ -110,6 +122,10 @@ namespace DotNet_Assignment.Tests.Repository
             Assert.That(result, Is.True);
         }
 
+        /// <summary>
+        /// FindUserByEmailAsync Function - Did not Find user - Returns False
+        /// </summary>
+        /// <returns>false</returns>
         [Test]
         public async Task FindUserByEmailAsync_ReturnsFalse()
         {
@@ -140,6 +156,10 @@ namespace DotNet_Assignment.Tests.Repository
             Assert.That(result, Is.False);
         }
 
+        /// <summary>
+        /// GetUserByIdAsync Function  Found user - Returns User
+        /// </summary>
+        /// <returns>User</returns>
         [Test]
         public async Task GetUserByIdAsync_ReturnsUser()
         {
@@ -170,6 +190,10 @@ namespace DotNet_Assignment.Tests.Repository
             Assert.That(result, Is.Not.Null);
         }
 
+        /// <summary>
+        /// GetUserByIdAsync Function - Did not Find user - Returns null
+        /// </summary>
+        /// <returns>null</returns>
         [Test]
         public async Task GetUserByIdAsync_ReturnsNull()
         {
@@ -200,6 +224,9 @@ namespace DotNet_Assignment.Tests.Repository
             Assert.That(result, Is.Null);
         }
 
+        /// <summary>
+        /// AddUser Function - Adds User Successfully
+        /// </summary>
         [Test]
         public async Task AddUser_AddsUserCorrectly()
         {

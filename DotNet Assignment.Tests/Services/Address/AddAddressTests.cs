@@ -1,4 +1,5 @@
-﻿using DotNet_Assignment.Data;
+﻿using DotNet_Assignment.Constants;
+using DotNet_Assignment.Data;
 using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Repository.Address;
 using DotNet_Assignment.Repository.RefreshTokens;
@@ -38,6 +39,9 @@ namespace DotNet_Assignment.Tests.Services.Users
             );
         }
 
+        /// <summary>
+        ///  AddUserAddress Function - User not found - throws Exception
+        /// </summary>
         [Test]
         public async Task AddUserAddress_UserNotFound_ThrowsException()
         {
@@ -49,13 +53,16 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync((User)null);
 
-            Func<Task> action = async () => await _addressService.AddUserAddressAsync(userId, request);
+            Func<Task> Action = async () => await _addressService.AddUserAddressAsync(userId, request);
 
-            var exception = Assert.CatchAsync<Exception>(action);
+            var exception = Assert.CatchAsync<Exception>(Action);
 
-            Assert.That(exception.Message, Is.EqualTo("User not found"));
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.UserNotFound));
         }
 
+        /// <summary>
+        ///  AddUserAddress Function - User Deactivated - throws Exception
+        /// </summary>
         [Test]
         public async Task AddUserAddress_UserDeactivated_ThrowsException()
         {
@@ -69,13 +76,18 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(user.UserId))
                 .ReturnsAsync(user);
 
-            Func<Task> action = async () => await _addressService.AddUserAddressAsync(user.UserId, request);
+            Func<Task> Action = async () => await _addressService.AddUserAddressAsync(user.UserId, request);
 
-            var exception = Assert.CatchAsync<Exception>(action);
+            var exception = Assert.CatchAsync<Exception>(Action);
 
-            Assert.That(exception.Message, Is.EqualTo("User is deactivated"));
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.UserDeactivated));
+
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Never);
         }
 
+        /// <summary>
+        ///  AddUserAddress Function - Valid Request - Adds Address
+        /// </summary>
         [Test]
         public async Task AddUserAddress_ValidRequest_AddsAddress()
         {
@@ -87,13 +99,20 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(user.UserId))
                 .ReturnsAsync(user);
 
-            await _addressService.AddUserAddressAsync(user.UserId, request);
+            Func<Task> Action = async () => await _addressService.AddUserAddressAsync(user.UserId, request);
+
+            Assert.DoesNotThrowAsync(Action);
 
             _addressRepository.Verify(
                 x => x.AddAddress(It.IsAny<UserAddress>()),
                 Times.Once);
+
+            _appDbContext.Verify(x => x.SaveChangesAsync(),Times.Once);
         }
 
+        /// <summary>
+        ///  AddUserAddress Function - Valid Request - Saves Address
+        /// </summary>
         [Test]
         public async Task AddUserAddress_ValidRequest_SavesChanges()
         {
@@ -105,7 +124,9 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(user.UserId))
                 .ReturnsAsync(user);
 
-            await _addressService.AddUserAddressAsync(user.UserId, request);
+            Func<Task> Action = async () => await _addressService.AddUserAddressAsync(user.UserId, request);
+
+            Assert.DoesNotThrowAsync(Action);
 
             _appDbContext.Verify(
                 x => x.SaveChangesAsync(),

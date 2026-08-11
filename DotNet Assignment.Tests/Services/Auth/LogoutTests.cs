@@ -36,6 +36,9 @@ namespace DotNet_Assignment.Tests.Services.Auth
             );
         }
 
+        /// <summary>
+        /// Logout Function - Refresh Token not Found - Returns Function
+        /// </summary>
         [Test]
         public void Logout_RefreshTokenNotFound_Returns()
         {
@@ -52,11 +55,12 @@ namespace DotNet_Assignment.Tests.Services.Auth
                 x => x.DeleteRefreshToken(It.IsAny<RefreshToken>()),
                 Times.Never);
 
-            _appDbContext.Verify(
-                x => x.SaveChanges(),
-                Times.Never);
+            _appDbContext.Verify(x => x.SaveChanges(),Times.Never);
         }
 
+        /// <summary>
+        /// Logout Function - Refresh Token Found - Deletes Token
+        /// </summary>
         [Test]
         public void Logout_ValidRefreshToken_DeletesRefreshToken()
         {
@@ -79,8 +83,13 @@ namespace DotNet_Assignment.Tests.Services.Auth
             _refreshTokenRepository.Verify(
                 x => x.DeleteRefreshToken(refreshToken),
                 Times.Once);
+
+            _appDbContext.Verify(x => x.SaveChanges(), Times.Once);
         }
 
+        /// <summary>
+        /// Logout Function - Refresh Token Found - Saves Changes
+        /// </summary>
         [Test]
         public void Logout_ValidRefreshToken_SavesChanges()
         {

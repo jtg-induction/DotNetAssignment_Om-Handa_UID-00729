@@ -232,6 +232,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants\MockConstants.cs" />
     <Compile Include="Controllers\Address\AddressControllerTests.cs" />
     <Compile Include="Controllers\Auth\AuthControllerTests.cs" />
     <Compile Include="Controllers\Users\UserControllerTests.cs" />

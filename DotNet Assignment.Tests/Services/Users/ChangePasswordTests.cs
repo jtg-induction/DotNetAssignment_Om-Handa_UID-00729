@@ -1,9 +1,11 @@
-﻿using DotNet_Assignment.Data;
+﻿using DotNet_Assignment.Constants;
+using DotNet_Assignment.Data;
 using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Repository.RefreshTokens;
 using DotNet_Assignment.Repository.Users;
 using DotNet_Assignment.Services.Users;
+using DotNet_Assignment.Tests.Constants;
 using DotNet_Assignment.Tests.Utils;
 using DotNet_Assignment.Utils;
 using Moq;
@@ -38,6 +40,9 @@ namespace DotNet_Assignment.Tests.Services.Users
             );
         }
 
+        /// <summary>
+        /// ChangePassword Function - User Not found - Throws exception
+        /// </summary>
         [Test]
         public async Task ChangePassword_UserNotFound_ThrowsException()
         {
@@ -45,8 +50,8 @@ namespace DotNet_Assignment.Tests.Services.Users
 
             var request = new ChangePasswordDto
             {
-                OldPassword = "OldPassword",
-                NewPassword = "NewPassword"
+                OldPassword = MockConstants.MockPassword,
+                NewPassword = MockConstants.MockNewPassword
             };
 
             _userRepository
@@ -58,9 +63,14 @@ namespace DotNet_Assignment.Tests.Services.Users
 
             var exception = Assert.CatchAsync<Exception>(Action);
 
-            Assert.That(exception.Message,Is.EqualTo("User not found"));
+            Assert.That(exception.Message,Is.EqualTo(ExceptionMessages.UserNotFound));
+
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Never);
         }
 
+        /// <summary>
+        /// ChangePassword Function - User Deactivated - Throws exception
+        /// </summary>
         [Test]
         public async Task ChangePassword_UserDeactivated_ThrowsException()
         {
@@ -68,14 +78,14 @@ namespace DotNet_Assignment.Tests.Services.Users
 
             var request = new ChangePasswordDto
             {
-                OldPassword = "OldPassword",
-                NewPassword = "NewPassword"
+                OldPassword = MockConstants.MockPassword,
+                NewPassword = MockConstants.MockNewPassword
             };
 
             var user = new User
             {
                 UserId = userId,
-                Password = Hasher.Hash("OldPassword"),
+                Password = Hasher.Hash(MockConstants.MockPassword),
                 IsDeleted = true
             };
 
@@ -88,9 +98,14 @@ namespace DotNet_Assignment.Tests.Services.Users
 
             var exception = Assert.CatchAsync<Exception>(Action);
 
-            Assert.That(exception.Message, Is.EqualTo("User is deactivated"));
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.UserDeactivated));
+
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Never);
         }
 
+        /// <summary>
+        /// ChangePassword Function - Incorrect old password - Throws exception
+        /// </summary>
         [Test]
         public async Task ChangePassword_IncorrectOldPassword_ThrowsException()
         {
@@ -98,14 +113,14 @@ namespace DotNet_Assignment.Tests.Services.Users
 
             var request = new ChangePasswordDto
             {
-                OldPassword = "WrongPassword",
-                NewPassword = "NewPassword"
+                OldPassword = MockConstants.MockWrongPassword,
+                NewPassword = MockConstants.MockNewPassword
             };
 
             var user = new User
             {
                 UserId = userId,
-                Password = Hasher.Hash("OldPassword"),
+                Password = Hasher.Hash(MockConstants.MockPassword),
                 IsDeleted = false
             };
 
@@ -118,9 +133,14 @@ namespace DotNet_Assignment.Tests.Services.Users
 
             var exception = Assert.CatchAsync<Exception>(Action);
 
-            Assert.That(exception.Message,Is.EqualTo("Old Password is Incorrect"));
+            Assert.That(exception.Message,Is.EqualTo(ExceptionMessages.OldPasswordIncorrect));
+
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Never);
         }
 
+        /// <summary>
+        /// ChangePassword Function - Valid Request - Changes Password
+        /// </summary>
         [Test]
         public async Task ChangePassword_ValidRequest_ChangesPassword()
         {
@@ -128,14 +148,14 @@ namespace DotNet_Assignment.Tests.Services.Users
 
             var request = new ChangePasswordDto
             {
-                OldPassword = "OldPassword",
-                NewPassword = "NewPassword"
+                OldPassword = MockConstants.MockPassword,
+                NewPassword = MockConstants.MockNewPassword
             };
 
             var user = new User
             {
                 UserId = userId,
-                Password = Hasher.Hash("OldPassword"),
+                Password = Hasher.Hash(MockConstants.MockPassword),
                 IsDeleted = false
             };
 
@@ -143,11 +163,18 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            await _userService.ChangePasswordAsync(userId, request);
+            Func<Task> Action = async () => await _userService.ChangePasswordAsync(userId, request);
+
+            Assert.DoesNotThrowAsync(Action);
 
             Assert.That(Hasher.Verify(request.NewPassword,user.Password),Is.True);
+
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
 
+        /// <summary>
+        /// ChangePassword Function - Valid Request - Saves Password
+        /// </summary>
         [Test]
         public async Task ChangePassword_ValidRequest_SavesChanges()
         {
@@ -155,14 +182,14 @@ namespace DotNet_Assignment.Tests.Services.Users
 
             var request = new ChangePasswordDto
             {
-                OldPassword = "OldPassword",
-                NewPassword = "NewPassword"
+                OldPassword = MockConstants.MockPassword,
+                NewPassword = MockConstants.MockNewPassword
             };
 
             var user = new User
             {
                 UserId = userId,
-                Password = Hasher.Hash("OldPassword"),
+                Password = Hasher.Hash(MockConstants.MockPassword),
                 IsDeleted = false
             };
 
@@ -170,7 +197,9 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            await _userService.ChangePasswordAsync(userId, request);
+            Func<Task> Action = async () => await _userService.ChangePasswordAsync(userId, request);
+
+            Assert.DoesNotThrowAsync(Action);
 
             _appDbContext.Verify(x => x.SaveChangesAsync(),Times.Once);
         }

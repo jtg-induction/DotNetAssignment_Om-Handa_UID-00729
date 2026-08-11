@@ -1,4 +1,5 @@
-﻿using DotNet_Assignment.Data;
+﻿using DotNet_Assignment.Constants;
+using DotNet_Assignment.Data;
 using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Repository.RefreshTokens;
@@ -6,6 +7,7 @@ using DotNet_Assignment.Repository.Users;
 using DotNet_Assignment.Services.Auth;
 using DotNet_Assignment.Services.JWT;
 using DotNet_Assignment.Tests.Utils;
+using DotNet_Assignment.Utils;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -17,7 +19,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
     public class SignupTests
     {
         private Mock<IUserRepository> _userRepository;
-        private Mock<IJWTService> _jWTService;
+        private JWTService _jWTService;
         private Mock<IRefreshTokenRepository> _refreshTokenRepository;
         private Mock<AppDbContext> _appDbContext;
         private AuthService _authService;
@@ -26,18 +28,21 @@ namespace DotNet_Assignment.Tests.Services.Auth
         public void Setup()
         {
             _userRepository = new Mock<IUserRepository>();
-            _jWTService = new Mock<IJWTService>();
+            _jWTService = new JWTService();
             _refreshTokenRepository = new Mock<IRefreshTokenRepository>();
             _appDbContext = new Mock<AppDbContext>();
 
             _authService = new AuthService(
                 _userRepository.Object,
-                _jWTService.Object,
+                _jWTService,
                 _refreshTokenRepository.Object,
                 _appDbContext.Object
             );
         }
 
+        /// <summary>
+        /// Register function - email already exists - throws exception
+        /// </summary>
         [Test]
         public async Task Register_EmailAlreadyExists_ThrowsException()
         {
@@ -54,157 +59,140 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             var exception= Assert.CatchAsync<Exception>(Action);
 
-            Assert.That(exception.Message, Is.EqualTo("Email already exists"));
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.EmailAlreadyExists));
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Never);
         }
 
+        /// <summary>
+        /// Register function - valid user - hashes password
+        /// </summary>
         [Test]
         public async Task Register_ValidUser_HashesPassword()
         {
             var requestDto = AuthTestUtil.CreateMockSignupRequestDto();
 
-            _userRepository.Setup(x => x.FindUserByEmailAsync(It.IsAny<string>())).
-                ReturnsAsync(false);
+            ValidSignupHelper(requestDto);
 
-            _jWTService.
-                Setup(x => x.GetAccessToken(It.IsAny<User>())).
-                Returns("AccessToken");
+            Func<Task> Action = async () => await _authService.RegisterAsync(requestDto);
 
-            _jWTService.
-                Setup(x => x.GenerateRefreshToken()).
-                Returns("RefreshToken");
+            Assert.DoesNotThrowAsync(Action);
 
-            await _authService.RegisterAsync(requestDto);
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
 
+        /// <summary>
+        /// Register function - valid user - adds user
+        /// </summary>
         [Test]
-        public async Task Register_AddsUser()
+        public async Task Register_ValidDeails_AddsUser()
         {
             var requestDto = AuthTestUtil.CreateMockSignupRequestDto();
 
-            _userRepository.Setup(x => x.FindUserByEmailAsync(It.IsAny<string>())).
-                ReturnsAsync(false);
+            ValidSignupHelper(requestDto);
 
-            _jWTService
-                .Setup(x => x.GetAccessToken(It.IsAny<User>()))
-                .Returns("AccessToken");
+            Func<Task> Action = async () => await _authService.RegisterAsync(requestDto);
 
-            _jWTService
-                .Setup(x => x.GenerateRefreshToken())
-                .Returns("RefreshToken");
+            Assert.DoesNotThrowAsync(Action);
 
-            await _authService.RegisterAsync(requestDto);
-
-            _userRepository.Verify(
-                x => x.AddUser(It.IsAny<User>()),
-                Times.Once);
+            _userRepository.Verify(x => x.AddUser(It.IsAny<User>()),Times.Once);
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
 
+        /// <summary>
+        /// Register function - valid user - generate tokens
+        /// </summary>
         [Test]
-        public async Task Register_ValidUser_GeneratesAccessToken()
+        public async Task Register_ValidUser_GenerateTokens()
         {
             var requestDto = AuthTestUtil.CreateMockSignupRequestDto();
 
-            _userRepository.Setup(x => x.FindUserByEmailAsync(It.IsAny<string>())).
-                ReturnsAsync(false);
+            ValidSignupHelper(requestDto);
 
-            _jWTService
-                .Setup(x => x.GetAccessToken(It.IsAny<User>()))
-                .Returns("AccessToken");
+            JWTResponseDto response = null;
+            Func<Task> Action = async () => response = await _authService.RegisterAsync(requestDto);
 
-            _jWTService
-                .Setup(x => x.GenerateRefreshToken())
-                .Returns("RefreshToken");
+            Assert.DoesNotThrowAsync(Action);
+            Assert.That(response.AccessToken, Is.Not.Null);
+            Assert.That(response.RefreshToken, Is.Not.Null);
 
-            await _authService.RegisterAsync(requestDto);
-
-            _jWTService.Verify(x => x.GetAccessToken(It.IsAny<User>()),Times.Once);
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
 
-        [Test]
-        public async Task Register_ValidUser_GeneratesRefreshToken()
-        {
-            var requestDto = AuthTestUtil.CreateMockSignupRequestDto();
-
-            _userRepository.Setup(x => x.FindUserByEmailAsync(It.IsAny<string>())).
-                ReturnsAsync(false);
-
-            _jWTService
-                .Setup(x => x.GetAccessToken(It.IsAny<User>()))
-                .Returns("AccessToken");
-
-            _jWTService
-                .Setup(x => x.GenerateRefreshToken())
-                .Returns("RefreshToken");
-
-            await _authService.RegisterAsync(requestDto);
-
-            _jWTService.Verify(x => x.GenerateRefreshToken(),Times.Once);
-        }
-
+        /// <summary>
+        /// Register function - valid user - adds refresh token
+        /// </summary>
         [Test]
         public async Task Register_ValidUser_AddsRefreshToken()
         {
             var requestDto = AuthTestUtil.CreateMockSignupRequestDto();
 
-            _userRepository.Setup(x => x.FindUserByEmailAsync(It.IsAny<string>())).
-                ReturnsAsync(false);
+            ValidSignupHelper(requestDto);
 
-            _jWTService
-                .Setup(x => x.GetAccessToken(It.IsAny<User>()))
-                .Returns("AccessToken");
+            Func<Task> Action = async () => await _authService.RegisterAsync(requestDto);
 
-            _jWTService
-                .Setup(x => x.GenerateRefreshToken())
-                .Returns("RefreshToken");
-
-            await _authService.RegisterAsync(requestDto);
+            Assert.DoesNotThrowAsync(Action);
 
             _refreshTokenRepository.Verify(x => x.AddRefreshToken(It.IsAny<RefreshToken>()),Times.Once);
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
 
+        /// <summary>
+        /// Register function - valid user - saves changes
+        /// </summary>
         [Test]
         public async Task Register_SavesChanges()
         {
             var requestDto = AuthTestUtil.CreateMockSignupRequestDto();
 
-            _userRepository.Setup(x => x.FindUserByEmailAsync(It.IsAny<string>())).
-                ReturnsAsync(false);
+            ValidSignupHelper(requestDto);
 
-            _jWTService
-                .Setup(x => x.GetAccessToken(It.IsAny<User>()))
-                .Returns("AccessToken");
+            Func<Task> Action = async () => await _authService.RegisterAsync(requestDto);
 
-            _jWTService
-                .Setup(x => x.GenerateRefreshToken())
-                .Returns("RefreshToken");
-
-            await _authService.RegisterAsync(requestDto);
+            Assert.DoesNotThrowAsync(Action);
 
             _appDbContext.Verify(x => x.SaveChangesAsync(),Times.Once);
         }
 
+        /// <summary>
+        /// Register function - valid user - returns jwt response - access token and refresh token
+        /// </summary>
         [Test]
         public async Task Register_ValidUser_ReturnTokens()
         {
             var requestDto = AuthTestUtil.CreateMockSignupRequestDto();
 
-            _userRepository.Setup(x => x.FindUserByEmailAsync(It.IsAny<string>())).
-                ReturnsAsync(false);
-
-            _jWTService
-                .Setup(x => x.GetAccessToken(It.IsAny<User>()))
-                .Returns("AccessToken");
-
-            _jWTService
-                .Setup(x => x.GenerateRefreshToken())
-                .Returns("RefreshToken");
+            ValidSignupHelper(requestDto);
 
             var response = await _authService.RegisterAsync(requestDto);
 
-            Assert.That(response.AccessToken, Is.EqualTo("AccessToken"));
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
 
-            Assert.That(response.RefreshToken, Is.EqualTo("RefreshToken"));
+        }
 
+        /// <summary>
+        /// Signup Helper - mocks signup flow
+        /// </summary>
+        /// <param name="RequestDto"></param>
+        /// <returns>user</returns>
+        private User ValidSignupHelper(SignupRequestDto RequestDto)
+        {
+            var user = new User
+            {
+                UserId = Guid.NewGuid(),
+                Email = RequestDto.Email,
+                Password = Hasher.Hash(RequestDto.Password),
+                IsDeleted = false
+            };
+
+            _userRepository
+                .Setup(x => x.GetUserByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+
+            _jWTService.GetAccessToken(user);
+
+            _jWTService.GenerateRefreshToken();
+
+            return user;
         }
     }
 }

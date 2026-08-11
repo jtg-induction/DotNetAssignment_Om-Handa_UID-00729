@@ -3,6 +3,7 @@ using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Models.Enums;
 using DotNet_Assignment.Repository.Address;
 using DotNet_Assignment.Repository.RefreshTokens;
+using DotNet_Assignment.Tests.Constants;
 using DotNet_Assignment.Tests.Utils.RepositoryHelpers;
 using Moq;
 using NUnit.Framework;
@@ -19,17 +20,21 @@ namespace DotNet_Assignment.Tests.Repository
     [TestFixture]
     public class RefreshTokenRepositoryTests
     {
+        /// <summary>
+        /// GetRefreshTokenAsync Function - Found Token - Returns token
+        /// </summary>
+        /// <returns>Refresh Token</returns>
         [Test]
         public async Task GetRefreshTokenAsync_ReturnsToken()
         {
-            var requestRefreshToken = "RefreshToken";
+            var requestRefreshToken = MockConstants.MockRefreshToken;
 
             var data = new List<RefreshToken>
                 {
                     new RefreshToken
                     {
                        RefreshTokenId= Guid.NewGuid(),
-                       Token="RefreshToken",
+                       Token=MockConstants.MockRefreshToken,
                        ExpiresAt= DateTime.UtcNow.AddDays(7),
                        CreatedAt= DateTime.UtcNow,
                        UserId= Guid.NewGuid(),
@@ -44,17 +49,21 @@ namespace DotNet_Assignment.Tests.Repository
             Assert.That(result, Is.Not.Null);
         }
 
+        /// <summary>
+        /// GetRefreshTokenAsync Function - Did not Find Token - Returns null
+        /// </summary>
+        /// <returns>null</returns>
         [Test]
         public async Task GetRefreshTokenAsync_ReturnsNull()
         {
-            var requestRefreshToken = "RefreshToken";
+            var requestRefreshToken = MockConstants.MockRefreshToken;
 
             var data = new List<RefreshToken>
                 {
                     new RefreshToken
                     {
                        RefreshTokenId= Guid.NewGuid(),
-                       Token="WrongRefreshToken",
+                       Token=MockConstants.MockWrongRefreshToken,
                        ExpiresAt= DateTime.UtcNow.AddDays(7),
                        CreatedAt= DateTime.UtcNow,
                        UserId= Guid.NewGuid(),
@@ -69,12 +78,15 @@ namespace DotNet_Assignment.Tests.Repository
             Assert.That(result, Is.Null);
         }
 
+        /// <summary>
+        /// AddRefreshToken Function - Adds token successfully
+        /// </summary>
         [Test]
         public async Task AddRefreshToken_AddsCorrectly()
         {
             var mockSet = new Mock<DbSet<RefreshToken>>();
             var mockContext = new Mock<AppDbContext>();
-            var requestRefreshToken = "RefreshToken";
+            var requestRefreshToken = MockConstants.MockRefreshToken;
 
             mockContext.Setup(c => c.RefreshTokens).Returns(mockSet.Object);
 
@@ -84,7 +96,7 @@ namespace DotNet_Assignment.Tests.Repository
                     new RefreshToken
                     {
                         RefreshTokenId = Guid.NewGuid(),
-                        Token = "RefreshToken",
+                        Token = MockConstants.MockRefreshToken,
                         ExpiresAt = DateTime.UtcNow.AddDays(7),
                         CreatedAt = DateTime.UtcNow,
                         UserId = Guid.NewGuid(),
@@ -95,17 +107,20 @@ namespace DotNet_Assignment.Tests.Repository
             mockSet.Verify(m => m.Add(data), Times.Once);
         }
 
+        /// <summary>
+        /// DeleteRefreshToken Function - Found Token - Deletes token
+        /// </summary>
         [Test]
         public async Task DeleteRefreshToken_DeletesCorrectly()
         {
-            var requestRefreshToken = "RefreshToken";
+            var requestRefreshToken = MockConstants.MockRefreshToken;
 
             var data = new List<RefreshToken>
                 {
                     new RefreshToken
                     {
                        RefreshTokenId= Guid.NewGuid(),
-                       Token="RefreshToken",
+                       Token=MockConstants.MockRefreshToken,
                        ExpiresAt= DateTime.UtcNow.AddDays(7),
                        CreatedAt= DateTime.UtcNow,
                        UserId= Guid.NewGuid(),
@@ -123,6 +138,9 @@ namespace DotNet_Assignment.Tests.Repository
             mockSet.Verify(m => m.Remove(result), Times.Once);
         }
 
+        /// <summary>
+        /// DeleteTokensByUserId Function - Found Tokens - Delete tokens
+        /// </summary>
         [Test]
         public void DeleteTokensByUserId_DeletesAllUserTokens()
         {
