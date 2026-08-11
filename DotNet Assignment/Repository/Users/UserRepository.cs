@@ -10,6 +10,7 @@ namespace DotNet_Assignment.Repository.Users
 {
     public class UserRepository : IUserRepository
     {
+
         private readonly AppDbContext _context;
 
         public UserRepository(AppDbContext context)
