@@ -1,11 +1,12 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DotNet_Assignment.Models.Entities
 {
     public class OrderedItem
     {
-        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid OrderedItemId { get; set; }
 
         [Range(1, int.MaxValue)]

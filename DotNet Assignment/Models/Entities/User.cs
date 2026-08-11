@@ -8,13 +8,14 @@ namespace DotNet_Assignment.Models.Entities
 {
     public class User
     {
-        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid UserId { get; set; }
 
         [Required]
         [EmailAddress]
         [Index("IX_User_Email", IsUnique = true)]
-        [StringLength(100)]
+        [StringLength(255)]
+        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")]
         public string Email { get; set; }
 
         [Required]
@@ -25,9 +26,9 @@ namespace DotNet_Assignment.Models.Entities
         [StringLength(100), MinLength(2)]
         public string Name { get; set; }
 
-        [Phone]
         [Required]
-        [StringLength(10)]
+        [StringLength(10), MinLength(10)]
+        [RegularExpression(@"^[0-9]{10}$")]
         public string PhoneNumber { get; set; }
 
         [Range(0, int.MaxValue)]
@@ -47,6 +48,7 @@ namespace DotNet_Assignment.Models.Entities
 
         public virtual ICollection<RestaurantOwner> RestaurantOwners { get; set; } = new HashSet<RestaurantOwner>();
 
+        public virtual ICollection<RefreshToken> RefreshTokens { get; set; }
 
     }
 }

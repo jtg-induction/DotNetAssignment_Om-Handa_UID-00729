@@ -1,4 +1,7 @@
+using DotNet_Assignment.App_Start;
+using System.ComponentModel;
 using System.Web.Http;
+using Unity.AspNet.WebApi;
 
 namespace DotNet_Assignment
 {
@@ -6,7 +9,9 @@ namespace DotNet_Assignment
     {
         protected void Application_Start()
         {
-            GlobalConfiguration.Configure(WebApiConfig.Register);
+           GlobalConfiguration.Configure(WebApiConfig.Register);
+
+           UnityConfig.RegisterComponents();
         }
     }
 }

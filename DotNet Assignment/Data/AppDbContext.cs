@@ -14,6 +14,7 @@ namespace DotNet_Assignment.Data
         public DbSet<Restaurant> Restaurants { get; set; }
         public DbSet<RestaurantOwner> RestaurantsOwner { get; set; }
         public DbSet<UserAddress> UserAddresses { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -64,6 +65,12 @@ namespace DotNet_Assignment.Data
                 .WithMany(mi => mi.OrderedItems)
                 .HasForeignKey(oi => oi.MenuItemId)
                 .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<RefreshToken>()
+                .HasRequired(rt => rt.User)
+                .WithMany(u => u.RefreshTokens)
+                .HasForeignKey(rt => rt.UserId)
+                .WillCascadeOnDelete(true);
 
             base.OnModelCreating(modelBuilder);
         }
