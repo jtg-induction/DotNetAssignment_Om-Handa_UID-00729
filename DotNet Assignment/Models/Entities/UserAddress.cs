@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DotNet_Assignment.Constants;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -25,7 +26,7 @@ namespace DotNet_Assignment.Models.Entities
 
         [Required]
         [StringLength(6)]
-        [RegularExpression(@"^[1-9][0-9]{5}$")]
+        [RegularExpression(Regex.PincodeRegex)]
         public string Pincode { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

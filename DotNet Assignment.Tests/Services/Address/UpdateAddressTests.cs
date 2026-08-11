@@ -1,4 +1,5 @@
 ﻿
+using DotNet_Assignment.Constants;
 using DotNet_Assignment.Data;
 using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Repository.Address;
@@ -36,6 +37,9 @@ namespace DotNet_Assignment.Tests.Services.Users
             );
         }
 
+        /// <summary>
+        ///  UpdateAddress Function - Invalid Address Id - Throws Exception
+        /// </summary>
         [Test]
         public async Task UpdateAddress_InvalidId_ThrowsException()
         {
@@ -53,9 +57,14 @@ namespace DotNet_Assignment.Tests.Services.Users
 
             var exception = Assert.CatchAsync<Exception>(action);
 
-            Assert.That(exception.Message, Is.EqualTo("Address not found"));
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.AddressNotFound));
+
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Never);
         }
 
+        /// <summary>
+        ///  UpdateAddress Function - Valid request - Updates Address
+        /// </summary>
         [Test]
         public async Task UpdateUserAddress_ValidRequest_UpdatesAllFields()
         {
@@ -71,7 +80,9 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetAddressByIdAsync(userAddressId, userId))
                 .ReturnsAsync(userAddress);
 
-            await _addressService.UpdateUserAddressAsync(userId, userAddressId, request);
+            Func<Task> action = async() => await _addressService.UpdateUserAddressAsync(userId, userAddressId, request);
+
+            Assert.DoesNotThrowAsync(action);
 
             Assert.That(userAddress.HouseNumber, Is.EqualTo(request.HouseNumber));
             Assert.That(userAddress.Street, Is.EqualTo(request.Street));
@@ -79,8 +90,13 @@ namespace DotNet_Assignment.Tests.Services.Users
             Assert.That(userAddress.City, Is.EqualTo(request.City));
             Assert.That(userAddress.State, Is.EqualTo(request.State));
             Assert.That(userAddress.Pincode, Is.EqualTo(request.Pincode));
+
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
 
+        /// <summary>
+        ///  UpdateAddress Function - Empty House Number - Does Not Update it and updates everything else
+        /// </summary>
         [Test]
         public async Task UpdateUserAddress_EmptyHouseNumber_DoesNotUpdate()
         {
@@ -99,11 +115,18 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetAddressByIdAsync(userAddressId, userId))
                 .ReturnsAsync(userAddress);
 
-            await _addressService.UpdateUserAddressAsync(userId, userAddressId, request);
+            Func<Task> action = async () => await _addressService.UpdateUserAddressAsync(userId, userAddressId, request);
+
+            Assert.DoesNotThrowAsync(action);
 
             Assert.That(userAddress.HouseNumber, Is.EqualTo(original));
+
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
 
+        /// <summary>
+        ///  UpdateAddress Function - Empty Street - Does Not Update it and updates everything else
+        /// </summary>
         [Test]
         public async Task UpdateUserAddress_EmptyStreet_DoesNotUpdate()
         {
@@ -123,11 +146,18 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetAddressByIdAsync(userAddressId, userId))
                 .ReturnsAsync(userAddress);
 
-            await _addressService.UpdateUserAddressAsync(userId, userAddressId, request);
-
+            Func<Task> action = async () => await _addressService.UpdateUserAddressAsync(userId, userAddressId, request);
+            
+            Assert.DoesNotThrowAsync(action);
+            
             Assert.That(userAddress.Street, Is.EqualTo(original));
+
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
 
+        /// <summary>
+        ///  UpdateAddress Function - Empty Landmark - Does Not Update it and updates everything else
+        /// </summary>
         [Test]
         public async Task UpdateUserAddress_EmptyLandmark_DoesNotUpdate()
         {
@@ -147,11 +177,18 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetAddressByIdAsync(userAddressId, userId))
                 .ReturnsAsync(userAddress);
 
-            await _addressService.UpdateUserAddressAsync(userId, userAddressId, request);
+            Func<Task> action = async () => await _addressService.UpdateUserAddressAsync(userId, userAddressId, request);
+
+            Assert.DoesNotThrowAsync(action);
 
             Assert.That(userAddress.Landmark, Is.EqualTo(original));
+
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
 
+        /// <summary>
+        ///  UpdateAddress Function - Empty City - Does Not Update it and updates everything else
+        /// </summary>
         [Test]
         public async Task UpdateUserAddress_EmptyCity_DoesNotUpdate()
         {
@@ -171,11 +208,18 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetAddressByIdAsync(userAddressId, userId))
                 .ReturnsAsync(userAddress);
 
-            await _addressService.UpdateUserAddressAsync(userId, userAddressId, request);
+            Func<Task> action = async () => await _addressService.UpdateUserAddressAsync(userId, userAddressId, request);
+
+            Assert.DoesNotThrowAsync(action);
 
             Assert.That(userAddress.City, Is.EqualTo(original));
+
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
 
+        /// <summary>
+        ///  UpdateAddress Function - Empty State - Does Not Update it and updates everything else
+        /// </summary>
         [Test]
         public async Task UpdateUserAddress_EmptyState_DoesNotUpdate()
         {
@@ -195,11 +239,18 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetAddressByIdAsync(userAddressId, userId))
                 .ReturnsAsync(userAddress);
 
-            await _addressService.UpdateUserAddressAsync(userId, userAddressId, request);
+            Func<Task> action = async () => await _addressService.UpdateUserAddressAsync(userId, userAddressId, request);
+
+            Assert.DoesNotThrowAsync(action);
 
             Assert.That(userAddress.State, Is.EqualTo(original));
+
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
 
+        /// <summary>
+        ///  UpdateAddress Function - Empty Pincode - Does Not Update it and updates everything else
+        /// </summary>
         [Test]
         public async Task UpdateUserAddress_EmptyPincode_DoesNotUpdate()
         {
@@ -219,11 +270,18 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetAddressByIdAsync(userAddressId, userId))
                 .ReturnsAsync(userAddress);
 
-            await _addressService.UpdateUserAddressAsync(userId, userAddressId, request);
+            Func<Task> action = async () => await _addressService.UpdateUserAddressAsync(userId, userAddressId, request);
+
+            Assert.DoesNotThrowAsync(action);
 
             Assert.That(userAddress.Pincode, Is.EqualTo(original));
+
+            _appDbContext.Verify( x => x.SaveChangesAsync(),Times.Once);
         }
 
+        /// <summary>
+        ///  UpdateAddress Function - Valid Request - Saves Address
+        /// </summary>
         [Test]
         public async Task UpdateUserAddress_ValidRequest_SavesChanges()
         {
@@ -239,7 +297,9 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetAddressByIdAsync(userAddressId, userId))
                 .ReturnsAsync(userAddress);
 
-            await _addressService.UpdateUserAddressAsync(userId, userAddressId, request);
+            Func<Task> action = async () => await _addressService.UpdateUserAddressAsync(userId, userAddressId, request);
+
+            Assert.DoesNotThrowAsync(action);
 
             _appDbContext.Verify(
                 x => x.SaveChangesAsync(),

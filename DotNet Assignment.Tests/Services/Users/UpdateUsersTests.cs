@@ -1,5 +1,6 @@
 ﻿
 
+using DotNet_Assignment.Constants;
 using DotNet_Assignment.Data;
 using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Repository.RefreshTokens;
@@ -35,6 +36,9 @@ namespace DotNet_Assignment.Tests.Services.Users
             );
         }
 
+        /// <summary>
+        /// UpdateUser function - invalid user id - throws exception
+        /// </summary>
         [Test]
         public async Task UpdateUser_InvalidId_ThrowsException()
         {
@@ -46,13 +50,17 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x=> x.GetUserByIdAsync(userId))
                 .ReturnsAsync((User)null);
 
-            Func<Task> action =() => _userService.UpdateUserAsync(userId, requestDto);
+            Func<Task> Action =() => _userService.UpdateUserAsync(userId, requestDto);
 
-            var exception = Assert.CatchAsync<Exception>(action);
+            var exception = Assert.CatchAsync<Exception>(Action);
 
-            Assert.That(exception.Message, Is.EqualTo("User not found"));
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.UserNotFound));
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Never);
         }
 
+        /// <summary>
+        /// UpdateUser function - valid name - updates name
+        /// </summary>
         [Test]
         public async Task UpdateUser_ValidName_UpdatesName()
         {
@@ -71,8 +79,12 @@ namespace DotNet_Assignment.Tests.Services.Users
             await _userService.UpdateUserAsync(userId, requestDto)  ;
 
             Assert.That(user.Name, Is.EqualTo(requestDto.Name));
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
 
+        /// <summary>
+        /// UpdateUser function - valid phone number - updates phone number
+        /// </summary>
         [Test]
         public async Task UpdateUser_ValidPhoneNumber_UpdatesPhoneNumber()
         {
@@ -88,11 +100,16 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            await _userService.UpdateUserAsync(userId, requestDto);
+            Func<Task> Action = async() => await _userService.UpdateUserAsync(userId, requestDto);
 
+            Assert.DoesNotThrowAsync(Action);
             Assert.That(user.PhoneNumber, Is.EqualTo(requestDto.PhoneNumber));
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
 
+        /// <summary>
+        /// UpdateUser function - both fields valid - updates both
+        /// </summary>
         [Test]
         public async Task UpdateUser_ValidNameAndPhoneNumber_UpdatesBothFields()
         {
@@ -106,13 +123,19 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            await _userService.UpdateUserAsync(userId, requestDto);
+            Func<Task> Action = async () => await _userService.UpdateUserAsync(userId, requestDto);
+
+            Assert.DoesNotThrowAsync(Action);
 
             Assert.That(user.Name, Is.EqualTo(requestDto.Name));
 
             Assert.That(user.PhoneNumber, Is.EqualTo(requestDto.PhoneNumber));
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
 
+        /// <summary>
+        /// UpdateUser function - null name - does not update name
+        /// </summary>
         [Test]
         public async Task UpdateUser_NullName_DoesNotUpdateName()
         {
@@ -130,11 +153,17 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            await _userService.UpdateUserAsync(userId, requestDto);
+            Func<Task> Action = async () => await _userService.UpdateUserAsync(userId, requestDto);
+
+            Assert.DoesNotThrowAsync(Action);
 
             Assert.That(user.Name, Is.EqualTo(originalName));
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
 
+        /// <summary>
+        /// UpdateUser function - null phone number - does not update phone number
+        /// </summary>
         [Test]
         public async Task UpdateUser_NullPhoneNumber_DoesNotUpdatePhoneNumber()
         {
@@ -151,11 +180,17 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            await _userService.UpdateUserAsync(userId, requestDto);
+            Func<Task> Action = async () => await _userService.UpdateUserAsync(userId, requestDto);
+
+            Assert.DoesNotThrowAsync(Action);
 
             Assert.That(user.PhoneNumber, Is.EqualTo(originalPhone));
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
 
+        /// <summary>
+        /// UpdateUser function - Valid request - saves changes
+        /// </summary>
         [Test]
         public async Task UpdateUser_ValidRequest_SavesChanges()
         {

@@ -1,9 +1,11 @@
-﻿using DotNet_Assignment.Data;
+﻿using DotNet_Assignment.Constants;
+using DotNet_Assignment.Data;
 using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Repository.RefreshTokens;
 using DotNet_Assignment.Repository.Users;
 using DotNet_Assignment.Services.Auth;
 using DotNet_Assignment.Services.JWT;
+using DotNet_Assignment.Tests.Constants;
 using DotNet_Assignment.Utils;
 using Moq;
 using NUnit.Framework;
@@ -38,11 +40,14 @@ namespace DotNet_Assignment.Tests.Services.Auth
             );
         }
 
+        /// <summary>
+        /// RefreshAccessToken - Invalid Refresh Token - throws exception
+        /// </summary>
         [Test]
         public async Task RefreshAccessToken_InvalidRefreshToken_ThrowsException()
         {
-            var refreshToken = "RefreshToken";
-            var hashedToken = "HashedRefreshToken";
+            var refreshToken = MockConstants.MockRefreshToken;
+            var hashedToken = MockConstants.MockHashedRefreshToken;
 
             _refreshTokenRepository
                 .Setup(x => x.HashRefreshToken(refreshToken))
@@ -52,18 +57,21 @@ namespace DotNet_Assignment.Tests.Services.Auth
                 .Setup(x => x.GetRefreshTokenAsync(hashedToken))
                 .ReturnsAsync((RefreshToken)null);
 
-            Func<Task> action = async () => await _authService.RefreshAccessTokenAsync(refreshToken);
+            Func<Task> Action = async () => await _authService.RefreshAccessTokenAsync(refreshToken);
 
-            var exception = Assert.CatchAsync<Exception>(action);
+            var exception = Assert.CatchAsync<Exception>(Action);
 
-            Assert.That(exception.Message, Is.EqualTo("Refresh token invalid"));
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.RefreshTokenInvalid));
         }
 
+        /// <summary>
+        /// RefreshAccessToken - Expired Refresh Token - throws exception
+        /// </summary>
         [Test]
         public async Task RefreshAccessToken_ExpiredRefreshToken_ThrowsException()
         {
-            var refreshToken = "RefreshToken";
-            var hashedToken = "HashedRefreshToken";
+            var refreshToken = MockConstants.MockRefreshToken;
+            var hashedToken = MockConstants.MockHashedRefreshToken;
 
             _refreshTokenRepository
                 .Setup(x => x.HashRefreshToken(refreshToken))
@@ -80,18 +88,21 @@ namespace DotNet_Assignment.Tests.Services.Auth
                 .Setup(x => x.GetRefreshTokenAsync(hashedToken))
                 .ReturnsAsync(token);
 
-            Func<Task> action = async () => await _authService.RefreshAccessTokenAsync(refreshToken);
+            Func<Task> Action = async () => await _authService.RefreshAccessTokenAsync(refreshToken);
 
-            var Exception = Assert.CatchAsync<Exception>(action);
+            var exception = Assert.CatchAsync(Action);
 
-            Assert.That(Exception.Message, Is.EqualTo("Refresh token Expired"));
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.RefreshTokenExpired));
         }
 
+        /// <summary>
+        /// RefreshAccessToken - User Deactivated - throws exception
+        /// </summary>
         [Test]
         public async Task RefreshAccessToken_DeactivatedUser_ThrowsException()
         {
-            var refreshToken = "RefreshToken";
-            var hashedToken = "HashedRefreshToken";
+            var refreshToken = MockConstants.MockRefreshToken;
+            var hashedToken = MockConstants.MockHashedRefreshToken;
 
             _refreshTokenRepository
                 .Setup(x => x.HashRefreshToken(refreshToken))
@@ -115,14 +126,18 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             var exception = Assert.CatchAsync<Exception>(action);
 
-            Assert.That(exception.Message, Is.EqualTo("User is deactivated"));
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.UserDeactivated));
         }
 
+
+        /// <summary>
+        /// RefreshAccessToken - Valid Refresh Token - returns new access token
+        /// </summary>
         [Test]
         public async Task RefreshAccessToken_ValidToken_ReturnsNewAccessToken()
         {
-            var refreshToken = "RefreshToken";
-            var hashedToken = "HashedRefreshToken";
+            var refreshToken = MockConstants.MockRefreshToken;
+            var hashedToken = MockConstants.MockHashedRefreshToken;
 
             _refreshTokenRepository
                 .Setup(x => x.HashRefreshToken(refreshToken))
@@ -147,19 +162,27 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             _jWTService
                 .Setup(x => x.GetAccessToken(user))
-                .Returns("NewAccessToken");
+                .Returns(MockConstants.MockNewAccessToken);
+
+            Func<Task> Action = async () => await _authService.RefreshAccessTokenAsync(refreshToken);
+
+            Assert.DoesNotThrowAsync(Action);
 
             var response = await _authService.RefreshAccessTokenAsync(refreshToken);
 
-            Assert.That(response.AccessToken, Is.EqualTo("NewAccessToken"));
+            Assert.That(response.AccessToken, Is.EqualTo(MockConstants.MockNewAccessToken));
             Assert.That(response.RefreshToken, Is.EqualTo(refreshToken));
         }
 
+
+        /// <summary>
+        /// RefreshAccessToken - Valid Refresh Token - Generates New access token
+        /// </summary>
         [Test]
         public async Task RefreshAccessToken_GeneratesNewAccessToken()
         {
-            var refreshToken = "RefreshToken";
-            var hashedToken = "HashedRefreshToken";
+            var refreshToken = MockConstants.MockRefreshToken;
+            var hashedToken = MockConstants.MockHashedRefreshToken;
 
             _refreshTokenRepository
                 .Setup(x => x.HashRefreshToken(refreshToken))
@@ -184,9 +207,11 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             _jWTService
                 .Setup(x => x.GetAccessToken(user))
-                .Returns("NewAccessToken");
+                .Returns(MockConstants.MockNewAccessToken);
 
-            await _authService.RefreshAccessTokenAsync(refreshToken);
+            Func<Task> Action = async () => await _authService.RefreshAccessTokenAsync(refreshToken);
+
+            Assert.DoesNotThrowAsync(Action);
 
             _jWTService.Verify(
                 x => x.GetAccessToken(user),

@@ -11,8 +11,4 @@ packages/
 *.sln.docstates
 
 ConnectionString.config
-<<<<<<< HEAD
 Secrets.config
-=======
-Secrets.config
->>>>>>> c798eef ([OH_DA_02]Login API Implemented)

@@ -11,6 +11,8 @@ using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Utils;
 using DotNet_Assignment.Data;
 using System.Threading.Tasks;
+using DotNet_Assignment.Constants;
+using DotNet_Assignment.Tests.Constants;
 
 namespace DotNet_Assignment.Tests.Services.Auth
 {
@@ -19,7 +21,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
     {
 
         private Mock<IUserRepository> _userRepository;
-        private Mock<IJWTService> _jWTService;
+        private JWTService _jWTService;
         private Mock<IRefreshTokenRepository> _refreshTokenRepository;
         private Mock<AppDbContext> _appDbContext;
         private AuthService _authService;
@@ -28,18 +30,21 @@ namespace DotNet_Assignment.Tests.Services.Auth
         public void Setup()
         {
             _userRepository = new Mock<IUserRepository>();
-            _jWTService = new Mock<IJWTService>();
+            _jWTService = new JWTService();
             _refreshTokenRepository = new Mock<IRefreshTokenRepository>();
             _appDbContext = new Mock<AppDbContext>();
 
             _authService = new AuthService(
                 _userRepository.Object,
-                _jWTService.Object,
+                _jWTService,
                 _refreshTokenRepository.Object,
                 _appDbContext.Object
             );
         }
 
+        /// <summary>
+        /// Login Function - User Does not exist - throws Exception
+        /// </summary>
         [Test]
         public async Task Login_UserDoesNotExist_ThrowsInvalidCredentialsException()
         {
@@ -53,9 +58,14 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             var exception = Assert.CatchAsync<Exception>(action);
 
-            Assert.That(exception.Message, Is.EqualTo("Invalid credentials"));
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.InvalidCredentials));
+
+            _appDbContext.Verify( x=> x.SaveChanges(), Times.Never);
         }
 
+        /// <summary>
+        /// Login Function - User Deactivated - throws Exception
+        /// </summary>
         [Test]
         public async Task Login_UserIsDeactivated_ThrowsUserDeactivatedException()
         {
@@ -64,7 +74,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
             var user = new User
             {
                 Email = request.Email,
-                Password = "HashedPassword",
+                Password = MockConstants.MockHashedPassword,
                 IsDeleted = true
             };
 
@@ -76,9 +86,14 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             var exception = Assert.CatchAsync<Exception>(action);
 
-            Assert.That(exception.Message, Is.EqualTo("User is deactivated"));
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.UserDeactivated));
+
+            _appDbContext.Verify( x=> x.SaveChanges(), Times.Never);
         }
 
+        /// <summary>
+        /// Login Function - Invalid Password - throws Exception
+        /// </summary>
         [Test]
         public async Task Login_InvalidPassword_ThrowsInvalidCredentialsException()
         {
@@ -87,7 +102,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
             var user = new User
             {
                 Email = request.Email,
-                Password = Hasher.Hash("Password"),    
+                Password = Hasher.Hash(Constants.MockConstants.MockPassword),    
                 IsDeleted = false
             };
 
@@ -99,9 +114,14 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             var exception = Assert.CatchAsync<Exception>(action);
 
-            Assert.That(exception.Message, Is.EqualTo("Invalid credentials"));
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.InvalidCredentials));
+
+            _appDbContext.Verify(x => x.SaveChanges(), Times.Never);
         }
 
+        /// <summary>
+        /// Login Function - Valid Credentials - Returns JWT response - Access and refresh token
+        /// </summary>
         [Test]
         public async Task Login_ValidCredentials_ReturnsAccessAndRefreshTokens()
         {
@@ -111,10 +131,15 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             var response = await _authService.LoginAsync(request);
 
-            Assert.That(response.AccessToken, Is.EqualTo("AccessToken"));
-            Assert.That(response.RefreshToken, Is.EqualTo("RefreshToken"));
+            Func<Task> action = async () => await _authService.LoginAsync(request);
+
+            Assert.DoesNotThrowAsync(action);
         }
 
+
+        /// <summary>
+        /// Login Function -Valid Credentials - Password verified
+        /// </summary>
         [Test]
         public async Task Login_ValidCredentials_VerifiesPassword()
         {
@@ -122,39 +147,38 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             var User = ValidLoginHelper(request);
 
-            await _authService.LoginAsync(request);
+            Func<Task> action = async () => await _authService.LoginAsync(request);
+
+            Assert.DoesNotThrowAsync(action);
 
             Hasher.Verify(request.Password, User.Password);
+
+            _appDbContext.Verify(x => x.SaveChanges(), Times.Once);
         }
 
+        /// <summary>
+        /// Login Function - Valid Credentials - Generates Access and refresh token
+        /// </summary>
         [Test]
-        public async Task Login_ValidCredentials_GeneratesAccessToken()
+        public async Task Login_ValidCredentials_GenerateTokens()
         {
-            
             var request = AuthTestUtil.CreateMockLoginRequestDto();
 
             ValidLoginHelper(request);
 
-            _authService.LoginAsync(request);
+            JWTResponseDto response = null;
+            Func<Task> action = async () => response = await _authService.LoginAsync(request);
 
-            _jWTService.Verify(
-                x => x.GetAccessToken(It.IsAny<User>()),
-                Times.Once);
+            Assert.DoesNotThrowAsync(action);
+            Assert.That(response.AccessToken, Is.Not.Null);
+            Assert.That(response.RefreshToken, Is.Not.Null);
+
+            _appDbContext.Verify(x => x.SaveChanges(), Times.Once);
         }
-        [Test]
-        public async Task Login_ValidCredentials_GeneratesRefreshToken()
-        {
-            
-            var request = AuthTestUtil.CreateMockLoginRequestDto();
 
-            ValidLoginHelper(request);
-
-            _authService.LoginAsync(request);
-
-            _jWTService.Verify(
-                x => x.GenerateRefreshToken(),
-                Times.Once);
-        }
+        /// <summary>
+        /// Login Function - Valid Credentials - Adds refresh token
+        /// </summary>
         [Test]
         public async Task Login_ValidCredentials_AddsRefreshToken()
         {
@@ -163,12 +187,19 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             ValidLoginHelper(request);
 
-            _authService.LoginAsync(request);
+            Func<Task> action = async () => await _authService.LoginAsync(request);
+
+            Assert.DoesNotThrowAsync(action);
 
             _refreshTokenRepository.Verify(
                 x => x.AddRefreshToken(It.IsAny<RefreshToken>()),
                 Times.Once);
+            _appDbContext.Verify(x => x.SaveChanges(), Times.Once);
         }
+
+        /// <summary>
+        /// Login Function - Valid Credentials - Saves refresh token
+        /// </summary>
         [Test]
         public async Task Login_ValidCredentials_SavesRefreshToken()
         {
@@ -177,13 +208,19 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             ValidLoginHelper(request);
 
-            _authService.LoginAsync(request);
+            Func<Task> action = async () => await _authService.LoginAsync(request);
 
+            Assert.DoesNotThrowAsync(action);
             _appDbContext.Verify(
                 x => x.SaveChanges(),
                 Times.Once);
         }
 
+        /// <summary>
+        /// Login Helper- mocking login flow
+        /// </summary>
+        /// <param name="RequestDto">Login request details</param>
+        /// <returns>user</returns>
         private User ValidLoginHelper(LoginRequestDto RequestDto)
         {
             var user = new User
@@ -198,14 +235,10 @@ namespace DotNet_Assignment.Tests.Services.Auth
                 .Setup(x => x.GetUserByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(user);
 
-            _jWTService
-                .Setup(x => x.GetAccessToken(It.IsAny<User>()))
-                .Returns("AccessToken");
+            _jWTService.GetAccessToken(user);
 
-            _jWTService
-                .Setup(x => x.GenerateRefreshToken())
-                .Returns("RefreshToken");
-
+            _jWTService.GenerateRefreshToken();
+                
             return user;
         }
     }

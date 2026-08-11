@@ -1,12 +1,13 @@
-﻿using DotNet_Assignment.Repository.RefreshTokens;
+﻿using DotNet_Assignment.Constants;
+using DotNet_Assignment.Data;
+using DotNet_Assignment.Models.Entities;
+using DotNet_Assignment.Repository.RefreshTokens;
 using DotNet_Assignment.Repository.Users;
 using DotNet_Assignment.Services.Users;
 using DotNet_Assignment.Tests.Utils;
-using DotNet_Assignment.Models.Entities;
 using Moq;
 using NUnit.Framework;
 using System;
-using DotNet_Assignment.Data;
 using System.Threading.Tasks;
 
 namespace DotNet_Assignment.Tests.Services.Users
@@ -33,24 +34,30 @@ namespace DotNet_Assignment.Tests.Services.Users
             );
         }
 
+        /// <summary>
+        /// DeactivateUser Function - Invalid User Id - throws exception
+        /// </summary>
         [Test]
         public void DeactivateUser_InvalidId_ThrowsException()
         {
-            var requestDto = UserTestUtil.CreateMockUpdateUserDto();
-
-            var UserId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
 
             _userRepository
-                .Setup(x => x.GetUserByIdAsync(UserId))
+                .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync((User)null);
 
-            Func<Task> action = () => _userService.UpdateUserAsync(UserId, requestDto);
+            Func<Task> Action = async() => await _userService.DeactivateUserAsync(userId);
 
-            var Exception = Assert.CatchAsync<Exception>(action);
+            var exception = Assert.CatchAsync<Exception>(Action);
 
-            Assert.That(Exception.Message, Is.EqualTo("User not found"));
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.UserNotFound));
+
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Never);
         }
 
+        /// <summary>
+        /// DeactivateUser Function - Valid User Id - user marked deleted
+        /// </summary>
         [Test]
         public void DeactivateUser_ValidUser_MarksUserDeleted()
         {
@@ -62,11 +69,17 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            _userService.DeactivateUserAsync(userId);
+            Func<Task> Action = async () =>await _userService.DeactivateUserAsync(userId);
+
+            Assert.DoesNotThrowAsync(Action);
 
             Assert.That(user.IsDeleted, Is.True);
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
 
+        /// <summary>
+        /// DeactivateUser Function - Valid User Id - deletes all refresh tokens
+        /// </summary>
         [Test]
         public void DeactivateUser_DeletesRefreshTokens()
         {
@@ -78,13 +91,20 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            _userService.DeactivateUserAsync(userId);
+            Func<Task> Action = async () => await _userService.DeactivateUserAsync(userId);
+
+            Assert.DoesNotThrowAsync(Action);
 
             _refreshTokenRepository.Verify(
                 x => x.DeleteTokensByUserId(userId),
                 Times.Once);
+
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
 
+        /// <summary>
+        /// DeactivateUser Function - Valid User Id - saves changes
+        /// </summary>
         [Test]
         public void DeactivateUser_SavesChanges()
         {
@@ -96,11 +116,15 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            _userService.DeactivateUserAsync(userId);
+            Func<Task> Action = async () => await _userService.DeactivateUserAsync(userId);
+
+            Assert.DoesNotThrowAsync(Action);
 
             _appDbContext.Verify(
                 x => x.SaveChangesAsync(),
                 Times.Once);
+
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
     }
 }

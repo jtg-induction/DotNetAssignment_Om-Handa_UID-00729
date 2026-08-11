@@ -56,18 +56,18 @@ namespace DotNet_Assignment.Services.Auth
 
             _userRepository.AddUser(user);
 
-            string AccessToken = _jWTService.GetAccessToken(user);
+            string accessToken = _jWTService.GetAccessToken(user);
 
-            string RefreshToken = _jWTService.GenerateRefreshToken();
+            string refreshToken = _jWTService.GenerateRefreshToken();
 
-            if(RefreshToken == null)
+            if(refreshToken == null)
             {
                 throw new Exception(ExceptionMessages.RefreshTokenNotGenerated);
             }
 
             var refresh = new RefreshToken()
             {
-                Token = Hasher.Hash(RefreshToken),
+                Token = Hasher.Hash(refreshToken),
                 UserId = user.UserId,
             };
 
@@ -77,8 +77,8 @@ namespace DotNet_Assignment.Services.Auth
 
             return new JWTResponseDto
             {
-                AccessToken= AccessToken,
-                RefreshToken= RefreshToken,
+                AccessToken= accessToken,
+                RefreshToken= refreshToken,
             };
         }
 
@@ -105,12 +105,12 @@ namespace DotNet_Assignment.Services.Auth
                 throw new Exception(ExceptionMessages.InvalidCredentials);
             }
 
-            string AccessToken = _jWTService.GetAccessToken(user);
-            string RefreshToken = _jWTService.GenerateRefreshToken();
+            string accessToken = _jWTService.GetAccessToken(user);
+            string refreshToken = _jWTService.GenerateRefreshToken();
 
             var refresh = new RefreshToken()
             {
-                Token = _refreshTokenRepository.HashRefreshToken(RefreshToken),
+                Token = _refreshTokenRepository.HashRefreshToken(refreshToken),
                 UserId = user.UserId
             };
 
@@ -120,8 +120,8 @@ namespace DotNet_Assignment.Services.Auth
 
             return new JWTResponseDto
             {
-                AccessToken = AccessToken,
-                RefreshToken = RefreshToken,
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
             };
         }
 

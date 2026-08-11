@@ -15,6 +15,9 @@ namespace DotNet_Assignment.Tests.Services.JWT
             _jWTService = new JWTService();
         }
 
+        /// <summary>
+        /// GetAccessToken function - returns new access token
+        /// </summary>
         [Test]
         public void GetAccessToken_ReturnsToken()
         {
@@ -26,6 +29,9 @@ namespace DotNet_Assignment.Tests.Services.JWT
             Assert.That(token, Is.Not.Empty);
         }
 
+        /// <summary>
+        /// GenerateRefreshToken function - returns new refresh token
+        /// </summary>
         [Test]
         public void GenerateRefreshToken_ReturnsToken()
         {
@@ -35,6 +41,9 @@ namespace DotNet_Assignment.Tests.Services.JWT
             Assert.That(token, Is.Not.Empty);
         }
 
+        /// <summary>
+        /// GenerateRefreshToken function - validates refresh tokens are unique
+        /// </summary>
         [Test]
         public void GenerateRefreshToken_ReturnsUniqueToken()
         {

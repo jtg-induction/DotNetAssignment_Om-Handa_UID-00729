@@ -251,6 +251,7 @@
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="App_Start\UnityConfig.cs" />
+    <Compile Include="Constants\Regex.cs" />
     <Compile Include="Controllers\AddressController.cs" />
     <Compile Include="Controllers\MenuItemController.cs" />
     <Compile Include="Controllers\RestaurantController.cs" />

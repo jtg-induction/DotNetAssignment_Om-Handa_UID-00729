@@ -18,8 +18,12 @@ namespace DotNet_Assignment.Tests.Repository
     [TestFixture]
     public class AddressRepositoryTests
     {
+        /// <summary>
+        /// GetAddressByIdAsync Function - Address Found - Returns address successfully
+        /// </summary>
+        /// <returns>User Address</returns>
         [Test]
-        public async Task GetAddressByIdAsync_ReturnsAddress()
+        public async Task GetAddressByIdAsync_AddressFound_ReturnsAddress()
         {
             var requestAddressId = Guid.NewGuid();
             var requestUserId = Guid.NewGuid();
@@ -49,8 +53,12 @@ namespace DotNet_Assignment.Tests.Repository
             Assert.That(result, Is.Not.Null);
         }
 
+        /// <summary>
+        /// GetAddressByIdAsync Function - Address not found - returns Null
+        /// </summary>
+        /// <returns>null</returns>
         [Test]
-        public async Task GetAddressByIdAsync_ReturnsNull()
+        public async Task GetAddressByIdAsync_AddressNotFound_ReturnsNull()
         {
             var requestAddressId = Guid.NewGuid();
             var requestUserId = Guid.NewGuid();
@@ -80,8 +88,11 @@ namespace DotNet_Assignment.Tests.Repository
             Assert.That(result, Is.Null);
         }
 
+        /// <summary>
+        /// AddAddress Function - Adds address successfully
+        /// </summary>
         [Test]
-        public async Task AddAddress_AddsAddressCorrectly()
+        public async Task AddAddress_AddsAddressSuccessfully()
         {
             var mockSet = new Mock<DbSet<UserAddress>>();
             var mockContext = new Mock<AppDbContext>();

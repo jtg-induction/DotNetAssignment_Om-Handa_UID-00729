@@ -1,4 +1,5 @@
-﻿using DotNet_Assignment.Controllers;
+﻿using DotNet_Assignment.Constants;
+using DotNet_Assignment.Controllers;
 using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Services.Auth;
 using DotNet_Assignment.Services.Users;
@@ -28,6 +29,9 @@ namespace DotNet_Assignment.Tests.Controllers.Users
             _userController = new UserController(_userService.Object);
         }
 
+        /// <summary>
+        /// UpdateUser Action - Sent valid request - updates user and returns success
+        /// </summary>
         [Test]
         public async Task UpdateUser_ValidRequest_ReturnsSuccess()
         {
@@ -43,11 +47,14 @@ namespace DotNet_Assignment.Tests.Controllers.Users
 
             Assert.That(okResult, Is.Not.Null);
             Assert.That(okResult.Content.IsSuccess, Is.True);
-            Assert.That(okResult.Content.Message, Is.EqualTo("Profile updated"));
+            Assert.That(okResult.Content.Message, Is.EqualTo(SuccessMessages.ProfileUpdated));
 
             _userService.Verify(x => x.UpdateUserAsync(userId, dto), Times.Once);
         }
 
+        /// <summary>
+        /// UpdateUser Action - Service throws exception - returns exception
+        /// </summary>
         [Test]
         public async Task UpdateUser_ServiceThrows_ReturnsFailure()
         {
@@ -58,15 +65,18 @@ namespace DotNet_Assignment.Tests.Controllers.Users
             var dto = UserTestUtil.CreateMockUpdateUserDto();
 
             _userService.Setup(x => x.UpdateUserAsync(userId, dto))
-                        .ThrowsAsync(new Exception("User Not Found"));
+                        .ThrowsAsync(new Exception(ExceptionMessages.UserNotFound));
 
             Func<Task> Action = async () => await _userController.UpdateUserAsync(dto);
 
             var exception = Assert.CatchAsync<Exception>(Action);
 
-            Assert.That(exception.Message, Is.EqualTo("User Not Found"));
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.UserNotFound));
         }
 
+        /// <summary>
+        /// DeactivateUser Action - Sent valid request - Deactivates user and returns success
+        /// </summary>
         [Test]
         public async Task DeactivateUser_ValidRequest_ReturnsSuccess()
         {
@@ -80,11 +90,14 @@ namespace DotNet_Assignment.Tests.Controllers.Users
 
             Assert.That(okResult, Is.Not.Null);
             Assert.That(okResult.Content.IsSuccess, Is.True);
-            Assert.That(okResult.Content.Message, Is.EqualTo("User deactivated"));
+            Assert.That(okResult.Content.Message, Is.EqualTo(SuccessMessages.UserDeactivated));
 
             _userService.Verify(x => x.DeactivateUserAsync(userId), Times.Once);
         }
 
+        /// <summary>
+        /// DeactivateUser Action - Service throws exception - returns exception
+        /// </summary>
         [Test]
         public async Task DeactivateUser_ServiceThrows_ReturnsFailure()
         {
@@ -93,15 +106,19 @@ namespace DotNet_Assignment.Tests.Controllers.Users
             SetUser(userId);
 
             _userService.Setup(x => x.DeactivateUserAsync(userId))
-                        .ThrowsAsync(new Exception("User Not Found"));
+                        .ThrowsAsync(new Exception(ExceptionMessages.UserNotFound));
 
             Func<Task> Action = async()=> await _userController.DeactivateUserAsync();
 
             var exception = Assert.CatchAsync<Exception>(Action);
 
-            Assert.That(exception.Message, Is.EqualTo("User Not Found"));
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.UserNotFound));
         }
 
+        /// <summary>
+        /// Mocks User Identity to send with Context
+        /// </summary>
+        /// <param name="userId"></param>
         private void SetUser(Guid userId)
         {
             var identity = new ClaimsIdentity(new[]

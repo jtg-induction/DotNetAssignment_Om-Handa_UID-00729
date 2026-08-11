@@ -9,6 +9,10 @@ namespace DotNet_Assignment.Tests.Utils
 {
     public static class UserTestUtil
     {
+        /// <summary>
+        /// Creates a mock User Update request DTO
+        /// </summary>
+        /// <returns>User Update Request Dto</returns>
         public static UpdateUserDto CreateMockUpdateUserDto()
         {
             return new UpdateUserDto
@@ -18,6 +22,10 @@ namespace DotNet_Assignment.Tests.Utils
             };
         }
 
+        /// <summary>
+        /// Creates a mock user
+        /// </summary>
+        /// <returns>user</returns>
         public static User CreateMockUser()
         {
             return new User
@@ -32,6 +40,10 @@ namespace DotNet_Assignment.Tests.Utils
             };
         }
 
+        /// <summary>
+        /// Creates a mock Address request DTO
+        /// </summary>
+        /// <returns>Address Request Dto</returns>
         public static AddressDto CreateMockAddressDto()
         {
             return new AddressDto
@@ -45,6 +57,10 @@ namespace DotNet_Assignment.Tests.Utils
             };
         }
 
+        /// <summary>
+        /// Creates a mock user address
+        /// </summary>
+        /// <returns>user address</returns>
         public static UserAddress CreateMockAddress()
         {
             var user = CreateMockUser();
