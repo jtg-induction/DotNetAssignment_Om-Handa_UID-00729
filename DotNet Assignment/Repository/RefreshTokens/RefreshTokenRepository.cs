@@ -35,7 +35,6 @@ namespace DotNet_Assignment.Repository.RefreshTokens
         /// <param name="refreshToken">Refresh Token details(token string, id, expiration)</param>
         public void AddRefreshToken(RefreshToken refreshToken)
         {
-
             _context.RefreshTokens.Add(refreshToken);
         }
 
