@@ -10,6 +10,9 @@ using DotNet_Assignment.Repository.RefreshTokens;
 using DotNet_Assignment.Services.Users;
 using DotNet_Assignment.Services.Address;
 using DotNet_Assignment.Repository.Address;
+using DotNet_Assignment.Services.Restaurants;
+using DotNet_Assignment.Repository.Restaurants;
+using DotNet_Assignment.Services.Orders;
 
 namespace DotNet_Assignment.App_Start
 {
@@ -28,10 +31,13 @@ namespace DotNet_Assignment.App_Start
             container.RegisterType<IJWTService, JWTService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IUserService, UserService>(new HierarchicalLifetimeManager());
             container.RegisterType<IAddressService, AddressService>(new HierarchicalLifetimeManager());
+            container.RegisterType<IRestaurantService, RestaurantService>(new HierarchicalLifetimeManager());
+            container.RegisterType<IMenuItemService, MenuItemService>(new HierarchicalLifetimeManager());
 
             container.RegisterType<IUserRepository, UserRepository>(new HierarchicalLifetimeManager());
             container.RegisterType<IRefreshTokenRepository, RefreshTokenRepository>(new HierarchicalLifetimeManager());
             container.RegisterType<IAddressRepository, AddressRepository>(new HierarchicalLifetimeManager());
+            container.RegisterType<IRestaurantRepository, RestaurantRepository>(new HierarchicalLifetimeManager());
 
             GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);
 

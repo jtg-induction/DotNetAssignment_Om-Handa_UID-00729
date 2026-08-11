@@ -252,6 +252,8 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="Controllers\AddressController.cs" />
+    <Compile Include="Controllers\MenuItemController.cs" />
+    <Compile Include="Controllers\RestaurantController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Constants\ExceptionMessages.cs" />
     <Compile Include="Constants\SuccessMessages.cs" />
@@ -292,7 +294,9 @@
     <Compile Include="Models\DTO\JWTResponseDto.cs" />
     <Compile Include="Models\DTO\LoginRequestDto.cs" />
     <Compile Include="Models\DTO\LogoutRequestDto.cs" />
+    <Compile Include="Models\DTO\MenuItemResponseDto.cs" />
     <Compile Include="Models\DTO\RefreshTokenDto.cs" />
+    <Compile Include="Models\DTO\RestaurantResponseDto.cs" />
     <Compile Include="Models\DTO\SignupRequestDto.cs" />
     <Compile Include="Models\DTO\UpdateUserDto.cs" />
     <Compile Include="Models\Entities\RefreshToken.cs" />
@@ -310,6 +314,8 @@
     <Compile Include="Repository\Address\IAddressRepository.cs" />
     <Compile Include="Repository\RefreshTokens\IRefreshTokenRepository.cs" />
     <Compile Include="Repository\RefreshTokens\RefreshTokenRepository.cs" />
+    <Compile Include="Repository\Restaurants\IRestaurantRepository.cs" />
+    <Compile Include="Repository\Restaurants\RestaurantRepository.cs" />
     <Compile Include="Repository\Users\IUserRepository.cs" />
     <Compile Include="Repository\Users\UserRepository.cs" />
     <Compile Include="Services\Address\AddressService.cs" />
@@ -319,6 +325,10 @@
     <Compile Include="Services\Auth\IAuthService.cs" />
     <Compile Include="Services\Auth\AuthService.cs" />
     <Compile Include="Controllers\AuthController.cs" />
+    <Compile Include="Services\MenuItem\IMenuItemService.cs" />
+    <Compile Include="Services\MenuItem\MenuItemService.cs" />
+    <Compile Include="Services\Restaurants\IRestaurantService.cs" />
+    <Compile Include="Services\Restaurants\RestaurantService.cs" />
     <Compile Include="Services\Users\IUserService.cs" />
     <Compile Include="Services\Users\UserService.cs" />
     <Compile Include="Startup.cs" />

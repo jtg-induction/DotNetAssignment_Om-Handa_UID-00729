@@ -19,6 +19,6 @@ namespace DotNet_Assignment.Constants
         public const string RefreshTokenExpired = "Refresh token Expired";
         public const string OldPasswordIncorrect = "Old Password is Incorrect";
         public const string OneFieldRequired = "Atleast one field is required";
-
+        public const string RestaurantNotFound = "Restaurant not Found";
     }
 }
