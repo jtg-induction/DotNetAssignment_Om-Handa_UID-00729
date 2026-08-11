@@ -81,7 +81,7 @@ namespace DotNet_Assignment.Services.Users
 
             if (user.IsDeleted)
             {
-                throw new Exception(ExceptionMessages.UserDeactivated);
+                throw new Exception(ExceptionMessages.UserAlreadyDeactivated);
             }
 
             user.IsDeleted = true;

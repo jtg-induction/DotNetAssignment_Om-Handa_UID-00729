@@ -31,17 +31,17 @@ namespace DotNet_Assignment.Controllers
         [Route("update")]
         public async Task<IHttpActionResult> UpdateUserAsync(UpdateUserDto updateUserDto)
         {
-             var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
+            var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
 
-             await _userService.UpdateUserAsync(userId, updateUserDto);
+            await _userService.UpdateUserAsync(userId, updateUserDto);
 
-             var response = new ApiResponseDto<object>()
-             {
-                  IsSuccess = true,
-                  Message = SuccessMessages.ProfileUpdated
-             };
+            var response = new ApiResponseDto<object>()
+            {
+                IsSuccess = true,
+                Message = SuccessMessages.ProfileUpdated
+            };
 
-             return Ok(response);
+            return Ok(response);
         }
 
         /// <summary>
@@ -53,17 +53,17 @@ namespace DotNet_Assignment.Controllers
         [Route("deactivate")]
         public async Task<IHttpActionResult> DeactivateUserAsync()
         {
-                var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
+            var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                await _userService.DeactivateUserAsync(userId);
+            await _userService.DeactivateUserAsync(userId);
 
-                var response = new ApiResponseDto<object>()
-                {
-                    IsSuccess = true,
-                    Message = SuccessMessages.UserDeactivated
-                };
+            var response = new ApiResponseDto<object>()
+            {
+                IsSuccess = true,
+                Message = SuccessMessages.UserDeactivated
+            };
 
-                return Ok(response);
+            return Ok(response);
         }
 
         /// <summary>
