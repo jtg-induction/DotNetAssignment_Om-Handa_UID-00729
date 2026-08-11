@@ -30,6 +30,7 @@ namespace DotNet_Assignment.Models.Entities
         [Required]
         [StringLength(10), MinLength(10)]
         [RegularExpression(Regex.PhoneNumberRegex)]
+        [Index("IX_User_PhoneNumber", IsUnique = true)]
         public string PhoneNumber { get; set; }
 
         [Range(0, int.MaxValue)]
