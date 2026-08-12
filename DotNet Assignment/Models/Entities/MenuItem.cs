@@ -26,6 +26,10 @@ namespace DotNet_Assignment.Models.Entities
         [Range (0, int.MaxValue)]
         public decimal Price { get; set; }
 
+        [Required]
+        [Range(0, int.MaxValue)]
+        public int QuantityAvailable { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

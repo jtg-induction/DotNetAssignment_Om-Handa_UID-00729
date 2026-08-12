@@ -51,6 +51,7 @@ namespace DotNet_Assignment.Controllers
         /// </summary>
         /// <param name="requestDto">Refresh Token to be removed</param>
         /// <returns>Http status code with ApiResponseDto including success message</returns>
+        [Authorize]
         [HttpPost]
         [Route("logout")]
         public async Task<IHttpActionResult> LogoutAsync(LogoutRequestDto requestDto)

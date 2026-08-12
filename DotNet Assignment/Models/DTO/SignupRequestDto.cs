@@ -22,6 +22,5 @@ namespace DotNet_Assignment.Models.DTO
         [StringLength(10)]
         public string PhoneNumber { get; set; }
 
-        public UserRoles Role { get; set; }
     }
 }

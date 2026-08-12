@@ -50,7 +50,6 @@ namespace DotNet_Assignment.Services.Auth
                 Password = Hasher.Hash(requestDto.Password),
                 Name = requestDto.Name,
                 PhoneNumber = requestDto.PhoneNumber,
-                Role = requestDto.Role,
                 IsDeleted = false,
             };
 
@@ -132,7 +131,8 @@ namespace DotNet_Assignment.Services.Auth
         /// <exception cref="Exception">If refresh token is null</exception>
         public async Task LogoutAsync(LogoutRequestDto logoutRequest)
         {
-            var refreshToken = await _refreshTokenRepository.GetRefreshTokenAsync(logoutRequest.RefreshToken);
+            var hashedRefreshedToken = _refreshTokenRepository.HashRefreshToken(logoutRequest.RefreshToken);
+            var refreshToken = await _refreshTokenRepository.GetRefreshTokenAsync(hashedRefreshedToken);
 
             if (refreshToken == null) {
                 throw new Exception(ExceptionMessages.RefreshTokenNotFound);
