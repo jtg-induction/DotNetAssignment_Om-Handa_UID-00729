@@ -17,12 +17,14 @@ namespace DotNet_Assignment.Handlers
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
             if (!actionContext.ModelState.IsValid) {
-                var errors = actionContext.ModelState.Values
-                    .SelectMany(x=>x.Errors)
-                    .Select(x=>x.ErrorMessage)
-                    .ToList();
+                var errors = actionContext.ModelState
+                            .Where(x => x.Value.Errors.Count > 0)
+                            .ToDictionary(
+                                er => er.Key.Replace("requestDto.", ""),
+                                er => er.Value.Errors.Select(e => e.ErrorMessage).ToList()
+                            );
 
-                var response = new ApiResponseDto<object> { IsSuccess = false, Message = ExceptionMessages.InvalidCredentials, Data = errors };
+                var response = new ApiResponseDto<object> { IsSuccess = false, Message = ExceptionMessages.InvalidCredentials, Errors = errors };
 
                 actionContext.Response= actionContext.Request.CreateResponse(HttpStatusCode.BadRequest, response);
                 return;

@@ -117,6 +117,7 @@ namespace DotNet_Assignment.Services.Users
                 throw new Exception(ExceptionMessages.OldPasswordIncorrect);
             }
 
+            user.UpdatedAt = DateTime.UtcNow;
             user.Password = Hasher.Hash(changePasswordDto.NewPassword);
 
             await _context.SaveChangesAsync();
