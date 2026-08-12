@@ -36,7 +36,7 @@ namespace DotNet_Assignment.Models.Entities
         [Range(0, int.MaxValue)]
         public decimal Balance { get; set; } = 1000m;
 
-        public UserRoles Role { get; set; }
+        public UserRoles Role { get; set; } = UserRoles.User;
 
         public bool IsDeleted { get; set; }
 

@@ -50,7 +50,6 @@ namespace DotNet_Assignment.Services.Auth
                 Password = Hasher.Hash(requestDto.Password),
                 Name = requestDto.Name,
                 PhoneNumber = requestDto.PhoneNumber,
-                Role = requestDto.Role,
                 IsDeleted = false,
             };
 
