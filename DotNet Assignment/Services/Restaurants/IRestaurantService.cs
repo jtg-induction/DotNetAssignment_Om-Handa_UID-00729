@@ -10,6 +10,8 @@ namespace DotNet_Assignment.Services.Restaurants
 {
     public interface IRestaurantService
     {
-        Task<List<RestaurantResponseDto>> GetAllRestaurantsAsync();
+        Task<List<RestaurantResponseDto>> GetAllRestaurantsAsync(int page, int pageSize);
+
+        Task<List<MenuItemResponseDto>> GetMenuItemsByRestaurantIdAsync(Guid restaurantId, int page, int pageSize);
     }
 }

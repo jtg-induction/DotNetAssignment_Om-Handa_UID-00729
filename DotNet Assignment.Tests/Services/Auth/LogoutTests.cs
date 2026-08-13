@@ -8,6 +8,7 @@ using DotNet_Assignment.Tests.Utils;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Threading.Tasks;
 
 namespace DotNet_Assignment.Tests.Services.Auth
 {
@@ -62,7 +63,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
         /// Logout Function - Refresh Token Found - Deletes Token
         /// </summary>
         [Test]
-        public void Logout_ValidRefreshToken_DeletesRefreshToken()
+        public async Task Logout_ValidRefreshToken_DeletesRefreshToken()
         {
 
             var request = AuthTestUtil.CreateMockLogoutRequestDto();
@@ -75,14 +76,16 @@ namespace DotNet_Assignment.Tests.Services.Auth
             };
 
             _refreshTokenRepository
+                .Setup(x => x.HashRefreshToken(request.RefreshToken))
+                .Returns(refreshToken.Token);
+
+            _refreshTokenRepository
                 .Setup(x => x.GetRefreshTokenAsync(request.RefreshToken))
                 .ReturnsAsync(refreshToken);
 
-            _authService.LogoutAsync(request);
+            await _authService.LogoutAsync(request);
 
-            _refreshTokenRepository.Verify(
-                x => x.DeleteRefreshToken(refreshToken),
-                Times.Once);
+            _refreshTokenRepository.Verify(x => x.DeleteRefreshToken(refreshToken),Times.Once);
 
             _appDbContext.Verify(x => x.SaveChanges(), Times.Once);
         }
@@ -91,7 +94,7 @@ namespace DotNet_Assignment.Tests.Services.Auth
         /// Logout Function - Refresh Token Found - Saves Changes
         /// </summary>
         [Test]
-        public void Logout_ValidRefreshToken_SavesChanges()
+        public async Task Logout_ValidRefreshToken_SavesChanges()
         {
 
             var request = AuthTestUtil.CreateMockLogoutRequestDto();
@@ -104,10 +107,14 @@ namespace DotNet_Assignment.Tests.Services.Auth
             };
 
             _refreshTokenRepository
+                .Setup(x => x.HashRefreshToken(request.RefreshToken))
+                .Returns(refreshToken.Token);
+
+            _refreshTokenRepository
                 .Setup(x => x.GetRefreshTokenAsync(request.RefreshToken))
                 .ReturnsAsync(refreshToken);
 
-            _authService.LogoutAsync(request);
+            await _authService.LogoutAsync(request);
 
             _appDbContext.Verify(
                 x => x.SaveChanges(),

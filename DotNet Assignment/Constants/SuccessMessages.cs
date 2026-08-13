@@ -18,6 +18,8 @@ namespace DotNet_Assignment.Constants
         public const string PasswordChanged = "Password changed";
         public const string RestaurantsFetchedSuccessfully = "Restaurants Fetched Successfully";
         public const string ItemsFetchedSuccessfully = "Menu Items Fetched Successfully";
-
+        public const string OrderPlacedSuccessfully = "Order Placed Successfully";
+        public const string OrderDetailsFetchedSuccessfully = "Order Details Fetched Successfully";
+        public const string OrderCancelledSuccessfully = "Order Cancelled Successfully";
     }
 }

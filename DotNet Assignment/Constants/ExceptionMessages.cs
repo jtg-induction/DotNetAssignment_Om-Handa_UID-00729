@@ -20,5 +20,14 @@ namespace DotNet_Assignment.Constants
         public const string OldPasswordIncorrect = "Old Password is Incorrect";
         public const string OneFieldRequired = "Atleast one field is required";
         public const string RestaurantNotFound = "Restaurant not Found";
+        public const string NoMenuItems = "This restaurant has no menu items";
+        public const string NoRestaurants = "No Restaurants found";
+        public const string AtleastOneOrderItemRequired = "Atleast one order item required";
+        public const string MenuItemNotFound = "Menu Item not found";
+        public const string InsufficientBalance = "Insufficient Balance";
+        public const string OrderNotFound = "Order Not Found";
+        public const string OrderAlreadyCancelled = "Order Already Cancelled";
+        public const string OrderCantBeCancelled = "Order Can't be Cancelled";
+        public const string InsufficientStock = "Insufficient Stock";
     }
 }

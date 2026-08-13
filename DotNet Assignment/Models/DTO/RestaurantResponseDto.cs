@@ -18,6 +18,5 @@ namespace DotNet_Assignment.Models.DTO
         public string Pincode { get; set; }
         public decimal Rating { get; set; }
         public bool IsOpen { get; set; } = true;
-        public List<MenuItemResponseDto> MenuItems { get; set; }
     }
 }

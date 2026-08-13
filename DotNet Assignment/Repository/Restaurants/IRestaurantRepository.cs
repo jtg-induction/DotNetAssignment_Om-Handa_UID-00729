@@ -9,8 +9,13 @@ namespace DotNet_Assignment.Repository.Restaurants
 {
     public interface IRestaurantRepository
     {
-        Task<List<Restaurant>> GetRestaurantsAsync();
+        Task<List<Restaurant>> GetRestaurantsAsync(int page, int pageSize);
 
-        Task<Restaurant> GetRestaurantById(Guid restaurantId);
+        Task<Restaurant> GetRestaurantByIdAsync(Guid restaurantId);
+
+        Task<MenuItem> GetMenuItemByIdAsync(Guid menuItemId);
+
+        Task<MenuItem> GetMenuItemForUpdateAsync(Guid menuItemId);
+
     }
 }
