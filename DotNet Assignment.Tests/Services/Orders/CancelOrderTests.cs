@@ -5,12 +5,14 @@ using DotNet_Assignment.Models.Enums;
 using DotNet_Assignment.Repository.Address;
 using DotNet_Assignment.Repository.Orders;
 using DotNet_Assignment.Repository.Restaurants;
+using DotNet_Assignment.Repository.Transaction;
 using DotNet_Assignment.Repository.Users;
 using DotNet_Assignment.Services.Orders;
 using DotNet_Assignment.Tests.Utils;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DotNet_Assignment.Tests.Services.Orders
@@ -22,7 +24,9 @@ namespace DotNet_Assignment.Tests.Services.Orders
         private Mock<IRestaurantRepository> _restaurantRepository;
         private Mock<IUserRepository> _userRepository;
         private Mock<IAddressRepository> _addressRepository;
+        private Mock<ITransactionRepository> _transactionRepository;
         private Mock<AppDbContext> _appDbContext;
+        private Mock<ITransaction> _transaction;
         private OrderService _orderService;
 
         [SetUp]
@@ -32,13 +36,16 @@ namespace DotNet_Assignment.Tests.Services.Orders
             _restaurantRepository = new Mock<IRestaurantRepository>();
             _userRepository = new Mock<IUserRepository>();
             _addressRepository = new Mock<IAddressRepository>();
+            _transactionRepository = new Mock<ITransactionRepository>();
             _appDbContext = new Mock<AppDbContext>();
+            _transaction = new Mock<ITransaction>();
 
             _orderService = new OrderService(
                 _orderRepository.Object,
                 _restaurantRepository.Object,
                 _addressRepository.Object,
                 _userRepository.Object,
+                _transactionRepository.Object,
                 _appDbContext.Object);
         }
 
@@ -49,11 +56,23 @@ namespace DotNet_Assignment.Tests.Services.Orders
         public void CancelOrder_OrderNotFound_ThrowsException()
         {
             var orderId = Guid.NewGuid();
-            var userId = Guid.NewGuid();
 
-            _orderRepository.Setup(x => x.GetOrderByIdAsync(orderId)).ReturnsAsync((Order)null);
+            var user = UserTestUtil.CreateMockUser();
+            var userId = user.UserId;
 
-            Func<Task> Action = async () => await _orderService.CancelOrderAsync(orderId, userId);
+            _orderRepository
+                .Setup(x => x.GetOrderForUpdateAsync(orderId))
+                .ReturnsAsync((Order)null);
+
+            _userRepository
+                .Setup(x => x.GetUserByIdAsync(userId))
+                .ReturnsAsync(user);
+
+            _transactionRepository
+                .Setup(x => x.BeginTransaction())
+                .Returns(_transaction.Object);
+
+            Func<Task> Action = async () => await _orderService.CancelOrderAsync(orderId, Guid.NewGuid());
             var exception = Assert.CatchAsync<Exception>(Action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.OrderNotFound));
@@ -69,15 +88,24 @@ namespace DotNet_Assignment.Tests.Services.Orders
         public void CancelOrder_OrderAlreadyCancelled_ThrowsException()
         {
             var orderId = Guid.NewGuid();
-            var userId = Guid.NewGuid();
 
-            var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid());
-
+            var user = UserTestUtil.CreateMockUser();
+            var userId = user.UserId;
+            var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid(), userId);
+            order.UserId = userId;
             order.Status = OrderStatus.Cancelled;
 
             _orderRepository
-                .Setup(x => x.GetOrderByIdAsync(orderId))
+                .Setup(x => x.GetOrderForUpdateAsync(orderId))
                 .ReturnsAsync(order);
+
+            _userRepository
+                .Setup(x => x.GetUserByIdAsync(userId))
+                .ReturnsAsync(user);
+
+            _transactionRepository
+                .Setup(x => x.BeginTransaction())
+                .Returns(_transaction.Object);
 
             Func<Task> Action = async () => await _orderService.CancelOrderAsync(orderId, userId);
 
@@ -95,11 +123,32 @@ namespace DotNet_Assignment.Tests.Services.Orders
         public async Task CancelOrder_ValidOrder_ChangesStatus()
         {
             var orderId = Guid.NewGuid();
-            var userId = Guid.NewGuid();
 
-            var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid());
+            var user = UserTestUtil.CreateMockUser();
+            var userId = user.UserId;
+            var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid(), userId);
 
-            _orderRepository.Setup(x => x.GetOrderByIdAsync(orderId)).ReturnsAsync(order);
+            var menuItem = new MenuItem
+            {
+                MenuItemId = order.OrderedItems.First().MenuItemId,
+                QuantityAvailable = 10
+            };
+
+            _orderRepository
+                .Setup(x => x.GetOrderForUpdateAsync(orderId))
+                .ReturnsAsync(order);
+
+            _userRepository
+                .Setup(x => x.GetUserByIdAsync(userId))
+                .ReturnsAsync(user);
+
+            _restaurantRepository
+                .Setup(x => x.GetMenuItemByIdAsync(menuItem.MenuItemId))
+                .ReturnsAsync(menuItem);
+
+            _transactionRepository
+                .Setup(x => x.BeginTransaction())
+                .Returns(_transaction.Object);
 
             await _orderService.CancelOrderAsync(orderId, userId);
 
@@ -116,11 +165,32 @@ namespace DotNet_Assignment.Tests.Services.Orders
         public async Task CancelOrder_ValidOrder_SavesChanges()
         {
             var orderId = Guid.NewGuid();
-            var userId = Guid.NewGuid();
+            var user = UserTestUtil.CreateMockUser();
+            var userId = user.UserId;
 
-            var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid());
+            var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid(), userId);
 
-            _orderRepository.Setup(x => x.GetOrderByIdAsync(orderId)).ReturnsAsync(order);
+            var menuItem = new MenuItem
+            {
+                MenuItemId = order.OrderedItems.First().MenuItemId,
+                QuantityAvailable = 10
+            };
+
+            _orderRepository
+                .Setup(x => x.GetOrderForUpdateAsync(orderId))
+                .ReturnsAsync(order);
+
+            _userRepository
+                .Setup(x => x.GetUserByIdAsync(userId))
+                .ReturnsAsync(user);
+
+            _transactionRepository
+                .Setup(x => x.BeginTransaction())
+                .Returns(_transaction.Object);
+
+            _restaurantRepository
+                .Setup(x => x.GetMenuItemByIdAsync(menuItem.MenuItemId))
+                .ReturnsAsync(menuItem);
 
             await _orderService.CancelOrderAsync(orderId, userId);
 

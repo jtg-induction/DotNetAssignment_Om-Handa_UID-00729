@@ -328,6 +328,8 @@
     <Compile Include="Repository\RefreshTokens\RefreshTokenRepository.cs" />
     <Compile Include="Repository\Restaurants\IRestaurantRepository.cs" />
     <Compile Include="Repository\Restaurants\RestaurantRepository.cs" />
+    <Compile Include="Repository\Transaction\ITransactionRepository.cs" />
+    <Compile Include="Repository\Transaction\TransactionRepository.cs" />
     <Compile Include="Repository\Users\IUserRepository.cs" />
     <Compile Include="Repository\Users\UserRepository.cs" />
     <Compile Include="Services\Address\AddressService.cs" />

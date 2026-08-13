@@ -5,12 +5,14 @@ using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Repository.Address;
 using DotNet_Assignment.Repository.Orders;
 using DotNet_Assignment.Repository.Restaurants;
+using DotNet_Assignment.Repository.Transaction;
 using DotNet_Assignment.Repository.Users;
 using DotNet_Assignment.Services.Orders;
 using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Threading.Tasks;
 
 namespace DotNet_Assignment.Tests.Services.Orders
@@ -22,7 +24,9 @@ namespace DotNet_Assignment.Tests.Services.Orders
         private Mock<IRestaurantRepository> _restaurantRepository;
         private Mock<IUserRepository> _userRepository;
         private Mock<IAddressRepository> _addressRepository;
+        private Mock<ITransactionRepository> _transactionRepository;
         private Mock<AppDbContext> _appDbContext;
+        private Mock<ITransaction> _transaction;
         private OrderService _orderService;
 
         [SetUp]
@@ -32,13 +36,16 @@ namespace DotNet_Assignment.Tests.Services.Orders
             _restaurantRepository = new Mock<IRestaurantRepository>();
             _userRepository = new Mock<IUserRepository>();
             _addressRepository = new Mock<IAddressRepository>();
+            _transactionRepository = new Mock<ITransactionRepository>();
             _appDbContext = new Mock<AppDbContext>();
+            _transaction = new Mock<ITransaction>();
 
             _orderService = new OrderService(
                 _orderRepository.Object,
                 _restaurantRepository.Object,
                 _addressRepository.Object,
                 _userRepository.Object,
+                _transactionRepository.Object,
                 _appDbContext.Object);
         }
 
@@ -64,7 +71,8 @@ namespace DotNet_Assignment.Tests.Services.Orders
             {
                 MenuItemId = menuItemId,
                 RestaurantId = restaurantId,
-                Price = 200
+                Price = 200,
+                QuantityAvailable=10
             };
 
             var restaurant = new Restaurant
@@ -99,10 +107,11 @@ namespace DotNet_Assignment.Tests.Services.Orders
                     }
             };
 
+            _transactionRepository.Setup(x => x.BeginTransaction()).Returns(_transaction.Object);
             _userRepository.Setup(x => x.GetUserByIdAsync(userId)).ReturnsAsync(user);
             _restaurantRepository.Setup(x => x.GetRestaurantByIdAsync(restaurantId)).ReturnsAsync(restaurant);
             _addressRepository.Setup(x => x.GetAddressByIdAsync(addressId, userId)).ReturnsAsync(address);
-            _restaurantRepository.Setup(x => x.GetMenuItemByIdAsync(menuItemId)).ReturnsAsync(menuItem);
+            _restaurantRepository.Setup(x => x.GetMenuItemForUpdateAsync(menuItemId)).ReturnsAsync(menuItem);
 
             var result = await _orderService.PlaceOrderAsync(userId, request);
 
@@ -119,6 +128,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
         {
             var userId = Guid.NewGuid();
 
+            _transactionRepository.Setup(x => x.BeginTransaction()).Returns(_transaction.Object);
             _userRepository.Setup(x => x.GetUserByIdAsync(userId)).ReturnsAsync((User)null);
 
             Func<Task> Action = async () => await _orderService.PlaceOrderAsync(userId, new OrderRequestDto());
@@ -269,7 +279,8 @@ namespace DotNet_Assignment.Tests.Services.Orders
             {
                 MenuItemId = menuItemId,
                 RestaurantId = restaurantId,
-                Price = 200
+                Price = 200,
+                QuantityAvailable=10
             };
 
             var restaurant = new Restaurant
@@ -300,7 +311,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
 
             _userRepository.Setup(x => x.GetUserByIdAsync(userId)).ReturnsAsync(user);
             _restaurantRepository.Setup(x => x.GetRestaurantByIdAsync(restaurantId)).ReturnsAsync(restaurant);
-            _restaurantRepository.Setup(x => x.GetMenuItemByIdAsync(menuItemId)).ReturnsAsync(menuItem);
+            _restaurantRepository.Setup(x => x.GetMenuItemForUpdateAsync(menuItemId)).ReturnsAsync(menuItem);
             _addressRepository.Setup(x => x.GetAddressByIdAsync(addressId, userId)).ReturnsAsync(address);
 
             Func<Task> Action = async () => await _orderService.PlaceOrderAsync(userId, request);

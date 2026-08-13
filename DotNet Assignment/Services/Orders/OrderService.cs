@@ -6,6 +6,7 @@ using DotNet_Assignment.Models.Enums;
 using DotNet_Assignment.Repository.Address;
 using DotNet_Assignment.Repository.Orders;
 using DotNet_Assignment.Repository.Restaurants;
+using DotNet_Assignment.Repository.Transaction;
 using DotNet_Assignment.Repository.Users;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ namespace DotNet_Assignment.Services.Orders
         private readonly IRestaurantRepository _restaurantRepository;
         private readonly IUserRepository _userRepository;
         private readonly IAddressRepository _addressRepository;
+        private readonly ITransactionRepository _transactionRepository;
         private readonly AppDbContext _appDbContext;
 
         public OrderService(
@@ -27,6 +29,7 @@ namespace DotNet_Assignment.Services.Orders
             IRestaurantRepository restaurantRepository,
             IAddressRepository addressRepository,
             IUserRepository userRepository,
+            ITransactionRepository transactionRepository,
             AppDbContext appDbContext
             )
         {
@@ -35,6 +38,7 @@ namespace DotNet_Assignment.Services.Orders
             _addressRepository = addressRepository;
             _userRepository = userRepository;
             _appDbContext = appDbContext;
+            _transactionRepository = transactionRepository;
         }
 
         /// <summary>
@@ -46,19 +50,17 @@ namespace DotNet_Assignment.Services.Orders
         /// <exception cref="Exception">if user, restaurant, address, menuitem not found, user deactivated or no menuitem in requestDto</exception>
         public async Task<OrderResponseDto> PlaceOrderAsync(Guid userId, OrderRequestDto orderRequestDto)
         {
-            using (var transaction = _appDbContext.Database.BeginTransaction())
+            using (var transaction = _transactionRepository.BeginTransaction())
             {
                 var user = await _userRepository.GetUserByIdAsync(userId);
 
                 if (user == null)
                 {
-                    transaction.Rollback();
                     throw new Exception(ExceptionMessages.UserNotFound);
                 }
 
                 if (user.IsDeleted)
                 {
-                    transaction.Rollback();
                     throw new Exception(ExceptionMessages.UserDeactivated);
                 }
 
@@ -186,10 +188,15 @@ namespace DotNet_Assignment.Services.Orders
         /// <exception cref="Exception">If order not found or already cancelled/exception>
         public async Task CancelOrderAsync(Guid orderId, Guid userId)
         {
-            using (var transaction = _appDbContext.Database.BeginTransaction())
+            using (var transaction =_transactionRepository.BeginTransaction())
             {
 
                 var order = await _orderRepository.GetOrderForUpdateAsync(orderId);
+
+                if (order == null)
+                {
+                    throw new Exception(ExceptionMessages.OrderNotFound);
+                }
                 var orderUserId = order.UserId;
 
                 if (userId != orderUserId)
@@ -209,11 +216,6 @@ namespace DotNet_Assignment.Services.Orders
                     throw new Exception(ExceptionMessages.UserDeactivated);
                 }
 
-                if (order == null)
-                {
-                    throw new Exception(ExceptionMessages.OrderNotFound);
-                }
-
                 if (order.Status == OrderStatus.Cancelled)
                 {
                     throw new Exception(ExceptionMessages.OrderAlreadyCancelled);
@@ -230,8 +232,8 @@ namespace DotNet_Assignment.Services.Orders
                 order.Status = OrderStatus.Cancelled;
                 order.UpdatedAt = DateTime.UtcNow;
 
-                transaction.Commit();
                 await _appDbContext.SaveChangesAsync();
+                transaction.Commit();
 
             }
         }

@@ -128,6 +128,9 @@ namespace DotNet_Assignment.Tests.Controllers.Order
             {
                 var orderId = Guid.NewGuid();
                 var userId = Guid.NewGuid();
+
+                SetUser(userId);
+
                 _orderService
                     .Setup(x => x.CancelOrderAsync(orderId, userId))
                     .Returns(Task.CompletedTask);
@@ -149,6 +152,8 @@ namespace DotNet_Assignment.Tests.Controllers.Order
             {
                 var OrderId = Guid.NewGuid();
                 var userId = Guid.NewGuid();
+
+                SetUser(userId);
 
                 _orderService
                     .Setup(x => x.CancelOrderAsync(OrderId, userId))

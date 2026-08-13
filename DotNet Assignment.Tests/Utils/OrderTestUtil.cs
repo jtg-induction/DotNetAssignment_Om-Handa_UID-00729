@@ -18,32 +18,30 @@ namespace DotNet_Assignment.Tests.Utils
             {
                 AddressId = Guid.NewGuid(),
                 RestaurantId = Guid.NewGuid(),
-                OrderedItems = new List<OrderItemDto>{
-                    new OrderItemDto{
-                        Quantity= 10,
-                        MenuItemId= Guid.NewGuid()
-                    },
-                    new OrderItemDto{
-                        Quantity= 2,
-                        MenuItemId= Guid.NewGuid()
-                    }
-                }
             };
         }
-
+        
         /// <summary>
         /// Creates Mock Order 
         /// </summary>
         /// <param name="orderId"></param>
         /// <param name="restaurantId"></param>
         /// <returns>Order</returns>
-        public static Order CreateMockOrder(Guid orderId, Guid restaurantId)
+        public static Order CreateMockOrder(Guid orderId, Guid restaurantId, Guid userId)
         {
             return new Order
             {
                 OrderId = orderId,
                 RestaurantId = restaurantId,
-                Status = OrderStatus.Placed
+                Status = OrderStatus.Placed,
+                UserId = userId,
+                OrderedItems = new List<OrderedItem> {
+                    new OrderedItem
+                    {
+                        Quantity=10,
+                        ItemPrice=199,
+                    }
+                }
             };
         }
 

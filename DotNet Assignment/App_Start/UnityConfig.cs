@@ -14,6 +14,7 @@ using DotNet_Assignment.Services.Restaurants;
 using DotNet_Assignment.Repository.Restaurants;
 using DotNet_Assignment.Services.Orders;
 using DotNet_Assignment.Repository.Orders;
+using DotNet_Assignment.Repository.Transaction;
 
 namespace DotNet_Assignment.App_Start
 {
@@ -41,6 +42,8 @@ namespace DotNet_Assignment.App_Start
             container.RegisterType<IAddressRepository, AddressRepository>(new HierarchicalLifetimeManager());
             container.RegisterType<IRestaurantRepository, RestaurantRepository>(new HierarchicalLifetimeManager());
             container.RegisterType<IOrderRepository, OrderRepository>(new HierarchicalLifetimeManager());
+            container.RegisterType<ITransactionRepository, TransactionRepository>(new HierarchicalLifetimeManager());
+
 
             GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);
 
