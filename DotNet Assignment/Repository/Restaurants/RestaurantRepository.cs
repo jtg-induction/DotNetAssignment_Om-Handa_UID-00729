@@ -62,5 +62,19 @@ namespace DotNet_Assignment.Repository.Restaurants
         {
             return await _context.MenuItems.SqlQuery("SELECT * FROM  MenuItems WITH (UPDLOCK, ROWLOCK) where MenuItemId = @p0", menuItemId).SingleOrDefaultAsync();
         }
+
+        /// <summary>
+        /// Adds restaurant to DB context
+        /// </summary>
+        /// <param name="restaurant"></param>
+        public void AddRestaurant(Restaurant restaurant)
+        {
+            _context.Restaurants.Add(restaurant);
+        }
+
+        public void AddRestaurantOwner(RestaurantOwner restaurantOwner)
+        {
+            _context.RestaurantsOwner.Add(restaurantOwner);
+        }
     }
 }

@@ -18,11 +18,17 @@ namespace DotNet_Assignment.Repository.Transaction
             _transaction = transaction;
         }
 
+        /// <summary>
+        /// Commits a transaction
+        /// </summary>
         public void Commit()
         {
             _transaction.Commit();
         }
 
+        /// <summary>
+        /// Disposes a transaction
+        /// </summary>
         public void Dispose()
         {
             _transaction.Dispose();

@@ -1,5 +1,6 @@
 ﻿using DotNet_Assignment.Constants;
 using DotNet_Assignment.Models.DTO;
+using DotNet_Assignment.Models.Enums;
 using DotNet_Assignment.Services.Orders;
 using System;
 using System.Security.Claims;
@@ -82,6 +83,23 @@ namespace DotNet_Assignment.Controllers
             {
                 IsSuccess = true,
                 Message = SuccessMessages.OrderCancelledSuccessfully,
+            };
+
+            return Ok(response);
+        }
+
+        [Authorize(Roles =nameof(UserRoles.Owner))]
+        [HttpPost]
+        [Route("change-status")]
+        public async Task<IHttpActionResult> ChangeOrderStatusAsync(ChangeOrderStatusDto orderStatusDto)
+        {
+
+            await _orderService.ChangeOrderStatusAsync(orderStatusDto);
+
+            var response = new ApiResponseDto<OrderDetailsResponseDto>
+            {
+                IsSuccess = true,
+                Message = SuccessMessages.OrderStatusUpdatedSuccessfully,
             };
 
             return Ok(response);

@@ -6,17 +6,28 @@ using System.Linq;
 using System.Web;
 using System.Threading.Tasks;
 using DotNet_Assignment.Models.DTO;
+using DotNet_Assignment.Models.Enums;
 using DotNet_Assignment.Constants;
+using DotNet_Assignment.Data;
+using DotNet_Assignment.Repository.Users;
 
 namespace DotNet_Assignment.Services.Restaurants
 {
-    public class RestaurantService :IRestaurantService
-    { 
+    public class RestaurantService : IRestaurantService
+    {
         private readonly IRestaurantRepository _restaurantRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly AppDbContext _appDbContext;
 
-        public RestaurantService(IRestaurantRepository restaurantRepository)
+        public RestaurantService(
+            IRestaurantRepository restaurantRepository,
+            IUserRepository userRepository,
+            AppDbContext appDbContext
+            )
         {
             _restaurantRepository = restaurantRepository;
+            _userRepository = userRepository;
+            _appDbContext = appDbContext;
         }
 
         /// <summary>
@@ -85,6 +96,72 @@ namespace DotNet_Assignment.Services.Restaurants
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToList();
+        }
+
+        /// <summary>
+        /// Adds restaurant
+        /// </summary>
+        /// <param name="addRestaurantDto"></param>
+        public async Task AddRestaurantAsync(AddRestaurantDto addRestaurantDto)
+        {
+            var restaurant = new Restaurant
+            {
+                Name = addRestaurantDto.Name,
+                Description = addRestaurantDto.Description,
+                Street = addRestaurantDto.Street,
+                Landmark = addRestaurantDto.Landmark,
+                City = addRestaurantDto.City,
+                State = addRestaurantDto.State,
+                Pincode = addRestaurantDto.Pincode,
+                Rating = 0
+            };
+
+            _restaurantRepository.AddRestaurant(restaurant);
+
+            await _appDbContext.SaveChangesAsync();
+        }
+
+        public async Task AddRestaurantOwner(RestaurantOwnerRequestDto restaurantOwnerRequestDto)
+        {
+            var user = await _userRepository.GetUserByEmailAsync(restaurantOwnerRequestDto.UserEmail);
+
+            if (user == null)
+            {
+                throw new Exception(ExceptionMessages.UserNotFound);
+            }
+
+            if (user.IsDeleted)
+            {
+                throw new Exception(ExceptionMessages.UserDeactivated);
+            }
+
+            var restaurant = await _restaurantRepository.GetRestaurantByIdAsync(restaurantOwnerRequestDto.RestaurantId);
+
+            if (restaurant == null)
+            {
+                throw new Exception(ExceptionMessages.RestaurantNotFound);
+            }
+
+            if (!restaurant.MenuItems.Any())
+            {
+                throw new Exception(ExceptionMessages.NoMenuItems);
+            }
+
+            var restaurantOwner = new RestaurantOwner
+            {
+                RestaurantId = restaurantOwnerRequestDto.RestaurantId,
+                UserId = user.UserId
+            };
+
+            if (user.Role == UserRoles.User)
+            {
+                user.Role = UserRoles.Owner;
+            }
+
+            _restaurantRepository.AddRestaurantOwner(restaurantOwner);
+
+            await _appDbContext.SaveChangesAsync();
+            
         }
     }
 }

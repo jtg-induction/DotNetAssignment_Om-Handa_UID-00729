@@ -11,5 +11,7 @@ namespace DotNet_Assignment.Services.Orders
         Task<OrderDetailsResponseDto> GetOrderDetailsAsync(Guid orderId);
 
         Task CancelOrderAsync(Guid orderId, Guid userId);
+
+        Task ChangeOrderStatusAsync(ChangeOrderStatusDto orderStatusDto);
     }
 }

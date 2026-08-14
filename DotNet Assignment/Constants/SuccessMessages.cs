@@ -21,5 +21,8 @@ namespace DotNet_Assignment.Constants
         public const string OrderPlacedSuccessfully = "Order Placed Successfully";
         public const string OrderDetailsFetchedSuccessfully = "Order Details Fetched Successfully";
         public const string OrderCancelledSuccessfully = "Order Cancelled Successfully";
+        public const string RestaurantAddedSuccessfully = "Restaurant Added Successfully";
+        public const string OwnerLinkedSuccessfully = "Owner Linked Successfully";
+        public const string OrderStatusUpdatedSuccessfully = "Order Status Updated Successfully";
     }
 }

@@ -9,7 +9,6 @@ using DotNet_Assignment.Repository.Restaurants;
 using DotNet_Assignment.Repository.Transaction;
 using DotNet_Assignment.Repository.Users;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -236,6 +235,26 @@ namespace DotNet_Assignment.Services.Orders
                 transaction.Commit();
 
             }
+        }
+
+        public async Task ChangeOrderStatusAsync(ChangeOrderStatusDto orderStatusDto)
+        {
+            var order = await _orderRepository.GetOrderForUpdateAsync(orderStatusDto.OrderId);
+
+            if (order == null)
+            {
+                throw new Exception(ExceptionMessages.OrderNotFound);
+            }
+
+            if(orderStatusDto.Status == OrderStatus.Cancelled)
+            {
+                await CancelOrderAsync(order.OrderId, order.UserId);
+                return;
+            }
+
+            order.Status = orderStatusDto.Status;
+
+            await _appDbContext.SaveChangesAsync();
         }
     }
 }

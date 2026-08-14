@@ -294,7 +294,9 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DTO\AddressDto.cs" />
+    <Compile Include="Models\DTO\AddRestaurantDto.cs" />
     <Compile Include="Models\DTO\ApiResponseDto.cs" />
+    <Compile Include="Models\DTO\ChangeOrderStatusDto.cs" />
     <Compile Include="Models\DTO\ChangePasswordDto.cs" />
     <Compile Include="Models\DTO\JWTResponseDto.cs" />
     <Compile Include="Models\DTO\LoginRequestDto.cs" />
@@ -306,6 +308,7 @@
     <Compile Include="Models\DTO\OrderRequestDto.cs" />
     <Compile Include="Models\DTO\OrderResponseDto.cs" />
     <Compile Include="Models\DTO\RefreshTokenDto.cs" />
+    <Compile Include="Models\DTO\RestaurantOwnerRequestDto.cs" />
     <Compile Include="Models\DTO\RestaurantResponseDto.cs" />
     <Compile Include="Models\DTO\SignupRequestDto.cs" />
     <Compile Include="Models\DTO\UpdateUserDto.cs" />

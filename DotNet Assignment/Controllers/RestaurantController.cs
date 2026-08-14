@@ -1,6 +1,7 @@
 ﻿using DotNet_Assignment.Constants;
 using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Models.Entities;
+using DotNet_Assignment.Models.Enums;
 using DotNet_Assignment.Services.Orders;
 using DotNet_Assignment.Services.Restaurants;
 using System;
@@ -10,6 +11,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Security;
 
 namespace DotNet_Assignment.Controllers
 {
@@ -65,6 +67,38 @@ namespace DotNet_Assignment.Controllers
                 IsSuccess = true,
                 Message = SuccessMessages.ItemsFetchedSuccessfully,
                 Data = data
+            };
+
+            return Ok(response);
+        }
+
+        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [HttpPost]
+        [Route("add")]
+        public async Task<IHttpActionResult> AddRestaurants(AddRestaurantDto addRestaurantDto)
+        {
+            await _restaurantService.AddRestaurantAsync(addRestaurantDto);
+
+            var response = new ApiResponseDto<List<MenuItemResponseDto>>
+            {
+                IsSuccess = true,
+                Message = SuccessMessages.RestaurantAddedSuccessfully
+            };
+
+            return Ok(response);
+        }
+
+        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [HttpPost]
+        [Route("owner")]
+        public async Task<IHttpActionResult> AddRestaurants(RestaurantOwnerRequestDto restaurantOwnerRequestDto)
+        {
+            await _restaurantService.AddRestaurantOwner(restaurantOwnerRequestDto);
+
+            var response = new ApiResponseDto<List<MenuItemResponseDto>>
+            {
+                IsSuccess = true,
+                Message = SuccessMessages.OwnerLinkedSuccessfully
             };
 
             return Ok(response);

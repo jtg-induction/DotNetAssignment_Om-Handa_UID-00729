@@ -17,5 +17,9 @@ namespace DotNet_Assignment.Repository.Restaurants
 
         Task<MenuItem> GetMenuItemForUpdateAsync(Guid menuItemId);
 
+        void AddRestaurant(Restaurant restaurant);
+
+        void AddRestaurantOwner(RestaurantOwner restaurantOwner);
+
     }
 }

@@ -86,7 +86,6 @@ namespace DotNet_Assignment.Tests.Repository
         {
             var mockSet = new Mock<DbSet<RefreshToken>>();
             var mockContext = new Mock<AppDbContext>();
-            var requestRefreshToken = MockConstants.MockRefreshToken;
 
             mockContext.Setup(c => c.RefreshTokens).Returns(mockSet.Object);
 

@@ -16,3 +16,4 @@ namespace DotNet_Assignment.Models.DTO
         public int Quantity { get; set; }
     }
 }
+    

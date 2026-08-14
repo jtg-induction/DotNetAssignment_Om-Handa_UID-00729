@@ -13,5 +13,9 @@ namespace DotNet_Assignment.Services.Restaurants
         Task<List<RestaurantResponseDto>> GetAllRestaurantsAsync(int page, int pageSize);
 
         Task<List<MenuItemResponseDto>> GetMenuItemsByRestaurantIdAsync(Guid restaurantId, int page, int pageSize);
+
+        Task AddRestaurantAsync(AddRestaurantDto addRestaurantDto);
+
+        Task AddRestaurantOwner(RestaurantOwnerRequestDto restaurantOwnerRequestDto);
     }
 }
