@@ -121,6 +121,16 @@ namespace DotNet_Assignment.Services.Restaurants
 
             var user = await _userRepository.GetUserByEmailAsync(addRestaurantDto.UserEmail);
 
+            if (user == null)
+            {
+                throw new Exception(ExceptionMessages.UserNotFound);
+            }
+
+            if (user.IsDeleted)
+            {
+                throw new Exception(ExceptionMessages.UserDeactivated);
+            }
+
             var restaurantOwner = new RestaurantOwner
             {
                 RestaurantId = restaurant.RestaurantId,
