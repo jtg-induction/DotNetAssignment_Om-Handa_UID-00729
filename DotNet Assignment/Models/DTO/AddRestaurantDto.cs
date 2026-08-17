@@ -37,6 +37,6 @@ namespace DotNet_Assignment.Models.DTO
         public string Pincode { get; set; }
 
         [Required]
-        public RestaurantOwnerRequestDto RestaurantOwnerRequest { get; set; }
+        public string UserEmail { get; set; }
     }
 }

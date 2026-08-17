@@ -1,15 +1,16 @@
-﻿using DotNet_Assignment.Models.Entities;
-using DotNet_Assignment.Repository.Restaurants;
-using System.Collections.Generic;
-using System;
-using System.Linq;
-using System.Web;
-using System.Threading.Tasks;
-using DotNet_Assignment.Models.DTO;
-using DotNet_Assignment.Models.Enums;
-using DotNet_Assignment.Constants;
+﻿using DotNet_Assignment.Constants;
 using DotNet_Assignment.Data;
+using DotNet_Assignment.Models.DTO;
+using DotNet_Assignment.Models.Entities;
+using DotNet_Assignment.Models.Enums;
+using DotNet_Assignment.Repository.Restaurants;
 using DotNet_Assignment.Repository.Users;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace DotNet_Assignment.Services.Restaurants
 {
@@ -117,7 +118,16 @@ namespace DotNet_Assignment.Services.Restaurants
             };
 
             _restaurantRepository.AddRestaurant(restaurant);
-            await AddRestaurantOwner(addRestaurantDto.RestaurantOwnerRequest);
+
+            var user = await _userRepository.GetUserByEmailAsync(addRestaurantDto.UserEmail);
+
+            var restaurantOwner = new RestaurantOwner
+            {
+                RestaurantId = restaurant.RestaurantId,
+                UserId = user.UserId
+            };
+
+            _restaurantRepository.AddRestaurantOwner(restaurantOwner);
 
             await _appDbContext.SaveChangesAsync();
         }
