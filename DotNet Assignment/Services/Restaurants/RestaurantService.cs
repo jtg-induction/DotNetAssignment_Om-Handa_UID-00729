@@ -117,10 +117,16 @@ namespace DotNet_Assignment.Services.Restaurants
             };
 
             _restaurantRepository.AddRestaurant(restaurant);
+            await AddRestaurantOwner(addRestaurantDto.RestaurantOwnerRequest);
 
             await _appDbContext.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Links an owner to a restaurant
+        /// </summary>
+        /// <param name="restaurantOwnerRequestDto"></param>
+        /// <exception cref="Exception">If user not found, user deleted, restaurant not found</exception>
         public async Task AddRestaurantOwner(RestaurantOwnerRequestDto restaurantOwnerRequestDto)
         {
             var user = await _userRepository.GetUserByEmailAsync(restaurantOwnerRequestDto.UserEmail);
@@ -140,11 +146,6 @@ namespace DotNet_Assignment.Services.Restaurants
             if (restaurant == null)
             {
                 throw new Exception(ExceptionMessages.RestaurantNotFound);
-            }
-
-            if (!restaurant.MenuItems.Any())
-            {
-                throw new Exception(ExceptionMessages.NoMenuItems);
             }
 
             var restaurantOwner = new RestaurantOwner

@@ -298,6 +298,7 @@
     <Compile Include="Models\DTO\ApiResponseDto.cs" />
     <Compile Include="Models\DTO\ChangeOrderStatusDto.cs" />
     <Compile Include="Models\DTO\ChangePasswordDto.cs" />
+    <Compile Include="Models\DTO\FilterOptionsDto.cs" />
     <Compile Include="Models\DTO\JWTResponseDto.cs" />
     <Compile Include="Models\DTO\LoginRequestDto.cs" />
     <Compile Include="Models\DTO\LogoutRequestDto.cs" />

@@ -29,5 +29,9 @@ namespace DotNet_Assignment.Constants
         public const string OrderAlreadyCancelled = "Order Already Cancelled";
         public const string OrderCantBeCancelled = "Order Can't be Cancelled";
         public const string InsufficientStock = "Insufficient Stock";
+        public const string StatusCantBeChanged = "Order status can't be changed";
+        public const string NoOrdersToShow = "No Orders To Show";
+        public const string Unauthorized = "Unauthorized";
+        public const string OrderStatusAlreadyChanged = "Order Status Already Changed";
     }
 }

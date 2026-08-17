@@ -15,7 +15,7 @@ namespace DotNet_Assignment
     {
         public void Configuration(IAppBuilder app)
         {
-            ConfigureJwt(app); ;
+            ConfigureJwt(app);
         }
 
         public void ConfigureJwt(IAppBuilder app) {

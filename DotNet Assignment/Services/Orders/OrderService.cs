@@ -9,12 +9,13 @@ using DotNet_Assignment.Repository.Restaurants;
 using DotNet_Assignment.Repository.Transaction;
 using DotNet_Assignment.Repository.Users;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace DotNet_Assignment.Services.Orders
 {
-    public class OrderService :IOrderService
+    public class OrderService : IOrderService
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IRestaurantRepository _restaurantRepository;
@@ -97,7 +98,7 @@ namespace DotNet_Assignment.Services.Orders
                 {
                     var menuItem = await _restaurantRepository.GetMenuItemForUpdateAsync(item.MenuItemId);
 
-                    if(menuItem.QuantityAvailable<0 || (menuItem.QuantityAvailable - item.Quantity) < 0)
+                    if (menuItem.QuantityAvailable < 0 || (menuItem.QuantityAvailable - item.Quantity) < 0)
                     {
                         throw new Exception(ExceptionMessages.InsufficientStock);
                     }
@@ -153,7 +154,7 @@ namespace DotNet_Assignment.Services.Orders
         {
             var order = await _orderRepository.GetOrderByIdAsync(orderId);
 
-            if(order == null)
+            if (order == null)
             {
                 throw new Exception(ExceptionMessages.OrderNotFound);
             }
@@ -174,8 +175,8 @@ namespace DotNet_Assignment.Services.Orders
                 {
                     Name = item.MenuItem.Name,
                     Description = item.MenuItem.Description,
-                    Price= item.ItemPrice,
-                    Quantity= item.Quantity
+                    Price = item.ItemPrice,
+                    Quantity = item.Quantity
                 }).ToList()
             };
         }
@@ -187,7 +188,7 @@ namespace DotNet_Assignment.Services.Orders
         /// <exception cref="Exception">If order not found or already cancelled/exception>
         public async Task CancelOrderAsync(Guid orderId, Guid userId)
         {
-            using (var transaction =_transactionRepository.BeginTransaction())
+            using (var transaction = _transactionRepository.BeginTransaction())
             {
 
                 var order = await _orderRepository.GetOrderForUpdateAsync(orderId);
@@ -237,24 +238,79 @@ namespace DotNet_Assignment.Services.Orders
             }
         }
 
-        public async Task ChangeOrderStatusAsync(ChangeOrderStatusDto orderStatusDto)
+        /// <summary>
+        /// Changes order status of an order based on order Id
+        /// </summary>
+        /// <param name="orderStatusDto"></param>
+        /// <param name="orderId"></param>
+        /// <exception cref="Exception">If order not found or new order status value is wrong</exception>
+        public async Task ChangeOrderStatusAsync(ChangeOrderStatusDto orderStatusDto, Guid orderId, Guid ownerId)
         {
-            var order = await _orderRepository.GetOrderForUpdateAsync(orderStatusDto.OrderId);
+            var order = await _orderRepository.GetOrderForUpdateAsync(orderId);
 
             if (order == null)
             {
                 throw new Exception(ExceptionMessages.OrderNotFound);
             }
 
-            if(orderStatusDto.Status == OrderStatus.Cancelled)
+            if (!order.Restaurant.RestaurantOwners.Any(x => x.UserId == ownerId))
+            {
+                throw new Exception(ExceptionMessages.Unauthorized);
+            }
+
+            if(order.Status == orderStatusDto.Status)
+            {
+                throw new Exception(ExceptionMessages.OrderStatusAlreadyChanged);
+            }
+
+            if ((int)orderStatusDto?.Status < (int)order.Status)
+            {
+                throw new Exception(ExceptionMessages.StatusCantBeChanged);
+            }
+
+            if (orderStatusDto?.Status == OrderStatus.Cancelled)
             {
                 await CancelOrderAsync(order.OrderId, order.UserId);
                 return;
             }
 
-            order.Status = orderStatusDto.Status;
+            order.Status = orderStatusDto.Status.Value;
 
             await _appDbContext.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Gets filtered orders based on options (query params) 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="filterOptions">Query params given by controller</param>
+        /// <returns>List of orders</returns>
+        /// <exception cref="Exception">if orders not found</exception>
+        public async Task<List<OrderDetailsResponseDto>> GetFilteredOrders(Guid userId, FilterOptionsDto filterOptions)
+        {
+            var orders = await _orderRepository.FilterOrderAsync(userId, filterOptions);
+
+            if (!orders.Any())
+            {
+                throw new Exception(ExceptionMessages.NoOrdersToShow);
+            }
+
+            return orders.Select(o => new OrderDetailsResponseDto
+            {
+                OrderId = o.OrderId,
+                TotalPrice = o.TotalPrice,
+                Status = o.Status.ToString(),
+                DeliveryAddress = o.DeliveryAddress,
+                RestaurantName = o.Restaurant.Name,
+
+                OrderedItems = o.OrderedItems.Select(oi => new MenuDetailsResponseDto
+                {
+                    Name = oi.MenuItem.Name,
+                    Description = oi.MenuItem.Description,
+                    Price = oi.ItemPrice,
+                    Quantity = oi.Quantity
+                }).ToList()
+            }).ToList();
         }
     }
 }

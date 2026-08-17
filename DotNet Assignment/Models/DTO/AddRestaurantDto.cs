@@ -36,5 +36,7 @@ namespace DotNet_Assignment.Models.DTO
         [RegularExpression(Regex.PincodeRegex)]
         public string Pincode { get; set; }
 
+        [Required]
+        public RestaurantOwnerRequestDto RestaurantOwnerRequest { get; set; }
     }
 }

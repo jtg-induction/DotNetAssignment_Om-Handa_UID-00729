@@ -3,6 +3,7 @@ using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Models.Enums;
 using DotNet_Assignment.Services.Orders;
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -88,13 +89,20 @@ namespace DotNet_Assignment.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Changes Order Status (Owner)
+        /// </summary>
+        /// <param name="orderStatusDto">Status to be changed to</param>
+        /// <param name="orderId"></param>
+        /// <returns>Http response with Success message</returns>
         [Authorize(Roles =nameof(UserRoles.Owner))]
         [HttpPost]
-        [Route("change-status")]
-        public async Task<IHttpActionResult> ChangeOrderStatusAsync(ChangeOrderStatusDto orderStatusDto)
+        [Route("change-status/{orderId}")]
+        public async Task<IHttpActionResult> ChangeOrderStatusAsync(ChangeOrderStatusDto orderStatusDto, Guid orderId)
         {
+            var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            await _orderService.ChangeOrderStatusAsync(orderStatusDto);
+            await _orderService.ChangeOrderStatusAsync(orderStatusDto, orderId, userId);
 
             var response = new ApiResponseDto<OrderDetailsResponseDto>
             {
@@ -105,5 +113,53 @@ namespace DotNet_Assignment.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Filters orders based on query params
+        /// </summary>
+        /// <param name="category"></param>
+        /// <param name="status"></param>
+        /// <param name="sortBy"></param>
+        /// <param name="sortOrder"></param>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="searchByOrderId"></param>
+        /// <returns>Http response with success message and filtered orders</returns>
+        [Authorize(Roles = nameof(UserRoles.Owner))]
+        [HttpGet]
+        [Route("orders")]
+        public async Task<IHttpActionResult> ChangeOrderStatusAsync(
+                string category = null,
+                string status = null,
+                string sortBy = "date",
+                string sortOrder = "desc",
+                int page = 1,
+                int pageSize = 10,
+                Guid? searchByOrderId = null
+            )
+        {
+            var filterOptions = new FilterOptionsDto
+            {
+                category = category,
+                status = status,
+                SortBy = sortBy,
+                SortOrder = sortOrder,
+                Page = page,
+                PageSize = pageSize,
+                SearchByOrderId = searchByOrderId
+            };
+
+            var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var result = await _orderService.GetFilteredOrders(userId, filterOptions);
+
+            var response = new ApiResponseDto<List<OrderDetailsResponseDto>>
+            {
+                IsSuccess = true,
+                Message = SuccessMessages.OrderDetailsFetchedSuccessfully,
+                Data = result
+            };
+
+            return Ok(response);
+        }
     }
 }

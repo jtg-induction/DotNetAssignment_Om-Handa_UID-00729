@@ -72,10 +72,15 @@ namespace DotNet_Assignment.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Adds restaurant 
+        /// </summary>
+        /// <param name="addRestaurantDto">Details of restaurant to be added</param>
+        /// <returns>Http status code with success message</returns>
         [Authorize(Roles = nameof(UserRoles.Admin))]
         [HttpPost]
         [Route("add")]
-        public async Task<IHttpActionResult> AddRestaurants(AddRestaurantDto addRestaurantDto)
+        public async Task<IHttpActionResult> AddRestaurantAsync(AddRestaurantDto addRestaurantDto)
         {
             await _restaurantService.AddRestaurantAsync(addRestaurantDto);
 
@@ -88,10 +93,15 @@ namespace DotNet_Assignment.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Links owners to the restaurants
+        /// </summary>
+        /// <param name="restaurantOwnerRequestDto">Restaurant ID and owner email</param>
+        /// <returns>Http status code with success message</returns>
         [Authorize(Roles = nameof(UserRoles.Admin))]
         [HttpPost]
         [Route("owner")]
-        public async Task<IHttpActionResult> AddRestaurants(RestaurantOwnerRequestDto restaurantOwnerRequestDto)
+        public async Task<IHttpActionResult> AddRestaurantOwnerAsync(RestaurantOwnerRequestDto restaurantOwnerRequestDto)
         {
             await _restaurantService.AddRestaurantOwner(restaurantOwnerRequestDto);
 
