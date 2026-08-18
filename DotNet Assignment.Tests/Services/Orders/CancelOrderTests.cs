@@ -128,11 +128,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
             var userId = user.UserId;
             var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid(), userId);
 
-            var menuItem = new MenuItem
-            {
-                MenuItemId = order.OrderedItems.First().MenuItemId,
-                QuantityAvailable = 10
-            };
+            var menuItem = order.OrderedItems.First().MenuItem;
 
             _orderRepository
                 .Setup(x => x.GetOrderForUpdateAsync(orderId))
@@ -170,11 +166,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
 
             var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid(), userId);
 
-            var menuItem = new MenuItem
-            {
-                MenuItemId = order.OrderedItems.First().MenuItemId,
-                QuantityAvailable = 10
-            };
+            var menuItem = order.OrderedItems.First().MenuItem;
 
             _orderRepository
                 .Setup(x => x.GetOrderForUpdateAsync(orderId))

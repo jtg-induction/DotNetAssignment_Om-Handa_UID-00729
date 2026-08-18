@@ -29,17 +29,36 @@ namespace DotNet_Assignment.Tests.Utils
         /// <returns>Order</returns>
         public static Order CreateMockOrder(Guid orderId, Guid restaurantId, Guid userId)
         {
+            var menuItem = new MenuItem
+            {
+                MenuItemId = Guid.NewGuid(),
+                Name = "Dish",
+                Description = "Menu Item",
+                QuantityAvailable = 10
+            };
+
             return new Order
             {
                 OrderId = orderId,
                 RestaurantId = restaurantId,
                 Status = OrderStatus.Placed,
                 UserId = userId,
+                Restaurant = new Restaurant
+                {
+                    RestaurantId = restaurantId,
+                    Name = "Restaurant"
+                },
+                TotalPrice = 1990,
+                DeliveryAddress = "111, Street, City",
                 OrderedItems = new List<OrderedItem> {
                     new OrderedItem
                     {
                         Quantity=10,
-                        ItemPrice=199,
+                        ItemPrice=199m,
+                        OrderedItemId = Guid.NewGuid(),
+                        OrderId = orderId,
+                        MenuItemId = menuItem.MenuItemId,
+                        MenuItem = menuItem
                     }
                 }
             };

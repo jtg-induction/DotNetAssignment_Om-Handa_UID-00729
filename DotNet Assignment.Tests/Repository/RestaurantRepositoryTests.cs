@@ -178,6 +178,58 @@ namespace DotNet_Assignment.Tests.Repository
             Assert.That(result, Is.Null);
         }
 
+        /// <summary>
+        /// AddRestaurant Function - Adds restaurant successfully
+        /// </summary>
+        [Test]
+        public void AddRestaurant_AddsRestaurantSuccessfully()
+        {
+            var mockSet = new Mock<DbSet<Restaurant>>();
+            var mockContext = new Mock<AppDbContext>();
+
+            mockContext
+                .Setup(x => x.Restaurants)
+                .Returns(mockSet.Object);
+
+            var repository = new RestaurantRepository(mockContext.Object);
+
+            var restaurant = new Restaurant
+            {
+                RestaurantId = Guid.NewGuid(),
+                Name = "Restaurant"
+            };
+
+            repository.AddRestaurant(restaurant);
+
+            mockSet.Verify( x => x.Add(restaurant), Times.Once);
+        }
+
+        /// <summary>
+        /// AddRestaurantOwner Function - Adds restaurant owner successfully
+        /// </summary>
+        [Test]
+        public void AddRestaurantOwner_AddsOwnerSuccessfully()
+        {
+            var mockSet = new Mock<DbSet<RestaurantOwner>>();
+            var mockContext = new Mock<AppDbContext>();
+
+            mockContext
+                .Setup(x => x.RestaurantsOwner)
+                .Returns(mockSet.Object);
+
+            var repository = new RestaurantRepository(mockContext.Object);
+
+            var restaurantOwner = new RestaurantOwner
+            {
+                RestaurantId = Guid.NewGuid(),
+                UserId = Guid.NewGuid()
+            };
+
+            repository.AddRestaurantOwner(restaurantOwner);
+
+            mockSet.Verify( x => x.Add(restaurantOwner), Times.Once);
+        }
+
         public Mock<AppDbContext> BuildRestaurantMockContext(IQueryable<Restaurant> data)
         {
             var mockSet = new Mock<DbSet<Restaurant>>();

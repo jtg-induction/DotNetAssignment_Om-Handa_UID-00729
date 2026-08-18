@@ -223,7 +223,7 @@ namespace DotNet_Assignment.Services.Orders
 
                 foreach (OrderedItem orderedItem in order.OrderedItems)
                 {
-                    var menuItem = await _restaurantRepository.GetMenuItemByIdAsync(orderedItem.OrderedItemId);
+                    var menuItem = await _restaurantRepository.GetMenuItemByIdAsync(orderedItem.MenuItemId);
 
                     menuItem.QuantityAvailable += orderedItem.Quantity;
                 }

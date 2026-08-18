@@ -251,8 +251,12 @@
     <Compile Include="Services\JWT\JWTTests.cs" />
     <Compile Include="Services\Address\AddAddressTests.cs" />
     <Compile Include="Services\Orders\CancelOrderTests.cs" />
+    <Compile Include="Services\Orders\ChangeOrderStatusTests.cs" />
+    <Compile Include="Services\Orders\GetFilteredOrdersTests.cs" />
     <Compile Include="Services\Orders\OrderDetailsTest.cs" />
     <Compile Include="Services\Orders\PlaceOrderTests.cs" />
+    <Compile Include="Services\Restaurants\AddRestaurantOwnerTests.cs" />
+    <Compile Include="Services\Restaurants\AddRestaurantTests.cs" />
     <Compile Include="Services\Restaurants\GetAllRestaurantsTests.cs" />
     <Compile Include="Services\Restaurants\GetMenuItemsTests.cs" />
     <Compile Include="Services\Users\ChangePasswordTests.cs" />
