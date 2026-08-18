@@ -13,7 +13,7 @@ using System.Web.Http;
 
 namespace DotNet_Assignment.Controllers
 {
-    [RoutePrefix("api/address")]
+    [RoutePrefix("api/addresses")]
     public class AddressController : ApiController
     {
         private readonly IAddressService _addressService;
@@ -30,7 +30,7 @@ namespace DotNet_Assignment.Controllers
         /// <returns>Https status code with success message</returns>
         [Authorize]
         [HttpPost]
-        [Route("add")]
+        [Route("")]
         public async Task<IHttpActionResult> AddAddressAsync(AddressDto addressDto)
         {
             var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -54,7 +54,7 @@ namespace DotNet_Assignment.Controllers
         /// <returns></returns>
         [Authorize]
         [HttpPatch]
-        [Route("update/{addressId:guid}")]
+        [Route("{addressId:guid}")]
         public async Task<IHttpActionResult> UpdateAddressAsync(Guid addressId, AddressDto addressDto)
         {
             var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);

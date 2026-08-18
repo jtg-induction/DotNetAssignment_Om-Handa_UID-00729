@@ -5,7 +5,6 @@ using DotNet_Assignment.Models.Enums;
 using DotNet_Assignment.Repository.Address;
 using DotNet_Assignment.Repository.Orders;
 using DotNet_Assignment.Repository.Restaurants;
-using DotNet_Assignment.Repository.Transaction;
 using DotNet_Assignment.Repository.Users;
 using DotNet_Assignment.Services.Orders;
 using DotNet_Assignment.Tests.Utils;
@@ -24,9 +23,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
         private Mock<IRestaurantRepository> _restaurantRepository;
         private Mock<IUserRepository> _userRepository;
         private Mock<IAddressRepository> _addressRepository;
-        private Mock<ITransactionRepository> _transactionRepository;
         private Mock<AppDbContext> _appDbContext;
-        private Mock<ITransaction> _transaction;
         private OrderService _orderService;
 
         [SetUp]
@@ -36,16 +33,13 @@ namespace DotNet_Assignment.Tests.Services.Orders
             _restaurantRepository = new Mock<IRestaurantRepository>();
             _userRepository = new Mock<IUserRepository>();
             _addressRepository = new Mock<IAddressRepository>();
-            _transactionRepository = new Mock<ITransactionRepository>();
             _appDbContext = new Mock<AppDbContext>();
-            _transaction = new Mock<ITransaction>();
 
             _orderService = new OrderService(
                 _orderRepository.Object,
                 _restaurantRepository.Object,
                 _addressRepository.Object,
                 _userRepository.Object,
-                _transactionRepository.Object,
                 _appDbContext.Object);
         }
 
@@ -68,11 +62,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            _transactionRepository
-                .Setup(x => x.BeginTransaction())
-                .Returns(_transaction.Object);
-
-            Func<Task> Action = async () => await _orderService.CancelOrderAsync(orderId, Guid.NewGuid());
+            Func<Task> Action = async () => await _orderService.CancelOrder(orderId, Guid.NewGuid());
             var exception = Assert.CatchAsync<Exception>(Action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.OrderNotFound));
@@ -103,11 +93,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            _transactionRepository
-                .Setup(x => x.BeginTransaction())
-                .Returns(_transaction.Object);
-
-            Func<Task> Action = async () => await _orderService.CancelOrderAsync(orderId, userId);
+            Func<Task> Action = async () => await _orderService.CancelOrder(orderId, userId);
 
             var exception = Assert.CatchAsync<Exception>(Action);
 
@@ -146,11 +132,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
                 .Setup(x => x.GetMenuItemByIdAsync(menuItem.MenuItemId))
                 .ReturnsAsync(menuItem);
 
-            _transactionRepository
-                .Setup(x => x.BeginTransaction())
-                .Returns(_transaction.Object);
-
-            await _orderService.CancelOrderAsync(orderId, userId);
+            await _orderService.CancelOrder(orderId, userId);
 
             Assert.That(order.Status, Is.EqualTo(OrderStatus.Cancelled));
 
@@ -184,15 +166,11 @@ namespace DotNet_Assignment.Tests.Services.Orders
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            _transactionRepository
-                .Setup(x => x.BeginTransaction())
-                .Returns(_transaction.Object);
-
             _restaurantRepository
                 .Setup(x => x.GetMenuItemByIdAsync(menuItem.MenuItemId))
                 .ReturnsAsync(menuItem);
 
-            await _orderService.CancelOrderAsync(orderId, userId);
+            await _orderService.CancelOrder(orderId, userId);
 
             _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
