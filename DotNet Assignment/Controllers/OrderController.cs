@@ -8,7 +8,7 @@ using System.Web.Http;
 
 namespace DotNet_Assignment.Controllers
 {
-    [RoutePrefix("api/order")]
+    [RoutePrefix("api/orders")]
     public class OrderController :ApiController
     {
         private readonly IOrderService _orderService;

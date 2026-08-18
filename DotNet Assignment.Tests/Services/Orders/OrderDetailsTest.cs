@@ -5,7 +5,6 @@ using DotNet_Assignment.Models.Enums;
 using DotNet_Assignment.Repository.Address;
 using DotNet_Assignment.Repository.Orders;
 using DotNet_Assignment.Repository.Restaurants;
-using DotNet_Assignment.Repository.Transaction;
 using DotNet_Assignment.Repository.Users;
 using DotNet_Assignment.Services.Orders;
 using DotNet_Assignment.Tests.Utils;
@@ -26,7 +25,6 @@ namespace DotNet_Assignment.Tests.Services.Orders
         private Mock<IRestaurantRepository> _restaurantRepository;
         private Mock<IUserRepository> _userRepository;
         private Mock<IAddressRepository> _addressRepository;
-        private Mock<ITransactionRepository> _transactionRepository;
         private Mock<AppDbContext> _appDbContext;
         private OrderService _orderService;
 
@@ -37,7 +35,6 @@ namespace DotNet_Assignment.Tests.Services.Orders
             _restaurantRepository = new Mock<IRestaurantRepository>();
             _userRepository = new Mock<IUserRepository>();
             _addressRepository = new Mock<IAddressRepository>();
-            _transactionRepository = new Mock<ITransactionRepository>();
             _appDbContext = new Mock<AppDbContext>();
 
             _orderService = new OrderService(
@@ -45,7 +42,6 @@ namespace DotNet_Assignment.Tests.Services.Orders
                 _restaurantRepository.Object,
                 _addressRepository.Object,
                 _userRepository.Object,
-                _transactionRepository.Object,
                 _appDbContext.Object);
         }
 

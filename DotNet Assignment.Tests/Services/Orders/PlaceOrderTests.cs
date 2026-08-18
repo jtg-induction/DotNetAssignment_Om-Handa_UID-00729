@@ -5,7 +5,6 @@ using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Repository.Address;
 using DotNet_Assignment.Repository.Orders;
 using DotNet_Assignment.Repository.Restaurants;
-using DotNet_Assignment.Repository.Transaction;
 using DotNet_Assignment.Repository.Users;
 using DotNet_Assignment.Services.Orders;
 using Moq;
@@ -24,9 +23,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
         private Mock<IRestaurantRepository> _restaurantRepository;
         private Mock<IUserRepository> _userRepository;
         private Mock<IAddressRepository> _addressRepository;
-        private Mock<ITransactionRepository> _transactionRepository;
         private Mock<AppDbContext> _appDbContext;
-        private Mock<ITransaction> _transaction;
         private OrderService _orderService;
 
         [SetUp]
@@ -36,16 +33,13 @@ namespace DotNet_Assignment.Tests.Services.Orders
             _restaurantRepository = new Mock<IRestaurantRepository>();
             _userRepository = new Mock<IUserRepository>();
             _addressRepository = new Mock<IAddressRepository>();
-            _transactionRepository = new Mock<ITransactionRepository>();
             _appDbContext = new Mock<AppDbContext>();
-            _transaction = new Mock<ITransaction>();
 
             _orderService = new OrderService(
                 _orderRepository.Object,
                 _restaurantRepository.Object,
                 _addressRepository.Object,
                 _userRepository.Object,
-                _transactionRepository.Object,
                 _appDbContext.Object);
         }
 
@@ -107,13 +101,12 @@ namespace DotNet_Assignment.Tests.Services.Orders
                     }
             };
 
-            _transactionRepository.Setup(x => x.BeginTransaction()).Returns(_transaction.Object);
             _userRepository.Setup(x => x.GetUserByIdAsync(userId)).ReturnsAsync(user);
             _restaurantRepository.Setup(x => x.GetRestaurantByIdAsync(restaurantId)).ReturnsAsync(restaurant);
             _addressRepository.Setup(x => x.GetAddressByIdAsync(addressId, userId)).ReturnsAsync(address);
             _restaurantRepository.Setup(x => x.GetMenuItemForUpdateAsync(menuItemId)).ReturnsAsync(menuItem);
 
-            var result = await _orderService.PlaceOrderAsync(userId, request);
+            var result = await _orderService.PlaceOrder(userId, request);
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.TotalPrice, Is.EqualTo(400));
@@ -128,10 +121,9 @@ namespace DotNet_Assignment.Tests.Services.Orders
         {
             var userId = Guid.NewGuid();
 
-            _transactionRepository.Setup(x => x.BeginTransaction()).Returns(_transaction.Object);
             _userRepository.Setup(x => x.GetUserByIdAsync(userId)).ReturnsAsync((User)null);
 
-            Func<Task> Action = async () => await _orderService.PlaceOrderAsync(userId, new OrderRequestDto());
+            Func<Task> Action = async () => await _orderService.PlaceOrder(userId, new OrderRequestDto());
             var exception = Assert.CatchAsync<Exception>(Action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.UserNotFound));
@@ -162,7 +154,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
             _userRepository.Setup(x => x.GetUserByIdAsync(userId)).ReturnsAsync(user);
             _restaurantRepository.Setup(x => x.GetRestaurantByIdAsync(restaurantId)).ReturnsAsync((Restaurant)null);
 
-            Func<Task> Action = async () => await _orderService.PlaceOrderAsync(userId, new OrderRequestDto());
+            Func<Task> Action = async () => await _orderService.PlaceOrder(userId, new OrderRequestDto());
             var exception = Assert.CatchAsync<Exception>(Action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.RestaurantNotFound));
@@ -200,7 +192,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
             _userRepository.Setup(x => x.GetUserByIdAsync(userId)).ReturnsAsync(user);
             _restaurantRepository.Setup(x => x.GetRestaurantByIdAsync(restaurantId)).ReturnsAsync(restaurant);
 
-            Func<Task> Action = async () => await _orderService.PlaceOrderAsync(userId, request);
+            Func<Task> Action = async () => await _orderService.PlaceOrder(userId, request);
             var exception = Assert.CatchAsync<Exception>(Action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.NoMenuItems));
@@ -250,7 +242,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
             _restaurantRepository.Setup(x => x.GetRestaurantByIdAsync(restaurantId)).ReturnsAsync(restaurant);
             _addressRepository.Setup(x => x.GetAddressByIdAsync(addressId, userId)).ReturnsAsync(address);
 
-            Func<Task> Action = async () => await _orderService.PlaceOrderAsync(userId, request);
+            Func<Task> Action = async () => await _orderService.PlaceOrder(userId, request);
             var exception = Assert.CatchAsync<Exception>(Action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.AtleastOneOrderItemRequired));
@@ -314,7 +306,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
             _restaurantRepository.Setup(x => x.GetMenuItemForUpdateAsync(menuItemId)).ReturnsAsync(menuItem);
             _addressRepository.Setup(x => x.GetAddressByIdAsync(addressId, userId)).ReturnsAsync(address);
 
-            Func<Task> Action = async () => await _orderService.PlaceOrderAsync(userId, request);
+            Func<Task> Action = async () => await _orderService.PlaceOrder(userId, request);
             var exception = Assert.CatchAsync<Exception>(Action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.InsufficientBalance));
