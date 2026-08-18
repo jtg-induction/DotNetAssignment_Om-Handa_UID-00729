@@ -4,9 +4,9 @@
     {
         Placed,
         Accepted, 
-        Rejected, 
         Dispatched, 
         Delivered, 
-        Cancelled
+        Cancelled,
+        Rejected
     }
 }

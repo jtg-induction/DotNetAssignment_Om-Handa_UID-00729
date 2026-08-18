@@ -15,7 +15,7 @@ using System.Web.Security;
 
 namespace DotNet_Assignment.Controllers
 {
-    [RoutePrefix("api/restaurant")]
+    [RoutePrefix("api/restaurants")]
     public class RestaurantController : ApiController
     {
         private readonly IRestaurantService _restaurantService;
@@ -33,7 +33,7 @@ namespace DotNet_Assignment.Controllers
         /// <returns>Http status code with restaurants list</returns>
         [Authorize]
         [HttpGet]
-        [Route("{page}/{pageSize}")]
+        [Route("")]
         public async Task<IHttpActionResult> GetRestaurantsAsync(int page= 1, int pageSize= 10)
         {
             var data = await _restaurantService.GetAllRestaurantsAsync(page, pageSize);
@@ -57,7 +57,7 @@ namespace DotNet_Assignment.Controllers
         /// <returns>Http response Token with Menu item data</returns>
         [Authorize]
         [HttpGet]
-        [Route("{restaurantId:guid}/{page}/{pageSize}")]
+        [Route("{restaurantId:guid}")]
         public async Task<IHttpActionResult> GetMenuItemsAsync(Guid restaurantId, int page = 1, int pageSize = 10)
         {
             var data = await _restaurantService.GetMenuItemsByRestaurantIdAsync(restaurantId, page, pageSize);
@@ -79,7 +79,7 @@ namespace DotNet_Assignment.Controllers
         /// <returns>Http status code with success message</returns>
         [Authorize(Roles = nameof(UserRoles.Admin))]
         [HttpPost]
-        [Route("add")]
+        [Route("")]
         public async Task<IHttpActionResult> AddRestaurantAsync(AddRestaurantDto addRestaurantDto)
         {
             await _restaurantService.AddRestaurantAsync(addRestaurantDto);

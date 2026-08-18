@@ -10,7 +10,7 @@ using System.Web.Http;
 
 namespace DotNet_Assignment.Controllers
 {
-    [RoutePrefix("api/order")]
+    [RoutePrefix("api/orders")]
     public class OrderController :ApiController
     {
         private readonly IOrderService _orderService;
@@ -97,7 +97,7 @@ namespace DotNet_Assignment.Controllers
         /// <returns>Http response with Success message</returns>
         [Authorize(Roles =nameof(UserRoles.Owner))]
         [HttpPost]
-        [Route("change-status/{orderId}")]
+        [Route("{orderId:guid}")]
         public async Task<IHttpActionResult> ChangeOrderStatusAsync(ChangeOrderStatusDto orderStatusDto, Guid orderId)
         {
             var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -126,8 +126,8 @@ namespace DotNet_Assignment.Controllers
         /// <returns>Http response with success message and filtered orders</returns>
         [Authorize(Roles = nameof(UserRoles.Owner))]
         [HttpGet]
-        [Route("orders")]
-        public async Task<IHttpActionResult> ChangeOrderStatusAsync(
+        [Route("")]
+        public async Task<IHttpActionResult> FilterOrder(
                 string category = null,
                 string status = null,
                 string sortBy = "date",

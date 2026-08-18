@@ -238,7 +238,7 @@ namespace DotNet_Assignment.Tests.Controllers.Order
                     .Setup(x => x.GetFilteredOrders(It.IsAny<Guid>(), It.IsAny<FilterOptionsDto>())) 
                     .ReturnsAsync(orders);
 
-                var result = await _orderController.ChangeOrderStatusAsync("veg", "Placed", "price", "asc", 1, 10, null);
+                var result = await _orderController.FilterOrder("veg", "Placed", "price", "asc", 1, 10, null);
 
                 Assert.That( result,Is.TypeOf<OkNegotiatedContentResult<ApiResponseDto<List<OrderDetailsResponseDto>>>>());
 
@@ -261,7 +261,7 @@ namespace DotNet_Assignment.Tests.Controllers.Order
                     .Setup(x => x.GetFilteredOrders(It.IsAny<Guid>(), It.IsAny<FilterOptionsDto>()))
                     .ThrowsAsync(new Exception(exceptionMessage));
 
-                Func<Task> action = async () => await _orderController.ChangeOrderStatusAsync();
+                Func<Task> action = async () => await _orderController.FilterOrder();
 
                 var exception = Assert.CatchAsync<Exception>(action);
 
