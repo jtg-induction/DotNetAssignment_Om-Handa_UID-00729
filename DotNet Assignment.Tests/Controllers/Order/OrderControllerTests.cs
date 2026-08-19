@@ -86,20 +86,25 @@ namespace DotNet_Assignment.Tests.Controllers.Order
             [Test]
             public async Task GetOrderDetails_ValidOrderId_ReturnsSuccess()
             {
-                var OrderId = Guid.NewGuid();
+                var orderId = Guid.NewGuid();
+
+                var userId = Guid.NewGuid();
+
+                SetUser(userId);
+
                 var orderResponse = new OrderDetailsResponseDto();
 
                 _orderService
-                    .Setup(x => x.GetOrderDetailsAsync(OrderId))
+                    .Setup(x => x.GetOrderDetailsAsync(orderId, userId))
                     .ReturnsAsync(orderResponse);
 
-                var result =await _orderController.GetOrderDetailsAsync(OrderId);
+                var result = await _orderController.GetOrderDetailsAsync(orderId);
 
                 var okResult = result as OkNegotiatedContentResult<ApiResponseDto<OrderDetailsResponseDto>>;
 
                 Assert.That(okResult, Is.Not.Null);
                 Assert.That(okResult.Content.IsSuccess, Is.True);
-                Assert.That(okResult.Content.Data,Is.EqualTo(orderResponse));
+                Assert.That(okResult.Content.Data, Is.EqualTo(orderResponse));
             }
 
             /// <summary>
@@ -108,17 +113,21 @@ namespace DotNet_Assignment.Tests.Controllers.Order
             [Test]
             public void GetOrderDetails_InvalidOrderId_ThrowsException()
             {
-                var OrderId = Guid.NewGuid();
+                var orderId = Guid.NewGuid();
+                var userId = Guid.NewGuid();
+
+                SetUser(userId);
 
                 _orderService
-                    .Setup(x => x.GetOrderDetailsAsync(OrderId))
+                    .Setup(x => x.GetOrderDetailsAsync(orderId, userId))
                     .ThrowsAsync(new Exception(ExceptionMessages.OrderNotFound));
 
-                Func<Task> Action = async () => await _orderController.GetOrderDetailsAsync(OrderId);
+                Func<Task> Action = async () => await _orderController.GetOrderDetailsAsync(orderId);
                 var exception = Assert.CatchAsync<Exception>(Action);
 
-                Assert.That(exception.Message,Is.EqualTo(ExceptionMessages.OrderNotFound));
+                Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.OrderNotFound));
             }
+
 
             /// <summary>
             /// CancelOrder Function - Valid Order Id - Returns Success

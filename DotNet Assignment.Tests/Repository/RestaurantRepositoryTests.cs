@@ -39,7 +39,7 @@ namespace DotNet_Assignment.Tests.Repository
 
             var repository = new RestaurantRepository(mockContext.Object);
 
-            var result = await repository.GetRestaurantsAsync(1, 10);
+            var result = await repository.GetPagedRestaurantsAsync(1, 10);
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Count, Is.EqualTo(1));
@@ -58,7 +58,7 @@ namespace DotNet_Assignment.Tests.Repository
 
             var repository = new RestaurantRepository(mockContext.Object);
 
-            var result = await repository.GetRestaurantsAsync(1, 10);
+            var result = await repository.GetPagedRestaurantsAsync(1, 10);
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.Empty);

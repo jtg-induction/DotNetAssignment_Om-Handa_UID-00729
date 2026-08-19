@@ -6,6 +6,8 @@ using DotNet_Assignment.Repository.RefreshTokens;
 using DotNet_Assignment.Repository.Users;
 using DotNet_Assignment.Utils;
 using System;
+using System.Collections.Generic;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 
 namespace DotNet_Assignment.Services.Users
@@ -25,7 +27,7 @@ namespace DotNet_Assignment.Services.Users
             _refreshTokenRepository = refreshTokenRepository;
             _context = appDbContext;
         }
-        
+
         /// <summary>
         /// Updates user Details
         /// </summary>
@@ -38,17 +40,17 @@ namespace DotNet_Assignment.Services.Users
 
             if (user == null)
             {
-                throw new Exception(ExceptionMessages.UserNotFound);
+                throw new KeyNotFoundException(ExceptionMessages.UserNotFound);
             }
 
             if (user.IsDeleted)
             {
-                throw new Exception(ExceptionMessages.UserDeactivated);
+                throw new InvalidOperationException(ExceptionMessages.UserDeactivated);
             }
 
-            if(string.IsNullOrWhiteSpace(updateUserDto.Name) && string.IsNullOrWhiteSpace(updateUserDto.PhoneNumber))
+            if (string.IsNullOrWhiteSpace(updateUserDto.Name) && string.IsNullOrWhiteSpace(updateUserDto.PhoneNumber))
             {
-                throw new Exception(ExceptionMessages.OneFieldRequired);
+                throw new ArgumentException(ExceptionMessages.OneFieldRequired);
             }
 
             if (!string.IsNullOrWhiteSpace(updateUserDto.Name))
@@ -71,17 +73,18 @@ namespace DotNet_Assignment.Services.Users
         /// </summary>
         /// <param name="userId">User Id</param>
         /// <exception cref="Exception">If user not found or user deactivated</exception>
-        public async Task DeactivateUserAsync(Guid userId) {
+        public async Task DeactivateUserAsync(Guid userId)
+        {
             var user = await _userRepository.GetUserByIdAsync(userId);
 
             if (user == null)
             {
-                throw new Exception(ExceptionMessages.UserNotFound);
+                throw new KeyNotFoundException(ExceptionMessages.UserNotFound);
             }
 
             if (user.IsDeleted)
             {
-                throw new Exception(ExceptionMessages.UserAlreadyDeactivated);
+                throw new InvalidOperationException(ExceptionMessages.UserAlreadyDeactivated);
             }
 
             user.IsDeleted = true;
@@ -104,17 +107,17 @@ namespace DotNet_Assignment.Services.Users
 
             if (user == null)
             {
-                throw new Exception(ExceptionMessages.UserNotFound);
+                throw new KeyNotFoundException(ExceptionMessages.UserNotFound);
             }
 
             if (user.IsDeleted)
             {
-                throw new Exception(ExceptionMessages.UserDeactivated);
+                throw new InvalidOperationException(ExceptionMessages.UserDeactivated);
             }
 
             if (!Hasher.Verify(changePasswordDto.OldPassword, user.Password))
             {
-                throw new Exception(ExceptionMessages.OldPasswordIncorrect);
+                throw new InvalidOperationException(ExceptionMessages.OldPasswordIncorrect);
             }
 
             user.UpdatedAt = DateTime.UtcNow;

@@ -9,8 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
+using DotNet_Assignment.Models.DTO;
+using DotNet_Assignment.Constants;
 
 namespace DotNet_Assignment.Services.Restaurants
 {
@@ -40,12 +40,7 @@ namespace DotNet_Assignment.Services.Restaurants
         /// <exception cref="Exception">If no restaurants found</exception>
         public async Task<List<RestaurantResponseDto>> GetAllRestaurantsAsync(int page, int pageSize)
         {
-            var restaurants = await _restaurantRepository.GetRestaurantsAsync(page, pageSize);
-
-            if (!restaurants.Any())
-            {
-                throw new Exception(ExceptionMessages.NoRestaurants);
-            }
+            var restaurants = await _restaurantRepository.GetPagedRestaurantsAsync(page, pageSize);
 
             return restaurants.Select(r => new RestaurantResponseDto
             {
@@ -72,19 +67,15 @@ namespace DotNet_Assignment.Services.Restaurants
         /// <exception cref="Exception">If restaurant not found, no items in restaurant</exception>
         public async Task<List<MenuItemResponseDto>> GetMenuItemsByRestaurantIdAsync(Guid restaurantId, int page, int pageSize)
         {
-            var restaurant = await _restaurantRepository.GetRestaurantByIdAsync(restaurantId);
 
-            if (restaurant == null)
+            if (!await _restaurantRepository.RestaurantExists(restaurantId))
             {
-                throw new Exception(ExceptionMessages.RestaurantNotFound);
+                throw new KeyNotFoundException(ExceptionMessages.RestaurantNotFound);
             }
 
-            if (!restaurant.MenuItems.Any())
-            {
-                throw new Exception(ExceptionMessages.NoMenuItems);
-            }
+            var menuItems = await _restaurantRepository.GetPagedMenuItems(restaurantId, page, pageSize);
 
-            return restaurant.MenuItems.Select(mi => new MenuItemResponseDto
+            return menuItems.Select(mi => new MenuItemResponseDto
             {
                 MenuItemId = mi.MenuItemId,
                 Name = mi.Name,
@@ -92,11 +83,7 @@ namespace DotNet_Assignment.Services.Restaurants
                 Rating = mi.Rating,
                 Category = mi.Category,
                 Price = mi.Price,
-                InStock = mi.InStock
-            }).OrderBy(mi => mi.Rating)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToList();
+            }).ToList();
         }
 
         /// <summary>
@@ -123,12 +110,12 @@ namespace DotNet_Assignment.Services.Restaurants
 
             if (user == null)
             {
-                throw new Exception(ExceptionMessages.UserNotFound);
+                throw new KeyNotFoundException(ExceptionMessages.UserNotFound);
             }
 
             if (user.IsDeleted)
             {
-                throw new Exception(ExceptionMessages.UserDeactivated);
+                throw new InvalidOperationException(ExceptionMessages.UserDeactivated);
             }
 
             var restaurantOwner = new RestaurantOwner
@@ -153,19 +140,19 @@ namespace DotNet_Assignment.Services.Restaurants
 
             if (user == null)
             {
-                throw new Exception(ExceptionMessages.UserNotFound);
+                throw new KeyNotFoundException(ExceptionMessages.UserNotFound);
             }
 
             if (user.IsDeleted)
             {
-                throw new Exception(ExceptionMessages.UserDeactivated);
+                throw new InvalidOperationException(ExceptionMessages.UserDeactivated);
             }
 
             var restaurant = await _restaurantRepository.GetRestaurantByIdAsync(restaurantOwnerRequestDto.RestaurantId);
 
             if (restaurant == null)
             {
-                throw new Exception(ExceptionMessages.RestaurantNotFound);
+                throw new KeyNotFoundException(ExceptionMessages.RestaurantNotFound);
             }
 
             var restaurantOwner = new RestaurantOwner
@@ -182,7 +169,7 @@ namespace DotNet_Assignment.Services.Restaurants
             _restaurantRepository.AddRestaurantOwner(restaurantOwner);
 
             await _appDbContext.SaveChangesAsync();
-            
+
         }
     }
 }

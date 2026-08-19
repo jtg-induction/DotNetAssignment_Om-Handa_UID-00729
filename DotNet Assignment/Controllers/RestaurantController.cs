@@ -31,10 +31,9 @@ namespace DotNet_Assignment.Controllers
         /// <param name="page">Page number</param>
         /// <param name="pageSize">Number of restaurants to show on page</param>
         /// <returns>Http status code with restaurants list</returns>
-        [Authorize]
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> GetRestaurantsAsync(int page= 1, int pageSize= 10)
+        public async Task<IHttpActionResult> GetRestaurantsAsync([FromUri] int page = 1, [FromUri] int pageSize = 10)
         {
             var data = await _restaurantService.GetAllRestaurantsAsync(page, pageSize);
 
@@ -42,7 +41,7 @@ namespace DotNet_Assignment.Controllers
             {
                 IsSuccess = true,
                 Message = SuccessMessages.RestaurantsFetchedSuccessfully,
-                Data= data
+                Data = data
             };
 
             return Ok(response);
@@ -55,10 +54,9 @@ namespace DotNet_Assignment.Controllers
         /// <param name="page">Page number</param>
         /// <param name="pageSize">Size of items to be shown on the page</param>
         /// <returns>Http response Token with Menu item data</returns>
-        [Authorize]
         [HttpGet]
-        [Route("{restaurantId:guid}")]
-        public async Task<IHttpActionResult> GetMenuItemsAsync(Guid restaurantId, int page = 1, int pageSize = 10)
+        [Route("{restaurantId:guid}/menu-items")]
+        public async Task<IHttpActionResult> GetMenuItemsAsync(Guid restaurantId, [FromUri] int page = 1, [FromUri] int pageSize = 10)
         {
             var data = await _restaurantService.GetMenuItemsByRestaurantIdAsync(restaurantId, page, pageSize);
 
