@@ -160,9 +160,6 @@ namespace DotNet_Assignment.Tests.Services.Orders
             _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Never);
         }
 
-<<<<<<< HEAD
-=======
-
         /// <summary>
         /// PlacerOrder Function - Menu Items Not Found - Throw Exception
         /// </summary>
@@ -199,7 +196,6 @@ namespace DotNet_Assignment.Tests.Services.Orders
             _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
 
->>>>>>> 71a1a618f4c122ef6134c4a79c04b8467fc66e96
         /// <summary>
         /// PlacerOrder Function - No ordered Items - Throw Exception
         /// </summary>
