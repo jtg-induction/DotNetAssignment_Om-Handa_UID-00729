@@ -7,8 +7,10 @@ using DotNet_Assignment.Repository.RefreshTokens;
 using DotNet_Assignment.Repository.Users;
 using DotNet_Assignment.Services.JWT;
 using DotNet_Assignment.Utils;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 
 namespace DotNet_Assignment.Services.Auth
@@ -41,7 +43,7 @@ namespace DotNet_Assignment.Services.Auth
         public async Task<JWTResponseDto> RegisterAsync(SignupRequestDto requestDto) {
 
             if (await _userRepository.FindUserByEmailAsync(requestDto.Email)){
-                throw new Exception(ExceptionMessages.EmailAlreadyExists);
+                throw new InvalidOperationException(ExceptionMessages.EmailAlreadyExists);
             }
 
             var user = new User()
@@ -61,7 +63,7 @@ namespace DotNet_Assignment.Services.Auth
 
             if(refreshToken == null)
             {
-                throw new Exception(ExceptionMessages.RefreshTokenNotGenerated);
+                throw new SecurityTokenException(ExceptionMessages.RefreshTokenNotGenerated);
             }
 
             var refresh = new RefreshToken()
@@ -73,7 +75,7 @@ namespace DotNet_Assignment.Services.Auth
             _refreshTokenRepository.AddRefreshToken(refresh);
 
             await _context.SaveChangesAsync();
-
+            
             return new JWTResponseDto
             {
                 AccessToken= accessToken,
@@ -91,17 +93,17 @@ namespace DotNet_Assignment.Services.Auth
             var user = await _userRepository.GetUserByEmailAsync(loginRequest.Email);
 
             if (user == null) {
-                throw new Exception(ExceptionMessages.InvalidCredentials);
+                throw new AuthenticationException(ExceptionMessages.InvalidCredentials);
             }
 
             if (user.IsDeleted)
             {
-                throw new Exception(ExceptionMessages.UserDeactivated);
+                throw new InvalidOperationException(ExceptionMessages.UserDeactivated);
             }
 
             if (!Hasher.Verify(loginRequest.Password, user.Password))
             {
-                throw new Exception(ExceptionMessages.InvalidCredentials);
+                throw new AuthenticationException(ExceptionMessages.InvalidCredentials);
             }
 
             string accessToken = _jWTService.GetAccessToken(user);
@@ -135,7 +137,7 @@ namespace DotNet_Assignment.Services.Auth
             var refreshToken = await _refreshTokenRepository.GetRefreshTokenAsync(hashedRefreshedToken);
 
             if (refreshToken == null) {
-                throw new Exception(ExceptionMessages.RefreshTokenNotFound);
+                throw new SecurityTokenException(ExceptionMessages.RefreshTokenNotFound);
             }
 
             _refreshTokenRepository.DeleteRefreshToken(refreshToken);
@@ -156,17 +158,17 @@ namespace DotNet_Assignment.Services.Auth
 
             if (token == null)
             { 
-                throw new Exception(ExceptionMessages.RefreshTokenInvalid);
+                throw new SecurityTokenException(ExceptionMessages.RefreshTokenInvalid);
             }
 
             if (token.ExpiresAt < DateTime.UtcNow) 
             {
-                throw new Exception(ExceptionMessages.RefreshTokenExpired);
+                throw new SecurityTokenExpiredException(ExceptionMessages.RefreshTokenExpired);
             }
 
             if (token.User.IsDeleted)
             {
-                throw new Exception(ExceptionMessages.UserDeactivated);
+                throw new InvalidOperationException(ExceptionMessages.UserDeactivated);
             }
 
             var accessToken = _jWTService.GetAccessToken(token.User);

@@ -1,17 +1,19 @@
-﻿using DotNet_Assignment.Models.Entities;
-using DotNet_Assignment.Repository.Restaurants;
-using System.Collections.Generic;
-using System;
-using System.Linq;
-using System.Web;
-using System.Threading.Tasks;
+﻿using DotNet_Assignment.Constants;
+using DotNet_Assignment.Data;
 using DotNet_Assignment.Models.DTO;
-using DotNet_Assignment.Constants;
+using DotNet_Assignment.Models.Entities;
+using DotNet_Assignment.Repository.Restaurants;
+using DotNet_Assignment.Repository.Users;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
 
 namespace DotNet_Assignment.Services.Restaurants
 {
-    public class RestaurantService :IRestaurantService
-    { 
+    public class RestaurantService : IRestaurantService
+    {
         private readonly IRestaurantRepository _restaurantRepository;
 
         public RestaurantService(IRestaurantRepository restaurantRepository)
@@ -28,12 +30,7 @@ namespace DotNet_Assignment.Services.Restaurants
         /// <exception cref="Exception">If no restaurants found</exception>
         public async Task<List<RestaurantResponseDto>> GetAllRestaurantsAsync(int page, int pageSize)
         {
-            var restaurants = await _restaurantRepository.GetRestaurantsAsync(page, pageSize);
-
-            if (!restaurants.Any())
-            {
-                throw new Exception(ExceptionMessages.NoRestaurants);
-            }
+            var restaurants = await _restaurantRepository.GetPagedRestaurantsAsync(page, pageSize);
 
             return restaurants.Select(r => new RestaurantResponseDto
             {
@@ -60,19 +57,15 @@ namespace DotNet_Assignment.Services.Restaurants
         /// <exception cref="Exception">If restaurant not found, no items in restaurant</exception>
         public async Task<List<MenuItemResponseDto>> GetMenuItemsByRestaurantIdAsync(Guid restaurantId, int page, int pageSize)
         {
-            var restaurant = await _restaurantRepository.GetRestaurantByIdAsync(restaurantId);
 
-            if (restaurant == null)
+            if (!await _restaurantRepository.RestaurantExists(restaurantId))
             {
-                throw new Exception(ExceptionMessages.RestaurantNotFound);
+                throw new KeyNotFoundException(ExceptionMessages.RestaurantNotFound);
             }
 
-            if (!restaurant.MenuItems.Any())
-            {
-                throw new Exception(ExceptionMessages.NoMenuItems);
-            }
+            var menuItems = await _restaurantRepository.GetPagedMenuItems(restaurantId, page, pageSize);
 
-            return restaurant.MenuItems.Select(mi => new MenuItemResponseDto
+            return menuItems.Select(mi => new MenuItemResponseDto
             {
                 MenuItemId = mi.MenuItemId,
                 Name = mi.Name,
@@ -80,11 +73,8 @@ namespace DotNet_Assignment.Services.Restaurants
                 Rating = mi.Rating,
                 Category = mi.Category,
                 Price = mi.Price,
-                InStock = mi.InStock
-            }).OrderBy(mi => mi.Rating)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToList();
+            }).ToList();
         }
+
     }
 }

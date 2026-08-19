@@ -9,6 +9,5 @@ namespace DotNet_Assignment.Models.DTO
     {
         public Guid OrderId { get; set; }
 
-        public decimal TotalPrice { get; set; }
     }
 }

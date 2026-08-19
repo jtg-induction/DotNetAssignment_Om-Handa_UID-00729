@@ -9,7 +9,7 @@ using System.Web.Http;
 namespace DotNet_Assignment.Controllers
 {
     [RoutePrefix("api/orders")]
-    public class OrderController :ApiController
+    public class OrderController : ApiController
     {
         private readonly IOrderService _orderService;
 
@@ -34,9 +34,9 @@ namespace DotNet_Assignment.Controllers
 
             var response = new ApiResponseDto<OrderResponseDto>
             {
-                IsSuccess= true,
-                Message= SuccessMessages.OrderPlacedSuccessfully,
-                Data= orderResponse
+                IsSuccess = true,
+                Message = SuccessMessages.OrderPlacedSuccessfully,
+                Data = orderResponse
             };
 
             return Ok(response);
@@ -52,7 +52,9 @@ namespace DotNet_Assignment.Controllers
         [Route("{orderId}")]
         public async Task<IHttpActionResult> GetOrderDetailsAsync(Guid orderId)
         {
-            var orderResponse = await _orderService.GetOrderDetailsAsync(orderId);
+            var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var orderResponse = await _orderService.GetOrderDetailsAsync(orderId, userId);
 
             var response = new ApiResponseDto<OrderDetailsResponseDto>
             {
@@ -86,6 +88,5 @@ namespace DotNet_Assignment.Controllers
 
             return Ok(response);
         }
-
     }
 }

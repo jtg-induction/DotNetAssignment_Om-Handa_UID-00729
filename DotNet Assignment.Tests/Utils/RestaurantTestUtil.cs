@@ -49,7 +49,6 @@ namespace DotNet_Assignment.Tests.Utils
                     Rating = 4.5m,
                     Category = "Italian",
                     Price = 300,
-                    InStock = true
                  }
             };
         }

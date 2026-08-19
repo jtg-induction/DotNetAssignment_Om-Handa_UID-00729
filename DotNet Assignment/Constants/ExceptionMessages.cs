@@ -29,5 +29,8 @@ namespace DotNet_Assignment.Constants
         public const string OrderAlreadyCancelled = "Order Already Cancelled";
         public const string OrderCantBeCancelled = "Order Can't be Cancelled";
         public const string InsufficientStock = "Insufficient Stock";
+        public const string Unauthorized = "Unauthorized";
+        public const string OrderRejectedByRestaurant = "Order Rejected By Restaurant";
+        public const string RestaurantIsClosed = "Restaurant Is Closed";
     }
 }

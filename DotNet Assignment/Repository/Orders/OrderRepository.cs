@@ -42,7 +42,7 @@ namespace DotNet_Assignment.Repository.Orders
         /// <returns>Order</returns>
         public async Task<Order> GetOrderByIdAsync(Guid orderId)
         {
-            return _context.Orders.SingleOrDefault(o => o.OrderId == orderId);
+            return await _context.Orders.SingleOrDefaultAsync(o => o.OrderId == orderId);
         }
 
         /// <summary>

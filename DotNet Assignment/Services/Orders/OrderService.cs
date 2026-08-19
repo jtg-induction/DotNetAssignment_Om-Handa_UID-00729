@@ -49,7 +49,7 @@ namespace DotNet_Assignment.Services.Orders
         {
             using (var transaction = _appDbContext.Database.BeginTransaction())
             {
-                var response = await PlaceOrder(userId, orderRequestDto);
+                var response = await ExecutePlaceOrderAsync(userId, orderRequestDto);
 
                 transaction.Commit();
 
@@ -57,37 +57,42 @@ namespace DotNet_Assignment.Services.Orders
             }
         }
 
-        public async Task<OrderResponseDto> PlaceOrder(Guid userId, OrderRequestDto orderRequestDto)
+        public async Task<OrderResponseDto> ExecutePlaceOrderAsync(Guid userId, OrderRequestDto orderRequestDto)
         {
             var user = await _userRepository.GetUserByIdAsync(userId);
 
             if (user == null)
             {
-                throw new Exception(ExceptionMessages.UserNotFound);
+                throw new KeyNotFoundException(ExceptionMessages.UserNotFound);
             }
 
             if (user.IsDeleted)
             {
-                throw new Exception(ExceptionMessages.UserDeactivated);
+                throw new InvalidOperationException(ExceptionMessages.UserDeactivated);
             }
 
             var restaurant = await _restaurantRepository.GetRestaurantByIdAsync(orderRequestDto.RestaurantId);
 
             if (restaurant == null)
             {
-                throw new Exception(ExceptionMessages.RestaurantNotFound);
+                throw new KeyNotFoundException(ExceptionMessages.RestaurantNotFound);
+            }
+
+            if (!restaurant.IsOpen)
+            {
+                throw new InvalidOperationException(ExceptionMessages.RestaurantIsClosed);
             }
 
             if (orderRequestDto.OrderedItems == null)
             {
-                throw new Exception(ExceptionMessages.AtleastOneOrderItemRequired);
+                throw new ArgumentException(ExceptionMessages.AtleastOneOrderItemRequired);
             }
 
             var address = await _addressRepository.GetAddressByIdAsync(orderRequestDto.AddressId, userId);
 
-            if(address == null)
+            if (address == null)
             {
-                throw new Exception(ExceptionMessages.AddressNotFound);
+                throw new KeyNotFoundException(ExceptionMessages.AddressNotFound);
             }
 
             string deliveryAddress = address.HouseNumber + ", " + address.Street + ", " + address.City + ", " + address.State + ", " + address.Pincode + ", " + address.Landmark;
@@ -105,19 +110,25 @@ namespace DotNet_Assignment.Services.Orders
             {
                 var menuItem = await _restaurantRepository.GetMenuItemForUpdateAsync(item.MenuItemId);
 
+                if (menuItem.IsDeleted)
+                {
+                    throw new InvalidOperationException(ExceptionMessages.MenuItemNotFound);
+                }
+
                 if (menuItem == null || menuItem.RestaurantId != orderRequestDto.RestaurantId)
                 {
-                    throw new Exception(ExceptionMessages.MenuItemNotFound);
+                    throw new InvalidOperationException(ExceptionMessages.MenuItemNotFound);
                 }
+
 
                 if (menuItem.QuantityAvailable < 0 || (menuItem.QuantityAvailable - item.Quantity) < 0)
                 {
-                    throw new Exception(ExceptionMessages.InsufficientStock);
+                    throw new InvalidOperationException(ExceptionMessages.InsufficientStock);
                 }
 
                 if ((user.Balance - (menuItem.Price * item.Quantity)) < 0)
                 {
-                    throw new Exception(ExceptionMessages.InsufficientBalance);
+                    throw new InvalidOperationException(ExceptionMessages.InsufficientBalance);
                 }
 
                 menuItem.QuantityAvailable -= item.Quantity;
@@ -144,24 +155,30 @@ namespace DotNet_Assignment.Services.Orders
 
             return new OrderResponseDto
             {
-                TotalPrice = order.TotalPrice,
                 OrderId = order.OrderId
             };
         }
 
         /// <summary>
-        /// Get order details of a specif order
+        /// Get order details of a specific order
         /// </summary>
         /// <param name="orderId"></param>
         /// <returns>Order Details</returns>
         /// <exception cref="Exception">if no order found</exception>
-        public async Task<OrderDetailsResponseDto> GetOrderDetailsAsync(Guid orderId)
+        public async Task<OrderDetailsResponseDto> GetOrderDetailsAsync(Guid orderId, Guid userId)
         {
             var order = await _orderRepository.GetOrderByIdAsync(orderId);
 
             if (order == null)
             {
-                throw new Exception(ExceptionMessages.OrderNotFound);
+                throw new KeyNotFoundException(ExceptionMessages.OrderNotFound);
+            }
+
+            var orderUserId = order.UserId;
+
+            if (userId != orderUserId)
+            {
+                throw new UnauthorizedAccessException(ExceptionMessages.Unauthorized);
             }
 
             var orderedItems = await _orderRepository.GetOrderItemsAsync(orderId);
@@ -196,42 +213,53 @@ namespace DotNet_Assignment.Services.Orders
             using (var transaction = _appDbContext.Database.BeginTransaction())
             {
 
-                await CancelOrder(orderId, userId);
+                await ExecuteCancelOrderAsync(orderId, userId);
                 transaction.Commit();
 
             }
         }
 
-        public async Task CancelOrder(Guid orderId, Guid userId)
+        public async Task ExecuteCancelOrderAsync(Guid orderId, Guid userId)
         {
             var order = await _orderRepository.GetOrderForUpdateAsync(orderId);
 
             if (order == null)
             {
-                throw new Exception(ExceptionMessages.OrderNotFound);
+                throw new KeyNotFoundException(ExceptionMessages.OrderNotFound);
             }
+
             var orderUserId = order.UserId;
 
             if (userId != orderUserId)
             {
-                throw new Exception(ExceptionMessages.OrderCantBeCancelled);
+                throw new UnauthorizedAccessException(ExceptionMessages.Unauthorized);
             }
 
             var user = await _userRepository.GetUserByIdAsync(orderUserId);
 
             if (user == null)
             {
-                throw new Exception(ExceptionMessages.UserNotFound);
+                throw new KeyNotFoundException(ExceptionMessages.UserNotFound);
             }
 
             if (user.IsDeleted)
             {
-                throw new Exception(ExceptionMessages.UserDeactivated);
+                throw new InvalidOperationException(ExceptionMessages.UserDeactivated);
             }
 
             if (order.Status == OrderStatus.Cancelled)
             {
-                throw new Exception(ExceptionMessages.OrderAlreadyCancelled);
+                throw new InvalidOperationException(ExceptionMessages.OrderAlreadyCancelled);
+            }
+
+            if (order.Status == OrderStatus.Rejected)
+            {
+                throw new InvalidOperationException(ExceptionMessages.OrderRejectedByRestaurant);
+            }
+
+            if (order.Status == OrderStatus.Dispatched || order.Status == OrderStatus.Delivered)
+            {
+                throw new InvalidOperationException(ExceptionMessages.OrderCantBeCancelled);
             }
 
             foreach (OrderedItem orderedItem in order.OrderedItems)

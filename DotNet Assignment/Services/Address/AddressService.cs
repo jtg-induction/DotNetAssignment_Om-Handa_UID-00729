@@ -10,10 +10,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Http.Results;
 
 namespace DotNet_Assignment.Services.Address
 {
-    public class AddressService :IAddressService
+    public class AddressService : IAddressService
     {
         private readonly IAddressRepository _addressRepository;
         private readonly IUserRepository _userRepository;
@@ -41,12 +42,12 @@ namespace DotNet_Assignment.Services.Address
 
             if (user == null)
             {
-                throw new Exception(ExceptionMessages.UserNotFound);
+                throw new KeyNotFoundException(ExceptionMessages.UserNotFound);
             }
 
             if (user.IsDeleted)
             {
-                throw new Exception(ExceptionMessages.UserDeactivated);
+                throw new InvalidOperationException(ExceptionMessages.UserDeactivated);
             }
 
             var address = new UserAddress
@@ -64,7 +65,7 @@ namespace DotNet_Assignment.Services.Address
 
             await _context.SaveChangesAsync();
         }
-        
+
         /// <summary>
         /// Updates a users address
         /// </summary>
@@ -78,12 +79,12 @@ namespace DotNet_Assignment.Services.Address
 
             if (address == null)
             {
-                throw new Exception(ExceptionMessages.AddressNotFound);
+                throw new KeyNotFoundException(ExceptionMessages.AddressNotFound);
             }
 
             if (address.User.IsDeleted)
             {
-                throw new Exception(ExceptionMessages.UserDeactivated);
+                throw new InvalidOperationException(ExceptionMessages.UserDeactivated);
             }
 
             if (!string.IsNullOrWhiteSpace(addressDto.HouseNumber))

@@ -75,10 +75,10 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
         }
 
         /// <summary>
-        /// GetMenuItemsByRestaurantId Function - Valid Request - Calls Repository function
+        /// GetMenuItemsByRestaurantId Function - No Menu Items - Returns Empty
         /// </summary>
         [Test]
-        public void GetMenuItemsByRestaurantId_NoMenuItems_ThrowsException()
+        public async Task GetMenuItemsByRestaurantId_NoMenuItems_ReturnsEmpty()
         {
             var restaurantId = Guid.NewGuid();
 
@@ -92,11 +92,9 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
                 .Setup(x => x.GetRestaurantByIdAsync(restaurantId))
                 .ReturnsAsync(restaurant);
 
+            var response = await _restaurantService.GetMenuItemsByRestaurantIdAsync(restaurantId, 1, 10);
 
-            Func<Task> Action = async () => await _restaurantService.GetMenuItemsByRestaurantIdAsync(restaurantId, 1, 10);
-            var exception = Assert.CatchAsync<Exception>(Action);
-
-            Assert.That( exception.Message, Is.EqualTo(ExceptionMessages.NoMenuItems));
+            Assert.That( response, Is.Not.Null);
         }
 
         /// <summary>
