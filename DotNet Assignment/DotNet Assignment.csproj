@@ -292,6 +292,10 @@
     <Compile Include="Migrations\202608120925347_AddedQuantityFieldInMenuItems.Designer.cs">
       <DependentUpon>202608120925347_AddedQuantityFieldInMenuItems.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202608191911177_AddedIsDeletedForMenuItems.cs" />
+    <Compile Include="Migrations\202608191911177_AddedIsDeletedForMenuItems.Designer.cs">
+      <DependentUpon>202608191911177_AddedIsDeletedForMenuItems.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DTO\AddressDto.cs" />
     <Compile Include="Models\DTO\AddRestaurantDto.cs" />
@@ -391,6 +395,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202608120925347_AddedQuantityFieldInMenuItems.resx">
       <DependentUpon>202608120925347_AddedQuantityFieldInMenuItems.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608191911177_AddedIsDeletedForMenuItems.resx">
+      <DependentUpon>202608191911177_AddedIsDeletedForMenuItems.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

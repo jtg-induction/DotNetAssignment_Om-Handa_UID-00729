@@ -10,7 +10,7 @@ namespace DotNet_Assignment.Services.Address
     public interface IAddressService
     {
         Task AddUserAddressAsync(Guid userId, AddressDto addressDto);
-        
+
         Task UpdateUserAddressAsync(Guid userid, Guid userAddressId, AddressDto addressDto);
     }
 }

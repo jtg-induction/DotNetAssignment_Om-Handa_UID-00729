@@ -62,7 +62,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            Func<Task> Action = async () => await _orderService.CancelOrder(orderId, Guid.NewGuid());
+            Func<Task> Action = async () => await _orderService.ExecuteCancelOrderAsync(orderId, Guid.NewGuid());
             var exception = Assert.CatchAsync<Exception>(Action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.OrderNotFound));
@@ -93,7 +93,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            Func<Task> Action = async () => await _orderService.CancelOrder(orderId, userId);
+            Func<Task> Action = async () => await _orderService.ExecuteCancelOrderAsync(orderId, userId);
 
             var exception = Assert.CatchAsync<Exception>(Action);
 
@@ -128,7 +128,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
                 .Setup(x => x.GetMenuItemByIdAsync(menuItem.MenuItemId))
                 .ReturnsAsync(menuItem);
 
-            await _orderService.CancelOrder(orderId, userId);
+            await _orderService.ExecuteCancelOrderAsync(orderId, userId);
 
             Assert.That(order.Status, Is.EqualTo(OrderStatus.Cancelled));
 
@@ -162,7 +162,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
                 .Setup(x => x.GetMenuItemByIdAsync(menuItem.MenuItemId))
                 .ReturnsAsync(menuItem);
 
-            await _orderService.CancelOrder(orderId, userId);
+            await _orderService.ExecuteCancelOrderAsync(orderId, userId);
 
             _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }

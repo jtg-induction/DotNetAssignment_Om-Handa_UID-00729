@@ -49,7 +49,7 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
 
             var restaurants = RestaurantTestUtil.MockRestaurantHelper(Guid.NewGuid());
 
-            _restaurantRepository.Setup(x => x.GetRestaurantsAsync(page, pageSize)).ReturnsAsync(restaurants);
+            _restaurantRepository.Setup(x => x.GetPagedRestaurantsAsync(page, pageSize)).ReturnsAsync(restaurants);
 
             var result = await _restaurantService.GetAllRestaurantsAsync(page, pageSize);
 
@@ -58,20 +58,19 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
         }
 
         /// <summary>
-        /// GetAllRestaurants Function - Valid Request - No Restaurants Found - Throws Exception
+        /// GetAllRestaurants Function - Valid Request - No Restaurants Found - Returns Empty list
         /// </summary>
         [Test]
-        public void GetAllRestaurants_NoRestaurants_ThrowsException()
+        public void GetAllRestaurants_NoRestaurants_ReturnsEmpty()
         {
             var page = 1;
             var pageSize = 10;
 
-            _restaurantRepository.Setup(x => x.GetRestaurantsAsync(page, pageSize)).ReturnsAsync(new List<Restaurant>());
+            _restaurantRepository.Setup(x => x.GetPagedRestaurantsAsync(page, pageSize)).ReturnsAsync(new List<Restaurant>());
 
-            Func<Task> Action = async () => await _restaurantService.GetAllRestaurantsAsync(page, pageSize);
-            var exception = Assert.CatchAsync<Exception>(Action);
+            var response =  _restaurantService.GetAllRestaurantsAsync(page, pageSize);
 
-            Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.NoRestaurants));
+            Assert.That(response, Is.Not.Null);
         }
 
         /// <summary>
@@ -85,11 +84,11 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
 
             var restaurants = RestaurantTestUtil.MockRestaurantHelper(Guid.NewGuid());
 
-            _restaurantRepository.Setup(x => x.GetRestaurantsAsync(page, pageSize)).ReturnsAsync(restaurants);
+            _restaurantRepository.Setup(x => x.GetPagedRestaurantsAsync(page, pageSize)).ReturnsAsync(restaurants);
 
             await _restaurantService.GetAllRestaurantsAsync(page, pageSize);
 
-            _restaurantRepository.Verify(x => x.GetRestaurantsAsync(page, pageSize), Times.Once);
+            _restaurantRepository.Verify(x => x.GetPagedRestaurantsAsync(page, pageSize), Times.Once);
         }
 
         /// <summary>
@@ -100,7 +99,7 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
         {
             var restaurants = RestaurantTestUtil.MockRestaurantHelper(Guid.NewGuid());
 
-            _restaurantRepository.Setup(x => x.GetRestaurantsAsync(1, 10)).ReturnsAsync(restaurants);
+            _restaurantRepository.Setup(x => x.GetPagedRestaurantsAsync(1, 10)).ReturnsAsync(restaurants);
 
             var result = await _restaurantService.GetAllRestaurantsAsync(1, 10);
 

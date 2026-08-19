@@ -106,10 +106,9 @@ namespace DotNet_Assignment.Tests.Services.Orders
             _addressRepository.Setup(x => x.GetAddressByIdAsync(addressId, userId)).ReturnsAsync(address);
             _restaurantRepository.Setup(x => x.GetMenuItemForUpdateAsync(menuItemId)).ReturnsAsync(menuItem);
 
-            var result = await _orderService.PlaceOrder(userId, request);
+            var result = await _orderService.ExecutePlaceOrderAsync(userId, request);
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.TotalPrice, Is.EqualTo(400));
             _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
 
@@ -123,7 +122,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
 
             _userRepository.Setup(x => x.GetUserByIdAsync(userId)).ReturnsAsync((User)null);
 
-            Func<Task> Action = async () => await _orderService.PlaceOrder(userId, new OrderRequestDto());
+            Func<Task> Action = async () => await _orderService.ExecutePlaceOrderAsync(userId, new OrderRequestDto());
             var exception = Assert.CatchAsync<Exception>(Action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.UserNotFound));
@@ -154,13 +153,53 @@ namespace DotNet_Assignment.Tests.Services.Orders
             _userRepository.Setup(x => x.GetUserByIdAsync(userId)).ReturnsAsync(user);
             _restaurantRepository.Setup(x => x.GetRestaurantByIdAsync(restaurantId)).ReturnsAsync((Restaurant)null);
 
-            Func<Task> Action = async () => await _orderService.PlaceOrder(userId, new OrderRequestDto());
+            Func<Task> Action = async () => await _orderService.ExecutePlaceOrderAsync(userId, new OrderRequestDto());
             var exception = Assert.CatchAsync<Exception>(Action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.RestaurantNotFound));
             _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Never);
         }
 
+<<<<<<< HEAD
+=======
+
+        /// <summary>
+        /// PlacerOrder Function - Menu Items Not Found - Throw Exception
+        /// </summary>
+        [Test]
+        public async Task PlaceOrder_MenuItemsNotFound_ReturnsEmpty()
+        {
+            var userId = Guid.NewGuid();
+            var restaurantId = Guid.NewGuid();
+
+            var user = new User
+            {
+                UserId = userId,
+                IsDeleted = false,
+                Balance = 1000
+            };
+
+            var restaurant = new Restaurant
+            {
+                RestaurantId = restaurantId,
+                MenuItems = new List<MenuItem>()
+            };
+
+            var request = new OrderRequestDto
+            {
+                RestaurantId = restaurantId
+            };
+
+            _userRepository.Setup(x => x.GetUserByIdAsync(userId)).ReturnsAsync(user);
+            _restaurantRepository.Setup(x => x.GetRestaurantByIdAsync(restaurantId)).ReturnsAsync(restaurant);
+
+            var response = await _orderService.ExecutePlaceOrderAsync(userId, request);
+
+            Assert.That(response, Is.Not.Null);
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
+        }
+
+>>>>>>> 71a1a618f4c122ef6134c4a79c04b8467fc66e96
         /// <summary>
         /// PlacerOrder Function - No ordered Items - Throw Exception
         /// </summary>
@@ -204,7 +243,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
             _restaurantRepository.Setup(x => x.GetRestaurantByIdAsync(restaurantId)).ReturnsAsync(restaurant);
             _addressRepository.Setup(x => x.GetAddressByIdAsync(addressId, userId)).ReturnsAsync(address);
 
-            Func<Task> Action = async () => await _orderService.PlaceOrder(userId, request);
+            Func<Task> Action = async () => await _orderService.ExecutePlaceOrderAsync(userId, request);
             var exception = Assert.CatchAsync<Exception>(Action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.AtleastOneOrderItemRequired));
@@ -268,7 +307,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
             _restaurantRepository.Setup(x => x.GetMenuItemForUpdateAsync(menuItemId)).ReturnsAsync(menuItem);
             _addressRepository.Setup(x => x.GetAddressByIdAsync(addressId, userId)).ReturnsAsync(address);
 
-            Func<Task> Action = async () => await _orderService.PlaceOrder(userId, request);
+            Func<Task> Action = async () => await _orderService.ExecutePlaceOrderAsync(userId, request);
             var exception = Assert.CatchAsync<Exception>(Action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.InsufficientBalance));

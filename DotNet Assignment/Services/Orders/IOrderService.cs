@@ -9,7 +9,7 @@ namespace DotNet_Assignment.Services.Orders
     {
         Task<OrderResponseDto> PlaceOrderAsync(Guid userId, OrderRequestDto orderRequestDto);
 
-        Task<OrderDetailsResponseDto> GetOrderDetailsAsync(Guid orderId);
+        Task<OrderDetailsResponseDto> GetOrderDetailsAsync(Guid orderId, Guid userId);
 
         Task CancelOrderAsync(Guid orderId, Guid userId);
 
