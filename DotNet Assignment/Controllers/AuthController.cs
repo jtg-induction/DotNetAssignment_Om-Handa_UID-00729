@@ -60,7 +60,7 @@ namespace DotNet_Assignment.Controllers
 
                 var response=  new ApiResponseDto<object>() { IsSuccess = true, Message = SuccessMessages.UserLoggedOut};
                 return Ok(response);
-        }
+    }
 
         /// <summary>
         /// Refreshes and generates a new Access Token
@@ -80,3 +80,4 @@ namespace DotNet_Assignment.Controllers
 
     }
 }
+    
