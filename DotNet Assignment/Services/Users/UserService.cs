@@ -85,7 +85,7 @@ namespace DotNet_Assignment.Services.Users
 
             if (user.IsDeleted)
             {
-                throw new WrongOperationException(ExceptionMessages.UserAlreadyDeactivated);
+                throw new UserDeactivatedException(ExceptionMessages.UserAlreadyDeactivated);
             }
 
             user.IsDeleted = true;
@@ -119,6 +119,11 @@ namespace DotNet_Assignment.Services.Users
             if (!Hasher.Verify(changePasswordDto.OldPassword, user.Password))
             {
                 throw new WrongOperationException(ExceptionMessages.OldPasswordIncorrect);
+            }
+
+            if(changePasswordDto.OldPassword == changePasswordDto.NewPassword)
+            {
+                throw new WrongOperationException(ExceptionMessages.NewPasswordCantBeSameAsOld);
             }
 
             user.UpdatedAt = DateTime.UtcNow;

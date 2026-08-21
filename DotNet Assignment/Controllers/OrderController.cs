@@ -1,7 +1,9 @@
 ﻿using DotNet_Assignment.Constants;
 using DotNet_Assignment.Models.DTO;
+using DotNet_Assignment.Models.Enums;
 using DotNet_Assignment.Services.Orders;
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -84,6 +86,60 @@ namespace DotNet_Assignment.Controllers
             {
                 IsSuccess = true,
                 Message = SuccessMessages.OrderCancelledSuccessfully,
+            };
+
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Changes Order Status (Owner)
+        /// </summary>
+        /// <param name="orderStatusDto">Status to be changed to</param>
+        /// <param name="orderId"></param>
+        /// <returns>Http response with Success message</returns>
+        [Authorize(Roles = nameof(UserRoles.Owner))]
+        [HttpPatch]
+        [Route("{orderId:guid}")]
+        public async Task<IHttpActionResult> ChangeOrderStatusAsync(ChangeOrderStatusDto orderStatusDto, Guid orderId)
+        {
+            var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            await _orderService.ChangeOrderStatusAsync(orderStatusDto, orderId, userId);
+
+            var response = new ApiResponseDto<OrderDetailsResponseDto>
+            {
+                IsSuccess = true,
+                Message = SuccessMessages.OrderStatusUpdatedSuccessfully,
+            };
+
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Filters orders based on query params
+        /// </summary>
+        /// <param name="category"></param>
+        /// <param name="status"></param>
+        /// <param name="sortBy"></param>
+        /// <param name="sortOrder"></param>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="searchByOrderId"></param>
+        /// <returns>Http response with success message and filtered orders</returns>
+        [Authorize(Roles = nameof(UserRoles.Owner))]
+        [HttpGet]
+        [Route("")]
+        public async Task<IHttpActionResult> FilterOrder([FromUri] FilterOptionsDto filterOptions)
+        {
+            var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var result = await _orderService.GetFilteredOrders(userId, filterOptions);
+
+            var response = new ApiResponseDto<List<OrderDetailsResponseDto>>
+            {
+                IsSuccess = true,
+                Message = SuccessMessages.OrderDetailsFetchedSuccessfully,
+                Data = result
             };
 
             return Ok(response);

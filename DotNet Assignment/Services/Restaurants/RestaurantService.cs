@@ -1,24 +1,33 @@
 ﻿using DotNet_Assignment.Constants;
 using DotNet_Assignment.Data;
+using DotNet_Assignment.Exceptions;
 using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Models.Entities;
+using DotNet_Assignment.Models.Enums;
 using DotNet_Assignment.Repository.Restaurants;
 using DotNet_Assignment.Repository.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace DotNet_Assignment.Services.Restaurants
 {
     public class RestaurantService : IRestaurantService
     {
         private readonly IRestaurantRepository _restaurantRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly AppDbContext _appDbContext;
 
-        public RestaurantService(IRestaurantRepository restaurantRepository)
+        public RestaurantService(
+            IRestaurantRepository restaurantRepository,
+            IUserRepository userRepository,
+            AppDbContext appDbContext
+            )
         {
             _restaurantRepository = restaurantRepository;
+            _userRepository = userRepository;
+            _appDbContext = appDbContext;
         }
 
         /// <summary>
@@ -76,5 +85,95 @@ namespace DotNet_Assignment.Services.Restaurants
             }).ToList();
         }
 
+        /// <summary>
+        /// Adds restaurant
+        /// </summary>
+        /// <param name="addRestaurantDto"></param>
+        public async Task AddRestaurantAsync(AddRestaurantDto addRestaurantDto)
+        {
+            var restaurant = new Restaurant
+            {
+                Name = addRestaurantDto.Name,
+                Description = addRestaurantDto.Description,
+                Street = addRestaurantDto.Street,
+                Landmark = addRestaurantDto.Landmark,
+                City = addRestaurantDto.City,
+                State = addRestaurantDto.State,
+                Pincode = addRestaurantDto.Pincode,
+                Rating = 0
+            };
+
+            var user = await _userRepository.GetUserByEmailAsync(addRestaurantDto.UserEmail);
+
+            if (user == null)
+            {
+                throw new KeyNotFoundException(ExceptionMessages.UserNotFound);
+            }
+
+            if (user.IsDeleted)
+            {
+                throw new UserDeactivatedException(ExceptionMessages.UserDeactivated);
+            }
+
+            var restaurantOwner = new RestaurantOwner
+            {
+                RestaurantId = restaurant.RestaurantId,
+                UserId = user.UserId
+            };
+
+            _restaurantRepository.AddRestaurant(restaurant);
+
+            _restaurantRepository.AddRestaurantOwner(restaurantOwner);
+
+            await _appDbContext.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Links an owner to a restaurant
+        /// </summary>
+        /// <param name="restaurantOwnerRequestDto"></param>
+        /// <exception cref="Exception">If user not found, user deleted, restaurant not found</exception>
+        public async Task AddRestaurantOwnerAsync(RestaurantOwnerRequestDto restaurantOwnerRequestDto)
+        {
+            var user = await _userRepository.GetUserByEmailAsync(restaurantOwnerRequestDto.UserEmail);
+
+            if (user == null)
+            {
+                throw new KeyNotFoundException(ExceptionMessages.UserNotFound);
+            }
+
+            if (user.IsDeleted)
+            {
+                throw new UserDeactivatedException(ExceptionMessages.UserDeactivated);
+            }
+
+            var restaurant = await _restaurantRepository.GetRestaurantByIdAsync(restaurantOwnerRequestDto.RestaurantId);
+
+            if (restaurant == null)
+            {
+                throw new KeyNotFoundException(ExceptionMessages.RestaurantNotFound);
+            }
+
+            if (await _restaurantRepository.IsUserAlreadyOwnerAsync(restaurant.RestaurantId, user.UserId))
+            {
+                throw new WrongOperationException(ExceptionMessages.UserALreadyAssignedToThisRestaurant);
+            }
+
+            var restaurantOwner = new RestaurantOwner
+            {
+                RestaurantId = restaurantOwnerRequestDto.RestaurantId,
+                UserId = user.UserId
+            };
+
+            if (user.Role == UserRoles.User)
+            {
+                user.Role = UserRoles.Owner;
+            }
+
+            _restaurantRepository.AddRestaurantOwner(restaurantOwner);
+
+            await _appDbContext.SaveChangesAsync();
+
+        }
     }
 }

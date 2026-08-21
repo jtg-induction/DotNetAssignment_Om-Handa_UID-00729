@@ -83,7 +83,7 @@ namespace DotNet_Assignment.Services.Orders
                 throw new WrongOperationException(ExceptionMessages.RestaurantIsClosed);
             }
 
-            if (orderRequestDto.OrderedItems == null)
+            if (orderRequestDto.OrderedItems == null || !orderRequestDto.OrderedItems.Any())
             {
                 throw new ArgumentException(ExceptionMessages.AtleastOneOrderItemRequired);
             }
@@ -104,7 +104,7 @@ namespace DotNet_Assignment.Services.Orders
                 RestaurantId = orderRequestDto.RestaurantId
             };
 
-            var orderedItemIds = order.OrderedItems.Select(oi => oi.MenuItemId).ToList();
+            var orderedItemIds = orderRequestDto.OrderedItems.Select(oi => oi.MenuItemId).ToList();
 
             var menuItems = await _restaurantRepository.GetMenuItemsForUpdateAsync(orderedItemIds);
 
@@ -282,6 +282,95 @@ namespace DotNet_Assignment.Services.Orders
             order.UpdatedAt = DateTime.UtcNow;
 
             await _appDbContext.SaveChangesAsync();
+
+        }
+
+
+        /// <summary>
+        /// Changes order status of an order based on order Id
+        /// </summary>
+        /// <param name="orderStatusDto"></param>
+        /// <param name="orderId"></param>
+        /// <exception cref="Exception">If order not found or new order status value is wrong</exception>
+        public async Task ChangeOrderStatusAsync(ChangeOrderStatusDto orderStatusDto, Guid orderId, Guid ownerId)
+        {
+            using (var transaction = _appDbContext.Database.BeginTransaction())
+            {
+
+                await ExecuteChangeOrderStatusAsync(orderStatusDto, orderId, ownerId);
+                transaction.Commit();
+
+            }
+        }
+
+        public async Task ExecuteChangeOrderStatusAsync(ChangeOrderStatusDto orderStatusDto, Guid orderId, Guid ownerId)
+        {
+            if (!Enum.IsDefined(typeof(OrderStatus), orderStatusDto.Status.Value))
+            {
+                throw new ArgumentException(ExceptionMessages.InvalidOrderStatus);
+            }
+
+            var order = await _orderRepository.GetOrderForUpdateAsync(orderId);
+
+            if (order == null)
+            {
+                throw new KeyNotFoundException(ExceptionMessages.OrderNotFound);
+            }
+
+            if (!order.Restaurant.RestaurantOwners.Any(x => x.UserId == ownerId))
+            {
+                throw new UnauthorizedAccessException(ExceptionMessages.Unauthorized);
+            }
+
+            if (order.Status == orderStatusDto.Status)
+            {
+                throw new WrongOperationException(ExceptionMessages.OrderStatusAlreadyChanged);
+            }
+
+            if (orderStatusDto.Status != OrderStatus.Rejected)
+            {
+                if ((int)order.Status + 1 != (int)orderStatusDto.Status || (int)orderStatusDto?.Status < (int)order.Status)
+                {
+                    throw new WrongOperationException(ExceptionMessages.StatusCantBeChanged);
+                }
+            }
+
+            if (orderStatusDto.Status == OrderStatus.Cancelled)
+            {
+                throw new UnauthorizedAccessException(ExceptionMessages.Unauthorized);
+            }
+
+            if (orderStatusDto.Status == OrderStatus.Rejected)
+            {
+
+                var user = await _userRepository.GetUserByIdAsync(order.UserId);
+
+                foreach (OrderedItem orderedItem in order.OrderedItems)
+                {
+                    var menuItem = await _restaurantRepository.GetMenuItemByIdAsync(orderedItem.MenuItemId);
+
+                    menuItem.QuantityAvailable += orderedItem.Quantity;
+                }
+
+                user.Balance += order.TotalPrice;
+            }
+
+            order.Status = orderStatusDto.Status.Value;
+
+            order.UpdatedAt = DateTime.UtcNow;
+
+            await _appDbContext.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Gets filtered orders based on options (query params) 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="filterOptions">Query params given by controller</param>
+        /// <returns>List of orders</returns>
+        public async Task<List<OrderDetailsResponseDto>> GetFilteredOrders(Guid userId, FilterOptionsDto filterOptions)
+        {
+            return await _orderRepository.FilterOrderAsync(userId, filterOptions);
         }
     }
 }

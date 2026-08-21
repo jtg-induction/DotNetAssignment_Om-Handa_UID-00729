@@ -24,14 +24,20 @@ namespace DotNet_Assignment.Constants
         public const string NoRestaurants = "No Restaurants found";
         public const string AtleastOneOrderItemRequired = "At least one order item required";
         public const string MenuItemNotFound = "Menu Item not found";
-        public const string InsufficientBalance = "Insufficient balance";
-        public const string OrderNotFound = "Order not found";
-        public const string OrderAlreadyCancelled = "Order already cancelled";
-        public const string OrderCantBeCancelled = "Order can't be cancelled";
-        public const string InsufficientStock = "Insufficient stock";
+        public const string InsufficientBalance = "Insufficient Balance";
+        public const string OrderNotFound = "Order Not Found";
+        public const string OrderAlreadyCancelled = "Order Already Cancelled";
+        public const string OrderCantBeCancelled = "Order Can't be Cancelled";
+        public const string InsufficientStock = "Insufficient Stock";
+        public const string StatusCantBeChanged = "Order status can't be changed";
+        public const string NoOrdersToShow = "No Orders To Show";
         public const string Unauthorized = "Unauthorized";
-        public const string OrderRejectedByRestaurant = "Order rejected by restaurant";
-        public const string RestaurantIsClosed = "Restaurant is closed";
+        public const string OrderStatusAlreadyChanged = "Order Status Already Changed";
+        public const string InvalidOrderStatus = "Invalid Order Status";
+        public const string OrderRejectedByRestaurant = "Order Rejected By Restaurant";
+        public const string RestaurantIsClosed = "Restaurant Is Closed";
         public const string InvalidOperation = "Invalid Operation";
+        public const string NewPasswordCantBeSameAsOld = "New password can't be same as old password";
+        public const string UserALreadyAssignedToThisRestaurant = "User is already assigned to this restaurant";
     }
 }

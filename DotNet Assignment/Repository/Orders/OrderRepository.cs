@@ -1,5 +1,7 @@
 ﻿using DotNet_Assignment.Data;
+using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Models.Entities;
+using DotNet_Assignment.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -67,9 +69,89 @@ namespace DotNet_Assignment.Repository.Orders
             if (order != null)
             {
                 await _context.Entry(order).Collection(o => o.OrderedItems).LoadAsync();
+
+                await _context.Entry(order).Reference(o => o.Restaurant).LoadAsync();
+
+                if(order.Restaurant != null)
+                {
+                    await _context.Entry(order.Restaurant).Collection(o => o.RestaurantOwners).LoadAsync();
+
+                }
             }
 
             return order;
+        }
+
+        /// <summary>
+        /// Filters Orders based on query from controller
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="filterOptionsDto"></param>
+        /// <returns>List of filtered Orders</returns>
+        public async Task<List<OrderDetailsResponseDto>> FilterOrderAsync(Guid userId, FilterOptionsDto filterOptionsDto)
+        {
+            var query = _context.Orders.AsNoTracking().Where(o => o.Restaurant.RestaurantOwners.Any(ro => ro.UserId == userId));
+
+            query = query.Include(o => o.Restaurant)
+                        .Include(o => o.OrderedItems.Select(oi => oi.MenuItem));
+
+            if (filterOptionsDto == null)
+            {
+                filterOptionsDto = new FilterOptionsDto();
+            }
+
+            if (!string.IsNullOrWhiteSpace(filterOptionsDto.Status))
+            {
+                if(Enum.TryParse<OrderStatus>(filterOptionsDto.Status, true, out OrderStatus status))
+                {
+                    query = query.Where(x => x.Status == status);
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(filterOptionsDto.Category))
+            {
+                query = query.Where(x => x.OrderedItems.Any(oi => oi.MenuItem.Category == filterOptionsDto.Category));
+            }
+
+            if (filterOptionsDto.SearchByOrderId !=null)
+            {
+                query = query.Where(x => x.OrderId == filterOptionsDto.SearchByOrderId);
+            }
+
+            if (!string.IsNullOrWhiteSpace(filterOptionsDto.SortBy))
+            {
+                if (filterOptionsDto.SortBy.Equals("price", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = filterOptionsDto.SortOrder == "asc"
+                            ? query.OrderBy(x => x.TotalPrice)
+                            : query.OrderByDescending(x => x.TotalPrice);
+                }
+
+                if (filterOptionsDto.SortBy.Equals("date", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = filterOptionsDto.SortOrder == "asc"
+                            ? query.OrderBy(x => x.CreatedAt)
+                            : query.OrderByDescending(x => x.CreatedAt);
+                }
+            }
+
+            return await query.Skip((filterOptionsDto.Page - 1) * filterOptionsDto.PageSize)
+                .Take(filterOptionsDto.PageSize).Select(o => new OrderDetailsResponseDto
+                {
+                    OrderId = o.OrderId,
+                    TotalPrice = o.TotalPrice,
+                    Status = o.Status.ToString(),
+                    DeliveryAddress = o.DeliveryAddress,
+                    RestaurantName = o.Restaurant.Name,
+
+                    OrderedItems = o.OrderedItems.Select(oi => new MenuDetailsResponseDto
+                    {
+                        Name = oi.MenuItem.Name,
+                        Description = oi.MenuItem.Description,
+                        Price = oi.ItemPrice,
+                        Quantity = oi.Quantity
+                    }).ToList()
+                }).ToListAsync();
         }
     }
 }

@@ -20,15 +20,22 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
     public class GetMenuItemsTests
     {
         private Mock<IRestaurantRepository> _restaurantRepository;
+        private Mock<IUserRepository> _userRepository;
+        private Mock<AppDbContext> _appDbContext;
+
         private RestaurantService _restaurantService;
 
         [SetUp]
         public void Setup()
         {
             _restaurantRepository = new Mock<IRestaurantRepository>();
+            _userRepository = new Mock<IUserRepository>();
+            _appDbContext = new Mock<AppDbContext>();
 
             _restaurantService = new RestaurantService(
-                _restaurantRepository.Object
+                _restaurantRepository.Object,
+                _userRepository.Object,
+                _appDbContext.Object
             );
         }
 
