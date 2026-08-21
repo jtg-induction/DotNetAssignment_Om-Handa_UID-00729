@@ -47,8 +47,16 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
             };
 
             _restaurantRepository
+                .Setup(x => x.RestaurantExists(restaurantId))
+                .ReturnsAsync(true);
+
+            _restaurantRepository
                 .Setup(x => x.GetRestaurantByIdAsync(restaurantId))
                 .ReturnsAsync(restaurant);
+
+            _restaurantRepository
+                .Setup(x => x.GetPagedMenuItems(restaurantId, 1, 10))
+                .ReturnsAsync(restaurant.MenuItems.ToList());
 
             var result = await _restaurantService.GetMenuItemsByRestaurantIdAsync(restaurantId, 1, 10);
 
@@ -89,8 +97,16 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
             };
 
             _restaurantRepository
+                .Setup(x => x.RestaurantExists(restaurantId))
+                .ReturnsAsync(true);
+
+            _restaurantRepository
                 .Setup(x => x.GetRestaurantByIdAsync(restaurantId))
                 .ReturnsAsync(restaurant);
+
+            _restaurantRepository
+                .Setup(x => x.GetPagedMenuItems(restaurantId, 1, 10))
+                .ReturnsAsync(restaurant.MenuItems.ToList());
 
             var response = await _restaurantService.GetMenuItemsByRestaurantIdAsync(restaurantId, 1, 10);
 
@@ -112,12 +128,20 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
             };
 
             _restaurantRepository
+                .Setup(x => x.RestaurantExists(restaurantId))
+                .ReturnsAsync(true);
+
+            _restaurantRepository
                 .Setup(x => x.GetRestaurantByIdAsync(restaurantId))
                 .ReturnsAsync(restaurant);
 
+            _restaurantRepository
+                .Setup(x => x.GetPagedMenuItems(restaurantId, 1, 10))
+                .ReturnsAsync(restaurant.MenuItems.ToList());
+
             await _restaurantService.GetMenuItemsByRestaurantIdAsync(restaurantId, 1, 10);
 
-            _restaurantRepository.Verify(x => x.GetRestaurantByIdAsync(restaurantId), Times.Once);
+            _restaurantRepository.Verify(x => x.GetPagedMenuItems(restaurantId, 1, 10), Times.Once);
         }
     }
 }

@@ -27,7 +27,7 @@ namespace DotNet_Assignment.Services.Users
             _refreshTokenRepository = refreshTokenRepository;
             _context = appDbContext;
         }
-
+        
         /// <summary>
         /// Updates user Details
         /// </summary>

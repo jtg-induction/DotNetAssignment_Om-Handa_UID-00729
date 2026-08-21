@@ -121,8 +121,8 @@ namespace DotNet_Assignment.Services.Auth
 
             return new JWTResponseDto
             {
-                AccessToken = accessToken,
-                RefreshToken = refreshToken,
+                AccessToken= accessToken,
+                RefreshToken= refreshToken,
             };
         }
 

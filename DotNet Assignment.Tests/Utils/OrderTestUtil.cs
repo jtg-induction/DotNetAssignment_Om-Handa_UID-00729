@@ -1,6 +1,7 @@
 ﻿using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Models.Enums;
+using Moq;
 using System;
 using System.Collections.Generic;
 
@@ -35,13 +36,7 @@ namespace DotNet_Assignment.Tests.Utils
                 RestaurantId = restaurantId,
                 Status = OrderStatus.Placed,
                 UserId = userId,
-                OrderedItems = new List<OrderedItem> {
-                    new OrderedItem
-                    {
-                        Quantity=10,
-                        ItemPrice=199,
-                    }
-                }
+                OrderedItems = CreateMockOrderedItems(orderId, Guid.NewGuid())
             };
         }
 
