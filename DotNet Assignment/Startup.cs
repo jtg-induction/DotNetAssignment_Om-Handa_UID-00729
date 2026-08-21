@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
 
-[assembly:OwinStartup(typeof(DotNet_Assignment.Startup))]
+[assembly: OwinStartup(typeof(DotNet_Assignment.Startup))]
 
 namespace DotNet_Assignment
 {
@@ -18,7 +18,8 @@ namespace DotNet_Assignment
             ConfigureJwt(app);
         }
 
-        public void ConfigureJwt(IAppBuilder app) {
+        public void ConfigureJwt(IAppBuilder app)
+        {
 
             var key = ConfigurationManager.AppSettings["JwtKey"];
 
@@ -29,11 +30,11 @@ namespace DotNet_Assignment
                 TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey= new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)), 
-                    ValidateIssuer=false,
-                    ValidateAudience=false,
-                    ValidateLifetime=true,
-                    RoleClaimType= ClaimTypes.Role
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    RoleClaimType = ClaimTypes.Role
                 }
             });
         }

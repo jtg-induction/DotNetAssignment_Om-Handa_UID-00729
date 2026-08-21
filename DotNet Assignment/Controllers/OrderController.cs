@@ -51,7 +51,7 @@ namespace DotNet_Assignment.Controllers
         /// <returns>Http status code with order details</returns>
         [Authorize]
         [HttpGet]
-        [Route("{orderId}")]
+        [Route("{orderId:guid}")]
         public async Task<IHttpActionResult> GetOrderDetailsAsync(Guid orderId)
         {
             var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -74,9 +74,9 @@ namespace DotNet_Assignment.Controllers
         /// <param name="orderId">Order id to cancel</param>
         /// <returns>Http status code with success message</returns>
         [Authorize]
-        [HttpPost]
-        [Route("cancel/{orderId}")]
-        public async Task<IHttpActionResult> CancelOrderASync(Guid orderId)
+        [HttpPatch]
+        [Route("cancel/{orderId:guid}")]
+        public async Task<IHttpActionResult> CancelOrderAsync(Guid orderId)
         {
             var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
 
@@ -98,7 +98,7 @@ namespace DotNet_Assignment.Controllers
         /// <param name="orderId"></param>
         /// <returns>Http response with Success message</returns>
         [Authorize(Roles = nameof(UserRoles.Owner))]
-        [HttpPost]
+        [HttpPatch]
         [Route("{orderId:guid}")]
         public async Task<IHttpActionResult> ChangeOrderStatusAsync(ChangeOrderStatusDto orderStatusDto, Guid orderId)
         {
@@ -129,27 +129,8 @@ namespace DotNet_Assignment.Controllers
         [Authorize(Roles = nameof(UserRoles.Owner))]
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> FilterOrder(
-                string category = null,
-                string status = null,
-                string sortBy = "date",
-                string sortOrder = "desc",
-                int page = 1,
-                int pageSize = 10,
-                Guid? searchByOrderId = null
-            )
+        public async Task<IHttpActionResult> FilterOrder([FromUri] FilterOptionsDto filterOptions)
         {
-            var filterOptions = new FilterOptionsDto
-            {
-                category = category,
-                status = status,
-                SortBy = sortBy,
-                SortOrder = sortOrder,
-                Page = page,
-                PageSize = pageSize,
-                SearchByOrderId = searchByOrderId
-            };
-
             var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
 
             var result = await _orderService.GetFilteredOrders(userId, filterOptions);

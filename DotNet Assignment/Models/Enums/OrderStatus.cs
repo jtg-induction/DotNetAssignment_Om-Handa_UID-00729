@@ -2,11 +2,11 @@
 {
     public enum OrderStatus
     {
-        Placed,
-        Accepted, 
-        Dispatched, 
-        Delivered, 
-        Cancelled,
-        Rejected
+        Placed = 0,
+        Accepted = 1,
+        Dispatched = 2,
+        Delivered = 3,
+        Cancelled = 4,
+        Rejected = 5
     }
 }

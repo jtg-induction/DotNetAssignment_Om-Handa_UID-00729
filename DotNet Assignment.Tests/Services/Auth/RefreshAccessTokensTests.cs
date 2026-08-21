@@ -57,9 +57,9 @@ namespace DotNet_Assignment.Tests.Services.Auth
                 .Setup(x => x.GetRefreshTokenAsync(hashedToken))
                 .ReturnsAsync((RefreshToken)null);
 
-            Func<Task> Action = async () => await _authService.RefreshAccessTokenAsync(refreshToken);
+            Func<Task> action = async () => await _authService.RefreshAccessTokenAsync(refreshToken);
 
-            var exception = Assert.CatchAsync<Exception>(Action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.RefreshTokenInvalid));
         }
@@ -88,9 +88,9 @@ namespace DotNet_Assignment.Tests.Services.Auth
                 .Setup(x => x.GetRefreshTokenAsync(hashedToken))
                 .ReturnsAsync(token);
 
-            Func<Task> Action = async () => await _authService.RefreshAccessTokenAsync(refreshToken);
+            Func<Task> action = async () => await _authService.RefreshAccessTokenAsync(refreshToken);
 
-            var exception = Assert.CatchAsync(Action);
+            var exception = Assert.CatchAsync(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.RefreshTokenExpired));
         }
@@ -164,9 +164,9 @@ namespace DotNet_Assignment.Tests.Services.Auth
                 .Setup(x => x.GetAccessToken(user))
                 .Returns(MockConstants.MockNewAccessToken);
 
-            Func<Task> Action = async () => await _authService.RefreshAccessTokenAsync(refreshToken);
+            Func<Task> action = async () => await _authService.RefreshAccessTokenAsync(refreshToken);
 
-            Assert.DoesNotThrowAsync(Action);
+            Assert.DoesNotThrowAsync(action);
 
             var response = await _authService.RefreshAccessTokenAsync(refreshToken);
 
@@ -209,9 +209,9 @@ namespace DotNet_Assignment.Tests.Services.Auth
                 .Setup(x => x.GetAccessToken(user))
                 .Returns(MockConstants.MockNewAccessToken);
 
-            Func<Task> Action = async () => await _authService.RefreshAccessTokenAsync(refreshToken);
+            Func<Task> action = async () => await _authService.RefreshAccessTokenAsync(refreshToken);
 
-            Assert.DoesNotThrowAsync(Action);
+            Assert.DoesNotThrowAsync(action);
 
             _jWTService.Verify(
                 x => x.GetAccessToken(user),

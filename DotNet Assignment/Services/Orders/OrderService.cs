@@ -1,5 +1,6 @@
 ﻿using DotNet_Assignment.Constants;
 using DotNet_Assignment.Data;
+using DotNet_Assignment.Exceptions;
 using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Models.Enums;
@@ -9,7 +10,6 @@ using DotNet_Assignment.Repository.Restaurants;
 using DotNet_Assignment.Repository.Users;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -68,7 +68,7 @@ namespace DotNet_Assignment.Services.Orders
 
             if (user.IsDeleted)
             {
-                throw new InvalidOperationException(ExceptionMessages.UserDeactivated);
+                throw new UserDeactivatedException(ExceptionMessages.UserDeactivated);
             }
 
             var restaurant = await _restaurantRepository.GetRestaurantByIdAsync(orderRequestDto.RestaurantId);
@@ -80,10 +80,10 @@ namespace DotNet_Assignment.Services.Orders
 
             if (!restaurant.IsOpen)
             {
-                throw new InvalidOperationException(ExceptionMessages.RestaurantIsClosed);
+                throw new WrongOperationException(ExceptionMessages.RestaurantIsClosed);
             }
 
-            if (orderRequestDto.OrderedItems == null)
+            if (orderRequestDto.OrderedItems == null || !orderRequestDto.OrderedItems.Any())
             {
                 throw new ArgumentException(ExceptionMessages.AtleastOneOrderItemRequired);
             }
@@ -104,35 +104,35 @@ namespace DotNet_Assignment.Services.Orders
                 RestaurantId = orderRequestDto.RestaurantId
             };
 
+            var orderedItemIds = orderRequestDto.OrderedItems.Select(oi => oi.MenuItemId).ToList();
+
+            var menuItems = await _restaurantRepository.GetMenuItemsForUpdateAsync(orderedItemIds);
+
             decimal totalPrice = 0m;
 
             foreach (OrderItemDto item in orderRequestDto.OrderedItems)
             {
-                var menuItem = await _restaurantRepository.GetMenuItemForUpdateAsync(item.MenuItemId);
+
+                var menuItem = menuItems.FirstOrDefault(mi => mi.MenuItemId == item.MenuItemId);
+
+                if (menuItem == null)
+                {
+                    throw new WrongOperationException(ExceptionMessages.MenuItemNotFound);
+                }
+
+                if (menuItem.IsDeleted || menuItem.RestaurantId != orderRequestDto.RestaurantId)
+                {
+                    throw new WrongOperationException(ExceptionMessages.MenuItemNotFound);
+                }
 
                 if (menuItem.QuantityAvailable < 0 || (menuItem.QuantityAvailable - item.Quantity) < 0)
                 {
-                    throw new Exception(ExceptionMessages.InsufficientStock);
-                }
-                if (menuItem.IsDeleted)
-                {
-                    throw new InvalidOperationException(ExceptionMessages.MenuItemNotFound);
-                }
-
-                if (menuItem == null || menuItem.RestaurantId != orderRequestDto.RestaurantId)
-                {
-                    throw new InvalidOperationException(ExceptionMessages.MenuItemNotFound);
-                }
-
-
-                if (menuItem.QuantityAvailable < 0 || (menuItem.QuantityAvailable - item.Quantity) < 0)
-                {
-                    throw new InvalidOperationException(ExceptionMessages.InsufficientStock);
+                    throw new WrongOperationException(ExceptionMessages.InsufficientStock);
                 }
 
                 if ((user.Balance - (menuItem.Price * item.Quantity)) < 0)
                 {
-                    throw new InvalidOperationException(ExceptionMessages.InsufficientBalance);
+                    throw new WrongOperationException(ExceptionMessages.InsufficientBalance);
                 }
 
                 menuItem.QuantityAvailable -= item.Quantity;
@@ -248,32 +248,31 @@ namespace DotNet_Assignment.Services.Orders
 
             if (user.IsDeleted)
             {
-                throw new InvalidOperationException(ExceptionMessages.UserDeactivated);
+                throw new UserDeactivatedException(ExceptionMessages.UserDeactivated);
             }
 
             if (order.Status == OrderStatus.Cancelled)
             {
-                throw new InvalidOperationException(ExceptionMessages.OrderAlreadyCancelled);
+                throw new WrongOperationException(ExceptionMessages.OrderAlreadyCancelled);
             }
 
             if (order.Status == OrderStatus.Rejected)
             {
-                throw new InvalidOperationException(ExceptionMessages.OrderRejectedByRestaurant);
+                throw new WrongOperationException(ExceptionMessages.OrderRejectedByRestaurant);
             }
 
             if (order.Status == OrderStatus.Dispatched || order.Status == OrderStatus.Delivered)
             {
-                throw new InvalidOperationException(ExceptionMessages.OrderCantBeCancelled);
+                throw new WrongOperationException(ExceptionMessages.OrderCantBeCancelled);
             }
 
-            if (order.Status == OrderStatus.Rejected)
-            {
-                throw new Exception(ExceptionMessages.OrderRejectedByRestaurant);
-            }
+            var orderedItemIds = order.OrderedItems.Select(oi => oi.MenuItemId).ToList();
+
+            var menuItems = await _restaurantRepository.GetMenuItemsForUpdateAsync(orderedItemIds);
 
             foreach (OrderedItem orderedItem in order.OrderedItems)
             {
-                var menuItem = await _restaurantRepository.GetMenuItemByIdAsync(orderedItem.MenuItemId);
+                var menuItem = menuItems.FirstOrDefault(mi => mi.MenuItemId == orderedItem.MenuItemId);
 
                 menuItem.QuantityAvailable += orderedItem.Quantity;
             }
@@ -286,6 +285,7 @@ namespace DotNet_Assignment.Services.Orders
 
         }
 
+
         /// <summary>
         /// Changes order status of an order based on order Id
         /// </summary>
@@ -293,6 +293,17 @@ namespace DotNet_Assignment.Services.Orders
         /// <param name="orderId"></param>
         /// <exception cref="Exception">If order not found or new order status value is wrong</exception>
         public async Task ChangeOrderStatusAsync(ChangeOrderStatusDto orderStatusDto, Guid orderId, Guid ownerId)
+        {
+            using (var transaction = _appDbContext.Database.BeginTransaction())
+            {
+
+                await ExecuteChangeOrderStatusAsync(orderStatusDto, orderId, ownerId);
+                transaction.Commit();
+
+            }
+        }
+
+        public async Task ExecuteChangeOrderStatusAsync(ChangeOrderStatusDto orderStatusDto, Guid orderId, Guid ownerId)
         {
             if (!Enum.IsDefined(typeof(OrderStatus), orderStatusDto.Status.Value))
             {
@@ -313,30 +324,40 @@ namespace DotNet_Assignment.Services.Orders
 
             if (order.Status == orderStatusDto.Status)
             {
-                throw new InvalidOperationException(ExceptionMessages.OrderStatusAlreadyChanged);
+                throw new WrongOperationException(ExceptionMessages.OrderStatusAlreadyChanged);
             }
 
-            if ((int)order.Status != (int)orderStatusDto.Status + 1)
+            if (orderStatusDto.Status != OrderStatus.Rejected)
             {
-                throw new InvalidOperationException(ExceptionMessages.StatusCantBeChanged);
+                if ((int)order.Status + 1 != (int)orderStatusDto.Status || (int)orderStatusDto?.Status < (int)order.Status)
+                {
+                    throw new WrongOperationException(ExceptionMessages.StatusCantBeChanged);
+                }
             }
 
-            if ((int)orderStatusDto?.Status < (int)order.Status)
+            if (orderStatusDto.Status == OrderStatus.Cancelled)
             {
-                throw new InvalidOperationException(ExceptionMessages.StatusCantBeChanged);
+                throw new UnauthorizedAccessException(ExceptionMessages.Unauthorized);
             }
 
-            if (orderStatusDto?.Status == OrderStatus.Cancelled)
+            if (orderStatusDto.Status == OrderStatus.Rejected)
             {
-                throw new InvalidOperationException(ExceptionMessages.Unauthorized);
-            }
 
-            if (orderStatusDto?.Status == OrderStatus.Rejected)
-            {
-                await CancelOrderAsync(order.OrderId, order.UserId);
+                var user = await _userRepository.GetUserByIdAsync(order.UserId);
+
+                foreach (OrderedItem orderedItem in order.OrderedItems)
+                {
+                    var menuItem = await _restaurantRepository.GetMenuItemByIdAsync(orderedItem.MenuItemId);
+
+                    menuItem.QuantityAvailable += orderedItem.Quantity;
+                }
+
+                user.Balance += order.TotalPrice;
             }
 
             order.Status = orderStatusDto.Status.Value;
+
+            order.UpdatedAt = DateTime.UtcNow;
 
             await _appDbContext.SaveChangesAsync();
         }
@@ -347,27 +368,9 @@ namespace DotNet_Assignment.Services.Orders
         /// <param name="userId"></param>
         /// <param name="filterOptions">Query params given by controller</param>
         /// <returns>List of orders</returns>
-        /// <exception cref="Exception">if orders not found</exception>
         public async Task<List<OrderDetailsResponseDto>> GetFilteredOrders(Guid userId, FilterOptionsDto filterOptions)
         {
-            var orders = await _orderRepository.FilterOrderAsync(userId, filterOptions);
-
-            return orders.Select(o => new OrderDetailsResponseDto
-            {
-                OrderId = o.OrderId,
-                TotalPrice = o.TotalPrice,
-                Status = o.Status.ToString(),
-                DeliveryAddress = o.DeliveryAddress,
-                RestaurantName = o.Restaurant.Name,
-
-                OrderedItems = o.OrderedItems.Select(oi => new MenuDetailsResponseDto
-                {
-                    Name = oi.MenuItem.Name,
-                    Description = oi.MenuItem.Description,
-                    Price = oi.ItemPrice,
-                    Quantity = oi.Quantity
-                }).ToList()
-            }).ToList();
+            return await _orderRepository.FilterOrderAsync(userId, filterOptions);
         }
     }
 }

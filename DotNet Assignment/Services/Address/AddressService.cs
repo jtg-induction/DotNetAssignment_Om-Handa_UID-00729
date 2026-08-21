@@ -1,16 +1,13 @@
 ﻿using DotNet_Assignment.Constants;
 using DotNet_Assignment.Data;
+using DotNet_Assignment.Exceptions;
 using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Repository.Address;
-using DotNet_Assignment.Repository.RefreshTokens;
 using DotNet_Assignment.Repository.Users;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Http.Results;
 
 namespace DotNet_Assignment.Services.Address
 {
@@ -47,7 +44,7 @@ namespace DotNet_Assignment.Services.Address
 
             if (user.IsDeleted)
             {
-                throw new InvalidOperationException(ExceptionMessages.UserDeactivated);
+                throw new UserDeactivatedException(ExceptionMessages.UserDeactivated);
             }
 
             var address = new UserAddress
@@ -65,7 +62,7 @@ namespace DotNet_Assignment.Services.Address
 
             await _context.SaveChangesAsync();
         }
-
+        
         /// <summary>
         /// Updates a users address
         /// </summary>
@@ -84,7 +81,7 @@ namespace DotNet_Assignment.Services.Address
 
             if (address.User.IsDeleted)
             {
-                throw new InvalidOperationException(ExceptionMessages.UserDeactivated);
+                throw new UserDeactivatedException(ExceptionMessages.UserDeactivated);
             }
 
             if (!string.IsNullOrWhiteSpace(addressDto.HouseNumber))

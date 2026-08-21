@@ -1,17 +1,12 @@
 ﻿using DotNet_Assignment.Constants;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
 
 namespace DotNet_Assignment.Models.DTO
 {
     public class AddRestaurantDto
     {
         [Required]
-        [StringLength(100)]
-        [MinLength(3)]
+        [StringLength(100), MinLength(3)]
         public string Name { get; set; }
 
         [Required]

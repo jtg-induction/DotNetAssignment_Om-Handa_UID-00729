@@ -53,9 +53,9 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync((User)null);
 
-            Func<Task> Action = async () => await _addressService.AddUserAddressAsync(userId, request);
+            Func<Task> action = async () => await _addressService.AddUserAddressAsync(userId, request);
 
-            var exception = Assert.CatchAsync<Exception>(Action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.UserNotFound));
         }
@@ -76,9 +76,9 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(user.UserId))
                 .ReturnsAsync(user);
 
-            Func<Task> Action = async () => await _addressService.AddUserAddressAsync(user.UserId, request);
+            Func<Task> action = async () => await _addressService.AddUserAddressAsync(user.UserId, request);
 
-            var exception = Assert.CatchAsync<Exception>(Action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.UserDeactivated));
 
@@ -99,9 +99,9 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(user.UserId))
                 .ReturnsAsync(user);
 
-            Func<Task> Action = async () => await _addressService.AddUserAddressAsync(user.UserId, request);
+            Func<Task> action = async () => await _addressService.AddUserAddressAsync(user.UserId, request);
 
-            Assert.DoesNotThrowAsync(Action);
+            Assert.DoesNotThrowAsync(action);
 
             _addressRepository.Verify(
                 x => x.AddAddress(It.IsAny<UserAddress>()),
@@ -124,9 +124,9 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(user.UserId))
                 .ReturnsAsync(user);
 
-            Func<Task> Action = async () => await _addressService.AddUserAddressAsync(user.UserId, request);
+            Func<Task> action = async () => await _addressService.AddUserAddressAsync(user.UserId, request);
 
-            Assert.DoesNotThrowAsync(Action);
+            Assert.DoesNotThrowAsync(action);
 
             _appDbContext.Verify(
                 x => x.SaveChangesAsync(),

@@ -54,8 +54,16 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
             };
 
             _restaurantRepository
+                .Setup(x => x.RestaurantExists(restaurantId))
+                .ReturnsAsync(true);
+
+            _restaurantRepository
                 .Setup(x => x.GetRestaurantByIdAsync(restaurantId))
                 .ReturnsAsync(restaurant);
+
+            _restaurantRepository
+                .Setup(x => x.GetPagedMenuItems(restaurantId, 1, 10))
+                .ReturnsAsync(restaurant.MenuItems.ToList());
 
             var result = await _restaurantService.GetMenuItemsByRestaurantIdAsync(restaurantId, 1, 10);
 
@@ -75,8 +83,8 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
                 .Setup(x => x.GetRestaurantByIdAsync(restaurantId))
                 .ReturnsAsync((Restaurant)null);
 
-            Func<Task> Action = async () => await _restaurantService.GetMenuItemsByRestaurantIdAsync(restaurantId, 1, 10);
-            var exception = Assert.CatchAsync<Exception>(Action);
+            Func<Task> action = async () => await _restaurantService.GetMenuItemsByRestaurantIdAsync(restaurantId, 1, 10);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message,Is.EqualTo(ExceptionMessages.RestaurantNotFound));
         }
@@ -96,8 +104,16 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
             };
 
             _restaurantRepository
+                .Setup(x => x.RestaurantExists(restaurantId))
+                .ReturnsAsync(true);
+
+            _restaurantRepository
                 .Setup(x => x.GetRestaurantByIdAsync(restaurantId))
                 .ReturnsAsync(restaurant);
+
+            _restaurantRepository
+                .Setup(x => x.GetPagedMenuItems(restaurantId, 1, 10))
+                .ReturnsAsync(restaurant.MenuItems.ToList());
 
             var response = await _restaurantService.GetMenuItemsByRestaurantIdAsync(restaurantId, 1, 10);
 
@@ -119,12 +135,20 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
             };
 
             _restaurantRepository
+                .Setup(x => x.RestaurantExists(restaurantId))
+                .ReturnsAsync(true);
+
+            _restaurantRepository
                 .Setup(x => x.GetRestaurantByIdAsync(restaurantId))
                 .ReturnsAsync(restaurant);
 
+            _restaurantRepository
+                .Setup(x => x.GetPagedMenuItems(restaurantId, 1, 10))
+                .ReturnsAsync(restaurant.MenuItems.ToList());
+
             await _restaurantService.GetMenuItemsByRestaurantIdAsync(restaurantId, 1, 10);
 
-            _restaurantRepository.Verify(x => x.GetRestaurantByIdAsync(restaurantId), Times.Once);
+            _restaurantRepository.Verify(x => x.GetPagedMenuItems(restaurantId, 1, 10), Times.Once);
         }
     }
 }
