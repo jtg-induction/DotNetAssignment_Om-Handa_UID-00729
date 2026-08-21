@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace DotNet_Assignment.Repository.Restaurants
 {
@@ -24,6 +25,8 @@ namespace DotNet_Assignment.Repository.Restaurants
         void AddRestaurant(Restaurant restaurant);
 
         void AddRestaurantOwner(RestaurantOwner restaurantOwner);
+
+        Task<bool> IsUserAlreadyOwnerAsync(Guid restaurantId, Guid userId);
 
     }
 }

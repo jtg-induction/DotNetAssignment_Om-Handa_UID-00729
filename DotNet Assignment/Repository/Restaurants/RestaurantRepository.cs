@@ -62,10 +62,12 @@ namespace DotNet_Assignment.Repository.Restaurants
         {
             if(menuItemIds == null || !menuItemIds.Any())
             {
-                new List<MenuItem>();
+               return new List<MenuItem>();
             }
 
-            return await _context.MenuItems.SqlQuery("SELECT * FROM MenuItems WITH (UPDLOCK, ROWLOCK) WHERE MenuItemId IN {0}", menuItemIds).ToListAsync();
+            var joinedIds = string.Join(", ", menuItemIds.Select(id => $"'{id}'"));
+
+            return await _context.MenuItems.SqlQuery($"SELECT * FROM MenuItems WITH (UPDLOCK, ROWLOCK) WHERE MenuItemId IN ({joinedIds})").ToListAsync();
 
         }
 
@@ -112,6 +114,15 @@ namespace DotNet_Assignment.Repository.Restaurants
         public async Task<bool> RestaurantExists(Guid restaurantId)
         {
             return await _context.Restaurants.AnyAsync(x => x.RestaurantId == restaurantId);
+        }
+
+        public async Task<bool> IsUserAlreadyOwnerAsync(Guid restaurantId, Guid userId)
+        {
+            return await _context.RestaurantsOwner
+                .AnyAsync(
+                ro => ro.RestaurantId == restaurantId
+                && ro.UserId == userId
+                );
         }
     }
 }

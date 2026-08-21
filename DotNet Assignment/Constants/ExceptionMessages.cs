@@ -37,5 +37,7 @@ namespace DotNet_Assignment.Constants
         public const string OrderRejectedByRestaurant = "Order Rejected By Restaurant";
         public const string RestaurantIsClosed = "Restaurant Is Closed";
         public const string InvalidOperation = "Invalid Operation";
+        public const string NewPasswordCantBeSameAsOld = "New password can't be same as old password";
+        public const string UserALreadyAssignedToThisRestaurant = "User is already assigned to this restaurant";
     }
 }

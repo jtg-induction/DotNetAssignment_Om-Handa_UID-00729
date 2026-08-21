@@ -1,5 +1,6 @@
 ﻿using DotNet_Assignment.Constants;
 using DotNet_Assignment.Data;
+using DotNet_Assignment.Exceptions;
 using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Models.Enums;
@@ -9,8 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DotNet_Assignment.Models.DTO;
-using DotNet_Assignment.Constants;
 
 namespace DotNet_Assignment.Services.Restaurants
 {
@@ -104,8 +103,6 @@ namespace DotNet_Assignment.Services.Restaurants
                 Rating = 0
             };
 
-            _restaurantRepository.AddRestaurant(restaurant);
-
             var user = await _userRepository.GetUserByEmailAsync(addRestaurantDto.UserEmail);
 
             if (user == null)
@@ -115,7 +112,7 @@ namespace DotNet_Assignment.Services.Restaurants
 
             if (user.IsDeleted)
             {
-                throw new InvalidOperationException(ExceptionMessages.UserDeactivated);
+                throw new UserDeactivatedException(ExceptionMessages.UserDeactivated);
             }
 
             var restaurantOwner = new RestaurantOwner
@@ -123,6 +120,8 @@ namespace DotNet_Assignment.Services.Restaurants
                 RestaurantId = restaurant.RestaurantId,
                 UserId = user.UserId
             };
+
+            _restaurantRepository.AddRestaurant(restaurant);
 
             _restaurantRepository.AddRestaurantOwner(restaurantOwner);
 
@@ -134,7 +133,7 @@ namespace DotNet_Assignment.Services.Restaurants
         /// </summary>
         /// <param name="restaurantOwnerRequestDto"></param>
         /// <exception cref="Exception">If user not found, user deleted, restaurant not found</exception>
-        public async Task AddRestaurantOwner(RestaurantOwnerRequestDto restaurantOwnerRequestDto)
+        public async Task AddRestaurantOwnerAsync(RestaurantOwnerRequestDto restaurantOwnerRequestDto)
         {
             var user = await _userRepository.GetUserByEmailAsync(restaurantOwnerRequestDto.UserEmail);
 
@@ -145,7 +144,7 @@ namespace DotNet_Assignment.Services.Restaurants
 
             if (user.IsDeleted)
             {
-                throw new InvalidOperationException(ExceptionMessages.UserDeactivated);
+                throw new UserDeactivatedException(ExceptionMessages.UserDeactivated);
             }
 
             var restaurant = await _restaurantRepository.GetRestaurantByIdAsync(restaurantOwnerRequestDto.RestaurantId);
@@ -153,6 +152,11 @@ namespace DotNet_Assignment.Services.Restaurants
             if (restaurant == null)
             {
                 throw new KeyNotFoundException(ExceptionMessages.RestaurantNotFound);
+            }
+
+            if (await _restaurantRepository.IsUserAlreadyOwnerAsync(restaurant.RestaurantId, user.UserId))
+            {
+                throw new WrongOperationException(ExceptionMessages.UserALreadyAssignedToThisRestaurant);
             }
 
             var restaurantOwner = new RestaurantOwner
