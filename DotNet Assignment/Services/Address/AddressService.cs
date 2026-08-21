@@ -1,19 +1,17 @@
 ﻿using DotNet_Assignment.Constants;
 using DotNet_Assignment.Data;
+using DotNet_Assignment.Exceptions;
 using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Repository.Address;
-using DotNet_Assignment.Repository.RefreshTokens;
 using DotNet_Assignment.Repository.Users;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace DotNet_Assignment.Services.Address
 {
-    public class AddressService :IAddressService
+    public class AddressService : IAddressService
     {
         private readonly IAddressRepository _addressRepository;
         private readonly IUserRepository _userRepository;
@@ -41,12 +39,12 @@ namespace DotNet_Assignment.Services.Address
 
             if (user == null)
             {
-                throw new Exception(ExceptionMessages.UserNotFound);
+                throw new KeyNotFoundException(ExceptionMessages.UserNotFound);
             }
 
             if (user.IsDeleted)
             {
-                throw new Exception(ExceptionMessages.UserDeactivated);
+                throw new UserDeactivatedException(ExceptionMessages.UserDeactivated);
             }
 
             var address = new UserAddress
@@ -78,12 +76,12 @@ namespace DotNet_Assignment.Services.Address
 
             if (address == null)
             {
-                throw new Exception(ExceptionMessages.AddressNotFound);
+                throw new KeyNotFoundException(ExceptionMessages.AddressNotFound);
             }
 
             if (address.User.IsDeleted)
             {
-                throw new Exception(ExceptionMessages.UserDeactivated);
+                throw new UserDeactivatedException(ExceptionMessages.UserDeactivated);
             }
 
             if (!string.IsNullOrWhiteSpace(addressDto.HouseNumber))

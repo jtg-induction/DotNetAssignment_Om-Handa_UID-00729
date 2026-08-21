@@ -34,7 +34,7 @@ namespace DotNet_Assignment.Models.Entities
 
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        public bool InStock { get; set; } = true;
+        public bool IsDeleted { get; set; } = false;
 
         public Guid RestaurantId { get; set; }
 

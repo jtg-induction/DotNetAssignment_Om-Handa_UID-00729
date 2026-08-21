@@ -9,12 +9,13 @@ using System.Web.Http;
 
 namespace DotNet_Assignment.Controllers
 {
-    [RoutePrefix("api/auth")] 
+    [RoutePrefix("api/auth")]
     public class AuthController : ApiController
     {
         private readonly IAuthService _authService;
 
-        public AuthController(IAuthService authService) { 
+        public AuthController(IAuthService authService)
+        {
             _authService = authService;
         }
 
@@ -27,8 +28,8 @@ namespace DotNet_Assignment.Controllers
         [Route("signup")]
         public async Task<IHttpActionResult> SignUpAsync(SignupRequestDto requestDto)
         {
-            JWTResponseDto JWTResponse= await _authService.RegisterAsync(requestDto);
-            var response = new ApiResponseDto<JWTResponseDto>() { IsSuccess = true, Message = SuccessMessages.UserSignedIn , Data = JWTResponse };
+            JWTResponseDto JWTResponse = await _authService.RegisterAsync(requestDto);
+            var response = new ApiResponseDto<JWTResponseDto>() { IsSuccess = true, Message = SuccessMessages.UserSignedIn, Data = JWTResponse };
             return Ok(response);
         }
 
@@ -39,7 +40,8 @@ namespace DotNet_Assignment.Controllers
         /// <returns>Http status code with ApiResponseDto including JWT Response</returns>
         [HttpPost]
         [Route("login")]
-        public async Task<IHttpActionResult> LoginAsync(LoginRequestDto requestDto) {
+        public async Task<IHttpActionResult> LoginAsync(LoginRequestDto requestDto)
+        {
 
             JWTResponseDto JWTResponse = await _authService.LoginAsync(requestDto);
             var response = new ApiResponseDto<JWTResponseDto>() { IsSuccess = true, Message = SuccessMessages.UserLoggedIn, Data = JWTResponse };
@@ -56,18 +58,17 @@ namespace DotNet_Assignment.Controllers
         [Route("logout")]
         public async Task<IHttpActionResult> LogoutAsync(LogoutRequestDto requestDto)
         {
-                await _authService.LogoutAsync(requestDto);
+            await _authService.LogoutAsync(requestDto);
 
-                var response=  new ApiResponseDto<object>() { IsSuccess = true, Message = SuccessMessages.UserLoggedOut};
-                return Ok(response);
-    }
+            var response = new ApiResponseDto<object>() { IsSuccess = true, Message = SuccessMessages.UserLoggedOut };
+            return Ok(response);
+        }
 
         /// <summary>
         /// Refreshes and generates a new Access Token
         /// </summary>
         /// <param name="refreshTokenDto">Refresh Token</param>
         /// <returns>Http status code with ApiResponseDto including success message</returns>
-        [Authorize]
         [HttpPost]
         [Route("refresh")]
         public async Task<IHttpActionResult> RefreshAsync(RefreshTokenDto refreshTokenDto)
@@ -77,7 +78,5 @@ namespace DotNet_Assignment.Controllers
             var response = new ApiResponseDto<JWTResponseDto>() { IsSuccess = true, Message = SuccessMessages.NewTokenGenerated, Data = JWTResponse };
             return Ok(response);
         }
-
     }
 }
-    

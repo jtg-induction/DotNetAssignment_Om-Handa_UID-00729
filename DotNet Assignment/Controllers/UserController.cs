@@ -2,15 +2,13 @@
 using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Services.Users;
 using System;
-using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace DotNet_Assignment.Controllers
 {
-    [RoutePrefix("api/user")]
+    [RoutePrefix("api/users")]
 
     public class UserController : ApiController
     {
@@ -28,7 +26,7 @@ namespace DotNet_Assignment.Controllers
         /// <returns>Https status code including ApiResponseDto with success message</returns>
         [Authorize]
         [HttpPatch]
-        [Route("update")]
+        [Route("profile")]
         public async Task<IHttpActionResult> UpdateUserAsync(UpdateUserDto updateUserDto)
         {
             var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -49,8 +47,8 @@ namespace DotNet_Assignment.Controllers
         /// </summary>
         /// <returns>Https status code including ApiResponseDto with success message</returns>
         [Authorize]
-        [HttpPatch]
-        [Route("deactivate")]
+        [HttpDelete]
+        [Route("profile")]
         public async Task<IHttpActionResult> DeactivateUserAsync()
         {
             var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -73,7 +71,7 @@ namespace DotNet_Assignment.Controllers
         /// <returns>Https status code including ApiResponseDto with success message</returns>
         [Authorize]
         [HttpPatch]
-        [Route("change-password")]
+        [Route("profile/password")]
         public async Task<IHttpActionResult> ChangePassword(ChangePasswordDto changePasswordDto)
         {
             var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);

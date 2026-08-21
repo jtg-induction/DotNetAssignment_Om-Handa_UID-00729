@@ -33,7 +33,8 @@ namespace DotNet_Assignment.Tests.Controllers.Address
         }
 
         /// <summary>
-        /// UpdateAddress Action - Sent Valid Request - Updates Address and Returns success 
+        /// UpdateAddress 
+        /// - Sent Valid Request - Updates Address and Returns success 
         /// </summary>
         [Test]
         public async Task UpdateAddress_ValidRequest_ReturnsSuccess()
@@ -57,7 +58,7 @@ namespace DotNet_Assignment.Tests.Controllers.Address
         }
 
         /// <summary>
-        /// UpdateAddress Action - Service Throws Exception
+        /// UpdateAddress action - Service Throws Exception
         /// </summary>
         [Test]
         public async Task UpdateAddress_ServiceThrows_ReturnsFailure()
@@ -72,16 +73,16 @@ namespace DotNet_Assignment.Tests.Controllers.Address
             _addressService.Setup(x => x.UpdateUserAddressAsync(userId, addressId, dto))
                         .ThrowsAsync(new Exception(ExceptionMessages.AddressNotFound));
 
-            Func<Task> Action = async() => await _addressController.UpdateAddressAsync(addressId, dto);
+            Func<Task> action = async() => await _addressController.UpdateAddressAsync(addressId, dto);
 
-            var exception = Assert.CatchAsync<Exception>(Action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.AddressNotFound));
             _addressService.Verify(x => x.AddUserAddressAsync(userId, dto), Times.Never);
         }
 
         /// <summary>
-        /// AddAddress Action - Sent Valid Request - Adds Address and Returns success 
+        /// AddAddress action - Sent Valid Request - Adds Address and Returns success 
         /// </summary>
         [Test]
         public async Task AddAddress_ValidRequest_ReturnsSuccess()
@@ -104,7 +105,7 @@ namespace DotNet_Assignment.Tests.Controllers.Address
         }
 
         /// <summary>
-        /// AddAddress Action - Service Throws Exception
+        /// AddAddress action - Service Throws Exception
         /// </summary>
         [Test]
         public async Task AddAddress_ServiceThrows_ReturnsFailure()
