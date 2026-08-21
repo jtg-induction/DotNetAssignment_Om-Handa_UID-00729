@@ -1,5 +1,6 @@
 ﻿using DotNet_Assignment.Constants;
 using DotNet_Assignment.Data;
+using DotNet_Assignment.Exceptions;
 using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Models.Enums;
@@ -9,7 +10,6 @@ using DotNet_Assignment.Repository.Restaurants;
 using DotNet_Assignment.Repository.Users;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -68,7 +68,7 @@ namespace DotNet_Assignment.Services.Orders
 
             if (user.IsDeleted)
             {
-                throw new InvalidOperationException(ExceptionMessages.UserDeactivated);
+                throw new UserDeactivatedException(ExceptionMessages.UserDeactivated);
             }
 
             var restaurant = await _restaurantRepository.GetRestaurantByIdAsync(orderRequestDto.RestaurantId);
@@ -80,7 +80,7 @@ namespace DotNet_Assignment.Services.Orders
 
             if (!restaurant.IsOpen)
             {
-                throw new InvalidOperationException(ExceptionMessages.RestaurantIsClosed);
+                throw new WrongOperationException(ExceptionMessages.RestaurantIsClosed);
             }
 
             if (orderRequestDto.OrderedItems == null)
@@ -104,35 +104,35 @@ namespace DotNet_Assignment.Services.Orders
                 RestaurantId = orderRequestDto.RestaurantId
             };
 
+            var orderedItemIds = order.OrderedItems.Select(oi => oi.MenuItemId).ToList();
+
+            var menuItems = await _restaurantRepository.GetMenuItemsForUpdateAsync(orderedItemIds);
+
             decimal totalPrice = 0m;
 
             foreach (OrderItemDto item in orderRequestDto.OrderedItems)
             {
-                var menuItem = await _restaurantRepository.GetMenuItemForUpdateAsync(item.MenuItemId);
+
+                var menuItem = menuItems.FirstOrDefault(mi => mi.MenuItemId == item.MenuItemId);
+
+                if (menuItem == null)
+                {
+                    throw new WrongOperationException(ExceptionMessages.MenuItemNotFound);
+                }
+
+                if (menuItem.IsDeleted || menuItem.RestaurantId != orderRequestDto.RestaurantId)
+                {
+                    throw new WrongOperationException(ExceptionMessages.MenuItemNotFound);
+                }
 
                 if (menuItem.QuantityAvailable < 0 || (menuItem.QuantityAvailable - item.Quantity) < 0)
                 {
-                    throw new Exception(ExceptionMessages.InsufficientStock);
-                }
-                if (menuItem.IsDeleted)
-                {
-                    throw new InvalidOperationException(ExceptionMessages.MenuItemNotFound);
-                }
-
-                if (menuItem == null || menuItem.RestaurantId != orderRequestDto.RestaurantId)
-                {
-                    throw new InvalidOperationException(ExceptionMessages.MenuItemNotFound);
-                }
-
-
-                if (menuItem.QuantityAvailable < 0 || (menuItem.QuantityAvailable - item.Quantity) < 0)
-                {
-                    throw new InvalidOperationException(ExceptionMessages.InsufficientStock);
+                    throw new WrongOperationException(ExceptionMessages.InsufficientStock);
                 }
 
                 if ((user.Balance - (menuItem.Price * item.Quantity)) < 0)
                 {
-                    throw new InvalidOperationException(ExceptionMessages.InsufficientBalance);
+                    throw new WrongOperationException(ExceptionMessages.InsufficientBalance);
                 }
 
                 menuItem.QuantityAvailable -= item.Quantity;
@@ -248,32 +248,31 @@ namespace DotNet_Assignment.Services.Orders
 
             if (user.IsDeleted)
             {
-                throw new InvalidOperationException(ExceptionMessages.UserDeactivated);
+                throw new UserDeactivatedException(ExceptionMessages.UserDeactivated);
             }
 
             if (order.Status == OrderStatus.Cancelled)
             {
-                throw new InvalidOperationException(ExceptionMessages.OrderAlreadyCancelled);
+                throw new WrongOperationException(ExceptionMessages.OrderAlreadyCancelled);
             }
 
             if (order.Status == OrderStatus.Rejected)
             {
-                throw new InvalidOperationException(ExceptionMessages.OrderRejectedByRestaurant);
+                throw new WrongOperationException(ExceptionMessages.OrderRejectedByRestaurant);
             }
 
             if (order.Status == OrderStatus.Dispatched || order.Status == OrderStatus.Delivered)
             {
-                throw new InvalidOperationException(ExceptionMessages.OrderCantBeCancelled);
+                throw new WrongOperationException(ExceptionMessages.OrderCantBeCancelled);
             }
 
-            if (order.Status == OrderStatus.Rejected)
-            {
-                throw new Exception(ExceptionMessages.OrderRejectedByRestaurant);
-            }
+            var orderedItemIds = order.OrderedItems.Select(oi => oi.MenuItemId).ToList();
+
+            var menuItems = await _restaurantRepository.GetMenuItemsForUpdateAsync(orderedItemIds);
 
             foreach (OrderedItem orderedItem in order.OrderedItems)
             {
-                var menuItem = await _restaurantRepository.GetMenuItemByIdAsync(orderedItem.MenuItemId);
+                var menuItem = menuItems.FirstOrDefault(mi => mi.MenuItemId == orderedItem.MenuItemId);
 
                 menuItem.QuantityAvailable += orderedItem.Quantity;
             }

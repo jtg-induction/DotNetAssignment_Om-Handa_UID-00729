@@ -64,7 +64,14 @@ namespace DotNet_Assignment.Repository.Orders
         /// <returns>order</returns>
         public async Task<Order> GetOrderForUpdateAsync(Guid orderId)
         {
-            return await _context.Orders.SqlQuery("SELECT * FROM  Orders WITH (UPDLOCK, ROWLOCK) where OrderId = @p0", orderId).SingleOrDefaultAsync();
+            var order = await _context.Orders.SqlQuery("SELECT * FROM Orders WITH (UPDLOCK, ROWLOCK) WHERE OrderId = @p0", orderId).SingleOrDefaultAsync();
+
+            if (order != null)
+            {
+                await _context.Entry(order).Collection(o => o.OrderedItems).LoadAsync();
+            }
+
+            return order;
         }
 
         public async Task<List<Order>> FilterOrderAsync(Guid userId, FilterOptionsDto filterOptionsDto)

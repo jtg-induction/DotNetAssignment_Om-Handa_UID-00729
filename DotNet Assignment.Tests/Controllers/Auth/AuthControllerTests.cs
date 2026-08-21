@@ -28,7 +28,7 @@ namespace DotNet_Assignment.Tests.Controllers.Auth
         }
 
         /// <summary>
-        /// Signup Action - Sends Valid Request - Successfully signs up and returns success
+        /// Signup action - Sends Valid Request - Successfully signs up and returns success
         /// </summary>
         [Test]
         public async Task SignUp_ValidRequest_ReturnsSuccess()
@@ -55,7 +55,7 @@ namespace DotNet_Assignment.Tests.Controllers.Auth
         }
 
         /// <summary>
-        /// Signup Action - Service Throws Exception - returns Exception
+        /// Signup action - Service Throws Exception - returns Exception
         /// </summary>
         [Test]
         public async Task SignUp_ServiceThrows_ReturnsFailure()
@@ -65,15 +65,15 @@ namespace DotNet_Assignment.Tests.Controllers.Auth
             _authService.Setup(x => x.RegisterAsync(requestDto))
                         .ThrowsAsync(new Exception(ExceptionMessages.EmailAlreadyExists));
 
-            Func<Task> Action = async () => await _authController.SignUpAsync(requestDto);
+            Func<Task> action = async () => await _authController.SignUpAsync(requestDto);
 
-            var exception = Assert.CatchAsync<Exception>(Action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.EmailAlreadyExists));
         }
 
         /// <summary>
-        /// Login Action - Sends Valid Request - Successfully logs in and returns success
+        /// Login action - Sends Valid Request - Successfully logs in and returns success
         /// </summary>
         [Test]
         public async Task Login_ValidRequest_ReturnsSuccess()
@@ -100,7 +100,7 @@ namespace DotNet_Assignment.Tests.Controllers.Auth
         }
 
         /// <summary>
-        /// Login Action - Service Throws Exception - returns Exception
+        /// Login action - Service Throws Exception - returns Exception
         /// </summary>
         [Test]
         public async Task Login_ServiceThrows_ReturnsFailure()
@@ -111,15 +111,15 @@ namespace DotNet_Assignment.Tests.Controllers.Auth
                         .ThrowsAsync(new Exception(ExceptionMessages.InvalidCredentials));
 
 
-            Func<Task> Action = async () => await _authController.LoginAsync(requestDto);
+            Func<Task> action = async () => await _authController.LoginAsync(requestDto);
 
-            var exception = Assert.CatchAsync<Exception>(Action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.InvalidCredentials));
         }
 
         /// <summary>
-        /// Logout Action - Sends Valid Request - Successfully logs out and returns success
+        /// Logout action - Sends Valid Request - Successfully logs out and returns success
         /// </summary>
         [Test]
         public async Task Logout_ValidRequest_ReturnsSuccess()
@@ -141,7 +141,7 @@ namespace DotNet_Assignment.Tests.Controllers.Auth
         }
 
         /// <summary>
-        /// Signup Action - Service Throws Exception - returns Exception
+        /// Signup action - Service Throws Exception - returns Exception
         /// </summary>
         [Test]
         public async Task Logout_ServiceThrows_ReturnsFailure()
@@ -154,15 +154,15 @@ namespace DotNet_Assignment.Tests.Controllers.Auth
             _authService.Setup(x => x.LogoutAsync(requestDto))
                         .ThrowsAsync(new Exception(ExceptionMessages.RefreshTokenInvalid));
 
-            Func<Task> Action = async()=> await _authController.LogoutAsync(requestDto);
+            Func<Task> action = async()=> await _authController.LogoutAsync(requestDto);
 
-            var exception = Assert.CatchAsync<Exception>(Action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.RefreshTokenInvalid));
         }
 
         /// <summary>
-        /// Refresh Action - Sends Valid Request - Successfully refreshes access token and returns success
+        /// Refresh action - Sends Valid Request - Successfully refreshes access token and returns success
         /// </summary>
         [Test]
         public async Task Refresh_ValidToken_ReturnsSuccess()
@@ -192,7 +192,7 @@ namespace DotNet_Assignment.Tests.Controllers.Auth
         }
 
         /// <summary>
-        /// Refresh Action - Service Throws Exception - returns Exception
+        /// Refresh action - Service Throws Exception - returns Exception
         /// </summary>
         [Test]
         public void Refresh_ServiceThrows_ThrowsException()
@@ -205,9 +205,9 @@ namespace DotNet_Assignment.Tests.Controllers.Auth
             _authService.Setup(x => x.RefreshAccessTokenAsync(requestDto.RefreshToken))
                         .ThrowsAsync(new Exception(ExceptionMessages.RefreshTokenInvalid));
 
-            Func<Task> Action = async () => await _authController.RefreshAsync(requestDto);
+            Func<Task> action = async () => await _authController.RefreshAsync(requestDto);
 
-            var exception = Assert.CatchAsync<Exception>(Action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.RefreshTokenInvalid));
         }

@@ -104,7 +104,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
             _userRepository.Setup(x => x.GetUserByIdAsync(userId)).ReturnsAsync(user);
             _restaurantRepository.Setup(x => x.GetRestaurantByIdAsync(restaurantId)).ReturnsAsync(restaurant);
             _addressRepository.Setup(x => x.GetAddressByIdAsync(addressId, userId)).ReturnsAsync(address);
-            _restaurantRepository.Setup(x => x.GetMenuItemForUpdateAsync(menuItemId)).ReturnsAsync(menuItem);
+            _restaurantRepository.Setup(x => x.GetMenuItemsForUpdateAsync(It.IsAny<List<Guid>>())).ReturnsAsync(new List<MenuItem> { menuItem});
 
             var result = await _orderService.ExecutePlaceOrderAsync(userId, request);
 
@@ -122,8 +122,8 @@ namespace DotNet_Assignment.Tests.Services.Orders
 
             _userRepository.Setup(x => x.GetUserByIdAsync(userId)).ReturnsAsync((User)null);
 
-            Func<Task> Action = async () => await _orderService.ExecutePlaceOrderAsync(userId, new OrderRequestDto());
-            var exception = Assert.CatchAsync<Exception>(Action);
+            Func<Task> action = async () => await _orderService.ExecutePlaceOrderAsync(userId, new OrderRequestDto());
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.UserNotFound));
             _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Never);
@@ -153,8 +153,8 @@ namespace DotNet_Assignment.Tests.Services.Orders
             _userRepository.Setup(x => x.GetUserByIdAsync(userId)).ReturnsAsync(user);
             _restaurantRepository.Setup(x => x.GetRestaurantByIdAsync(restaurantId)).ReturnsAsync((Restaurant)null);
 
-            Func<Task> Action = async () => await _orderService.ExecutePlaceOrderAsync(userId, new OrderRequestDto());
-            var exception = Assert.CatchAsync<Exception>(Action);
+            Func<Task> action = async () => await _orderService.ExecutePlaceOrderAsync(userId, new OrderRequestDto());
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.RestaurantNotFound));
             _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Never);
@@ -191,8 +191,8 @@ namespace DotNet_Assignment.Tests.Services.Orders
             _userRepository.Setup(x => x.GetUserByIdAsync(userId)).ReturnsAsync(user);
             _restaurantRepository.Setup(x => x.GetRestaurantByIdAsync(restaurantId)).ReturnsAsync(restaurant);
 
-            Func<Task> Action = async () => await _orderService.ExecutePlaceOrderAsync(userId, request);
-            var exception = Assert.ThrowsAsync<ArgumentException>(Action);
+            Func<Task> action = async () => await _orderService.ExecutePlaceOrderAsync(userId, request);
+            var exception = Assert.ThrowsAsync<ArgumentException>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.AtleastOneOrderItemRequired));
             _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Never);
@@ -241,8 +241,8 @@ namespace DotNet_Assignment.Tests.Services.Orders
             _restaurantRepository.Setup(x => x.GetRestaurantByIdAsync(restaurantId)).ReturnsAsync(restaurant);
             _addressRepository.Setup(x => x.GetAddressByIdAsync(addressId, userId)).ReturnsAsync(address);
 
-            Func<Task> Action = async () => await _orderService.ExecutePlaceOrderAsync(userId, request);
-            var exception = Assert.CatchAsync<Exception>(Action);
+            Func<Task> action = async () => await _orderService.ExecutePlaceOrderAsync(userId, request);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.AtleastOneOrderItemRequired));
             _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Never);
@@ -302,11 +302,11 @@ namespace DotNet_Assignment.Tests.Services.Orders
 
             _userRepository.Setup(x => x.GetUserByIdAsync(userId)).ReturnsAsync(user);
             _restaurantRepository.Setup(x => x.GetRestaurantByIdAsync(restaurantId)).ReturnsAsync(restaurant);
-            _restaurantRepository.Setup(x => x.GetMenuItemForUpdateAsync(menuItemId)).ReturnsAsync(menuItem);
+            _restaurantRepository.Setup(x => x.GetMenuItemsForUpdateAsync(It.IsAny<List<Guid>>())).ReturnsAsync(new List<MenuItem>{ menuItem});
             _addressRepository.Setup(x => x.GetAddressByIdAsync(addressId, userId)).ReturnsAsync(address);
 
-            Func<Task> Action = async () => await _orderService.ExecutePlaceOrderAsync(userId, request);
-            var exception = Assert.CatchAsync<Exception>(Action);
+            Func<Task> action = async () => await _orderService.ExecutePlaceOrderAsync(userId, request);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.InsufficientBalance));
             _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Never);

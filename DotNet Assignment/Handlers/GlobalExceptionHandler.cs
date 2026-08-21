@@ -1,4 +1,5 @@
 ﻿using DotNet_Assignment.Constants;
+using DotNet_Assignment.Exceptions;
 using DotNet_Assignment.Models.DTO;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -39,16 +40,16 @@ namespace DotNet_Assignment.Handlers
                     statusCode = HttpStatusCode.Unauthorized;
                     break;
 
-                case InvalidOperationException _ when exception.Message == ExceptionMessages.UserDeactivated:
+                case UserDeactivatedException _:
                 case UnauthorizedAccessException _:
                     statusCode = HttpStatusCode.Forbidden;
                     break;
 
-                case InvalidOperationException _ when exception.Message == ExceptionMessages.EmailAlreadyExists:
+                case EmailAlreadyExistsException _: 
                     statusCode = HttpStatusCode.Conflict;
                     break;
 
-                case InvalidOperationException _:
+                case WrongOperationException _:
                 case ArgumentException _:
                     statusCode = HttpStatusCode.BadRequest;
                     break;

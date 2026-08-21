@@ -56,7 +56,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
             var menuItemId = Guid.NewGuid();
             var userId = Guid.NewGuid();
 
-            var order = OrderTestUtil.CreateMockOrder(orderId, restaurantId, userId);
+            var order = OrderTestUtil.CreateMockOrder(orderId, restaurantId, userId, menuItemId);
 
             var orderedItems = OrderTestUtil.CreateMockOrderedItems(orderId, menuItemId);
 
@@ -83,8 +83,8 @@ namespace DotNet_Assignment.Tests.Services.Orders
 
             _orderRepository.Setup(x => x.GetOrderByIdAsync(orderId)).ReturnsAsync((Order)null);
 
-            Func<Task> Action = async () => await _orderService.GetOrderDetailsAsync(orderId, Guid.NewGuid());
-            var exception = Assert.CatchAsync<Exception>(Action);
+            Func<Task> action = async () => await _orderService.GetOrderDetailsAsync(orderId, Guid.NewGuid());
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.OrderNotFound));
         }
@@ -100,7 +100,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
             var menuItemId = Guid.NewGuid();
             var userId = Guid.NewGuid();
 
-            var order = OrderTestUtil.CreateMockOrder(orderId, restaurantId, userId);
+            var order = OrderTestUtil.CreateMockOrder(orderId, restaurantId, userId, menuItemId);
 
             var orderedItems = OrderTestUtil.CreateMockOrderedItems(orderId, menuItemId);
 
@@ -128,8 +128,9 @@ namespace DotNet_Assignment.Tests.Services.Orders
             var orderId = Guid.NewGuid();
             var restaurantId = Guid.NewGuid();
             var userId = Guid.NewGuid();
+            var menuItemId = Guid.NewGuid();
 
-            var order = OrderTestUtil.CreateMockOrder(orderId, restaurantId, userId);
+            var order = OrderTestUtil.CreateMockOrder(orderId, restaurantId, userId, menuItemId);
 
             var restaurant = OrderTestUtil.CreateMockRestaurant(restaurantId);
 

@@ -63,9 +63,9 @@ namespace DotNet_Assignment.Tests.Controllers.Restaurant
                 .Setup(x => x.GetAllRestaurantsAsync(page, pageSize))
                 .ThrowsAsync(new Exception("Restaurants not found"));
 
-            Func<Task> Action = async () => await _restaurantController.GetRestaurantsAsync(page, pageSize);
+            Func<Task> action = async () => await _restaurantController.GetRestaurantsAsync(page, pageSize);
 
-            var exception = Assert.CatchAsync<Exception>(Action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo("Restaurants not found"));
         }
@@ -104,9 +104,9 @@ namespace DotNet_Assignment.Tests.Controllers.Restaurant
 
             _restaurantService.Setup(x => x.GetMenuItemsByRestaurantIdAsync(restaurantId, page, pageSize)).ThrowsAsync(new Exception(ExceptionMessages.RestaurantNotFound));
 
-            Func<Task> Action = async () => await _restaurantController.GetMenuItemsAsync(restaurantId, page, pageSize);
+            Func<Task> action = async () => await _restaurantController.GetMenuItemsAsync(restaurantId, page, pageSize);
 
-            var exception = Assert.CatchAsync<Exception>(Action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.RestaurantNotFound));
         }

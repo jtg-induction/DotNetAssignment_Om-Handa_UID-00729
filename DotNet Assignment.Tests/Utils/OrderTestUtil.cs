@@ -28,7 +28,7 @@ namespace DotNet_Assignment.Tests.Utils
         /// <param name="orderId"></param>
         /// <param name="restaurantId"></param>
         /// <returns>Order</returns>
-        public static Order CreateMockOrder(Guid orderId, Guid restaurantId, Guid userId)
+        public static Order CreateMockOrder(Guid orderId, Guid restaurantId, Guid userId, Guid menuItemId)
         {
             return new Order
             {
@@ -36,7 +36,7 @@ namespace DotNet_Assignment.Tests.Utils
                 RestaurantId = restaurantId,
                 Status = OrderStatus.Placed,
                 UserId = userId,
-                OrderedItems = CreateMockOrderedItems(orderId, Guid.NewGuid())
+                OrderedItems = CreateMockOrderedItems(orderId, menuItemId)
             };
         }
 
@@ -76,7 +76,7 @@ namespace DotNet_Assignment.Tests.Utils
                     OrderId = orderId,
                     MenuItemId = menuItemId,
                     Quantity = 2,
-                    ItemPrice = 250,
+                    ItemPrice = 250m,
                     MenuItem = menuItem
                 }
             };
