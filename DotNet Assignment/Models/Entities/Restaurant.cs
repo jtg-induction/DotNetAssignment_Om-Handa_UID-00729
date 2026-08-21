@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DotNet_Assignment.Constants;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -34,6 +35,7 @@ namespace DotNet_Assignment.Models.Entities
 
         [Required]
         [StringLength(6)]
+        [RegularExpression(Regex.PincodeRegex)]
         public string Pincode { get; set; }
 
         public decimal Rating { get; set; }

@@ -1,4 +1,5 @@
-﻿using DotNet_Assignment.Models.Enums;
+﻿using DotNet_Assignment.Constants;
+using DotNet_Assignment.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -15,7 +16,7 @@ namespace DotNet_Assignment.Models.Entities
         [EmailAddress]
         [Index("IX_User_Email", IsUnique = true)]
         [StringLength(255)]
-        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")]
+        [RegularExpression(Regex.EmailRegex)]
         public string Email { get; set; }
 
         [Required]
@@ -28,13 +29,14 @@ namespace DotNet_Assignment.Models.Entities
 
         [Required]
         [StringLength(10), MinLength(10)]
-        [RegularExpression(@"^[0-9]{10}$")]
+        [RegularExpression(Regex.PhoneNumberRegex)]
+        [Index("IX_User_PhoneNumber", IsUnique = true)]
         public string PhoneNumber { get; set; }
 
         [Range(0, int.MaxValue)]
         public decimal Balance { get; set; } = 1000m;
 
-        public UserRoles Role { get; set; }
+        public UserRoles Role { get; set; } = UserRoles.User;
 
         public bool IsDeleted { get; set; }
 

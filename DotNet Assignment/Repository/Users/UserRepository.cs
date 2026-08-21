@@ -1,5 +1,7 @@
 ﻿using DotNet_Assignment.Data;
+using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Models.Entities;
+using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,7 +10,6 @@ namespace DotNet_Assignment.Repository.Users
 {
     public class UserRepository : IUserRepository
     {
-
         private readonly AppDbContext _context;
 
         public UserRepository(AppDbContext context)
@@ -34,6 +35,16 @@ namespace DotNet_Assignment.Repository.Users
         public async Task<bool> FindUserByEmailAsync(string email)
         {
             return await _context.Users.AnyAsync(u => u.Email == email);
+        }
+
+        /// <summary>
+        /// Finds user using user ID and returns it
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <returns>User if found else null</returns>
+        public async Task<User> GetUserByIdAsync(Guid userId)
+        {
+            return await _context.Users.SingleOrDefaultAsync(u => u.UserId == userId);
         }
 
         /// <summary>

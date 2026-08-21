@@ -1,9 +1,12 @@
 ﻿using DotNet_Assignment.Data;
 using DotNet_Assignment.Models.Entities;
-using System.Data.Entity;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using DotNet_Assignment.Utils;
+using System.Data.Entity;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace DotNet_Assignment.Repository.RefreshTokens
 {
@@ -23,7 +26,7 @@ namespace DotNet_Assignment.Repository.RefreshTokens
         /// <returns>Refresh token from Database</returns>
         public async Task<RefreshToken> GetRefreshTokenAsync(string refreshToken)
         {
-            return await _context.RefreshTokens.SingleOrDefaultAsync(u => u.Token == Hasher.Hash(refreshToken));
+            return await _context.RefreshTokens.SingleOrDefaultAsync(u => u.Token == refreshToken);
         }
 
         /// <summary>
@@ -32,7 +35,6 @@ namespace DotNet_Assignment.Repository.RefreshTokens
         /// <param name="refreshToken">Refresh Token details(token string, id, expiration)</param>
         public void AddRefreshToken(RefreshToken refreshToken)
         {
-
             _context.RefreshTokens.Add(refreshToken);
         }
 
@@ -43,6 +45,34 @@ namespace DotNet_Assignment.Repository.RefreshTokens
         public void DeleteRefreshToken(RefreshToken refreshToken)
         {
             _context.RefreshTokens.Remove(refreshToken);
+        }
+
+        /// <summary>
+        /// Deletes all refresh token of a specific user
+        /// </summary>
+        /// <param name="userId">User id to find tokens</param>
+        public void DeleteTokensByUserId(Guid userId)
+        {
+            var tokens= _context.RefreshTokens.Where(u => u.UserId == userId).ToList();
+
+            _context.RefreshTokens.RemoveRange(tokens);
+        }
+
+        /// <summary>
+        /// Hashes a refresh token using SHA256
+        /// </summary>
+        /// <param name="refreshToken">Unhashed Refresh token string</param>
+        /// <returns>Hashed refresh Token String</returns>
+        public string HashRefreshToken(string refreshToken)
+        {
+            using(var sha256 = SHA256.Create())
+            {
+                var bytes = Encoding.UTF8.GetBytes(refreshToken);
+
+                var hash = sha256.ComputeHash(bytes);
+
+                return Convert.ToBase64String(hash);
+            }
         }
 
     }

@@ -1,8 +1,12 @@
-﻿using DotNet_Assignment.Models.Enums;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Web;
+
 namespace DotNet_Assignment.Models.DTO
 {
-    public class SignupRequestDto
+    public class LoginRequestDto
     {
         [Required]
         [EmailAddress]
@@ -12,15 +16,5 @@ namespace DotNet_Assignment.Models.DTO
         [Required]
         [StringLength(50), MinLength(8)]
         public string Password { get; set; }
-
-        [Required]
-        [StringLength(100), MinLength(2)]
-        public string Name { get; set; }
-
-        [Phone]
-        [Required]
-        [StringLength(10)]
-        public string PhoneNumber { get; set; }
-
     }
 }
