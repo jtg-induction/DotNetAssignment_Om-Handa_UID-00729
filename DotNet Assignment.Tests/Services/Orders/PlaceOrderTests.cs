@@ -66,7 +66,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
                 MenuItemId = menuItemId,
                 RestaurantId = restaurantId,
                 Price = 200,
-                QuantityAvailable=10
+                QuantityAvailable = 10
             };
 
             var restaurant = new Restaurant
@@ -191,10 +191,11 @@ namespace DotNet_Assignment.Tests.Services.Orders
             _userRepository.Setup(x => x.GetUserByIdAsync(userId)).ReturnsAsync(user);
             _restaurantRepository.Setup(x => x.GetRestaurantByIdAsync(restaurantId)).ReturnsAsync(restaurant);
 
-            var response = await _orderService.ExecutePlaceOrderAsync(userId, request);
+            Func<Task> Action = async () => await _orderService.ExecutePlaceOrderAsync(userId, request);
+            var exception = Assert.ThrowsAsync<ArgumentException>(Action);
 
-            Assert.That(response, Is.Not.Null);
-            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.AtleastOneOrderItemRequired));
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Never);
         }
 
         /// <summary>
@@ -270,7 +271,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
                 MenuItemId = menuItemId,
                 RestaurantId = restaurantId,
                 Price = 200,
-                QuantityAvailable=10
+                QuantityAvailable = 10
             };
 
             var restaurant = new Restaurant

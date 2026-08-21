@@ -78,6 +78,6 @@ namespace DotNet_Assignment.Controllers
             var response = new ApiResponseDto<JWTResponseDto>() { IsSuccess = true, Message = SuccessMessages.NewTokenGenerated, Data = JWTResponse };
             return Ok(response);
         }
-
     }
 }
+    
