@@ -49,7 +49,7 @@ namespace DotNet_Assignment.Controllers
         /// <returns>Http status code with order details</returns>
         [Authorize]
         [HttpGet]
-        [Route("{orderId}")]
+        [Route("{orderId:guid}")]
         public async Task<IHttpActionResult> GetOrderDetailsAsync(Guid orderId)
         {
             var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -72,9 +72,9 @@ namespace DotNet_Assignment.Controllers
         /// <param name="orderId">Order id to cancel</param>
         /// <returns>Http status code with success message</returns>
         [Authorize]
-        [HttpPost]
-        [Route("cancel/{orderId}")]
-        public async Task<IHttpActionResult> CancelOrderASync(Guid orderId)
+        [HttpPatch]
+        [Route("cancel/{orderId:guid}")]
+        public async Task<IHttpActionResult> CancelOrderAsync(Guid orderId)
         {
             var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
 

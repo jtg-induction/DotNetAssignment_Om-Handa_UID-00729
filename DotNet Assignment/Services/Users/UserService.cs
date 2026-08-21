@@ -1,5 +1,6 @@
 ﻿using DotNet_Assignment.Constants;
 using DotNet_Assignment.Data;
+using DotNet_Assignment.Exceptions;
 using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Repository.RefreshTokens;
@@ -45,7 +46,7 @@ namespace DotNet_Assignment.Services.Users
 
             if (user.IsDeleted)
             {
-                throw new InvalidOperationException(ExceptionMessages.UserDeactivated);
+                throw new UserDeactivatedException(ExceptionMessages.UserDeactivated);
             }
 
             if (string.IsNullOrWhiteSpace(updateUserDto.Name) && string.IsNullOrWhiteSpace(updateUserDto.PhoneNumber))
@@ -84,7 +85,7 @@ namespace DotNet_Assignment.Services.Users
 
             if (user.IsDeleted)
             {
-                throw new InvalidOperationException(ExceptionMessages.UserAlreadyDeactivated);
+                throw new WrongOperationException(ExceptionMessages.UserAlreadyDeactivated);
             }
 
             user.IsDeleted = true;
@@ -112,12 +113,12 @@ namespace DotNet_Assignment.Services.Users
 
             if (user.IsDeleted)
             {
-                throw new InvalidOperationException(ExceptionMessages.UserDeactivated);
+                throw new UserDeactivatedException(ExceptionMessages.UserDeactivated);
             }
 
             if (!Hasher.Verify(changePasswordDto.OldPassword, user.Password))
             {
-                throw new InvalidOperationException(ExceptionMessages.OldPasswordIncorrect);
+                throw new WrongOperationException(ExceptionMessages.OldPasswordIncorrect);
             }
 
             user.UpdatedAt = DateTime.UtcNow;

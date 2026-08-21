@@ -24,7 +24,7 @@ namespace DotNet_Assignment.Controllers
         }
 
         /// <summary>
-        /// Gets list of all Restaurant with pagination
+        /// Gets list of all Restaurant with pagination. Can be Access without authentication too
         /// </summary>
         /// <param name="page">Page number</param>
         /// <param name="pageSize">Number of restaurants to show on page</param>
@@ -46,7 +46,7 @@ namespace DotNet_Assignment.Controllers
         }
 
         /// <summary>
-        /// Return all menu items of a restaurant, with pagination
+        /// Return all menu items of a restaurant, with pagination. Can be Access without authentication too
         /// </summary>
         /// <param name="restaurantId">Restaurant Id</param>
         /// <param name="page">Page number</param>

@@ -52,14 +52,14 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
         /// GetAllRestaurants Function - Valid Request - No Restaurants Found - Returns Empty list
         /// </summary>
         [Test]
-        public void GetAllRestaurants_NoRestaurants_ReturnsEmpty()
+        public async Task GetAllRestaurants_NoRestaurants_ReturnsEmpty()
         {
             var page = 1;
             var pageSize = 10;
 
             _restaurantRepository.Setup(x => x.GetPagedRestaurantsAsync(page, pageSize)).ReturnsAsync(new List<Restaurant>());
 
-            var response =  _restaurantService.GetAllRestaurantsAsync(page, pageSize);
+            var response = await _restaurantService.GetAllRestaurantsAsync(page, pageSize);
 
             Assert.That(response, Is.Not.Null);
         }

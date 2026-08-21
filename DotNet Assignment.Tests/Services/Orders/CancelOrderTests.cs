@@ -11,6 +11,7 @@ using DotNet_Assignment.Tests.Utils;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -62,8 +63,8 @@ namespace DotNet_Assignment.Tests.Services.Orders
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            Func<Task> Action = async () => await _orderService.ExecuteCancelOrderAsync(orderId, Guid.NewGuid());
-            var exception = Assert.CatchAsync<Exception>(Action);
+            Func<Task> action = async () => await _orderService.ExecuteCancelOrderAsync(orderId, Guid.NewGuid());
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.OrderNotFound));
 
@@ -81,7 +82,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
 
             var user = UserTestUtil.CreateMockUser();
             var userId = user.UserId;
-            var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid(), userId);
+            var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid(), userId, Guid.NewGuid());
             order.UserId = userId;
             order.Status = OrderStatus.Cancelled;
 
@@ -93,9 +94,9 @@ namespace DotNet_Assignment.Tests.Services.Orders
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            Func<Task> Action = async () => await _orderService.ExecuteCancelOrderAsync(orderId, userId);
+            Func<Task> action = async () => await _orderService.ExecuteCancelOrderAsync(orderId, userId);
 
-            var exception = Assert.CatchAsync<Exception>(Action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.OrderAlreadyCancelled));
 
@@ -112,7 +113,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
 
             var user = UserTestUtil.CreateMockUser();
             var userId = user.UserId;
-            var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid(), userId);
+            var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid(), userId, Guid.NewGuid());
 
             var menuItem = order.OrderedItems.First().MenuItem;
 
@@ -125,15 +126,14 @@ namespace DotNet_Assignment.Tests.Services.Orders
                 .ReturnsAsync(user);
 
             _restaurantRepository
-                .Setup(x => x.GetMenuItemByIdAsync(menuItem.MenuItemId))
-                .ReturnsAsync(menuItem);
+                .Setup(x => x.GetMenuItemsForUpdateAsync(It.IsAny<List<Guid>>()))
+                .ReturnsAsync(new List<MenuItem> { menuItem });
 
             await _orderService.ExecuteCancelOrderAsync(orderId, userId);
 
             Assert.That(order.Status, Is.EqualTo(OrderStatus.Cancelled));
 
             _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
-
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
             var user = UserTestUtil.CreateMockUser();
             var userId = user.UserId;
 
-            var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid(), userId);
+            var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid(), userId, Guid.NewGuid());
 
             var menuItem = order.OrderedItems.First().MenuItem;
 
@@ -159,8 +159,8 @@ namespace DotNet_Assignment.Tests.Services.Orders
                 .ReturnsAsync(user);
 
             _restaurantRepository
-                .Setup(x => x.GetMenuItemByIdAsync(menuItem.MenuItemId))
-                .ReturnsAsync(menuItem);
+                .Setup(x => x.GetMenuItemsForUpdateAsync(It.IsAny<List<Guid>>()))
+                .ReturnsAsync(new List<MenuItem> { menuItem });
 
             await _orderService.ExecuteCancelOrderAsync(orderId, userId);
 

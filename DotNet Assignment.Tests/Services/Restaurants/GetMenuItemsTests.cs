@@ -76,8 +76,8 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
                 .Setup(x => x.GetRestaurantByIdAsync(restaurantId))
                 .ReturnsAsync((Restaurant)null);
 
-            Func<Task> Action = async () => await _restaurantService.GetMenuItemsByRestaurantIdAsync(restaurantId, 1, 10);
-            var exception = Assert.CatchAsync<Exception>(Action);
+            Func<Task> action = async () => await _restaurantService.GetMenuItemsByRestaurantIdAsync(restaurantId, 1, 10);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message,Is.EqualTo(ExceptionMessages.RestaurantNotFound));
         }

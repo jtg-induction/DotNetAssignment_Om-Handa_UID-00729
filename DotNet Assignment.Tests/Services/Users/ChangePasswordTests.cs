@@ -58,10 +58,10 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync((User)null);
 
-            Func<Task> Action = async () =>
+            Func<Task> action = async () =>
                 await _userService.ChangePasswordAsync(userId, request);
 
-            var exception = Assert.CatchAsync<Exception>(Action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message,Is.EqualTo(ExceptionMessages.UserNotFound));
 
@@ -93,10 +93,10 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            Func<Task> Action = async () =>
+            Func<Task> action = async () =>
                 await _userService.ChangePasswordAsync(userId, request);
 
-            var exception = Assert.CatchAsync<Exception>(Action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.UserDeactivated));
 
@@ -128,10 +128,10 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            Func<Task> Action = async () =>
+            Func<Task> action = async () =>
                 await _userService.ChangePasswordAsync(userId, request);
 
-            var exception = Assert.CatchAsync<Exception>(Action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message,Is.EqualTo(ExceptionMessages.OldPasswordIncorrect));
 
@@ -163,9 +163,9 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            Func<Task> Action = async () => await _userService.ChangePasswordAsync(userId, request);
+            Func<Task> action = async () => await _userService.ChangePasswordAsync(userId, request);
 
-            Assert.DoesNotThrowAsync(Action);
+            Assert.DoesNotThrowAsync(action);
 
             Assert.That(Hasher.Verify(request.NewPassword,user.Password),Is.True);
 
@@ -197,9 +197,9 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            Func<Task> Action = async () => await _userService.ChangePasswordAsync(userId, request);
+            Func<Task> action = async () => await _userService.ChangePasswordAsync(userId, request);
 
-            Assert.DoesNotThrowAsync(Action);
+            Assert.DoesNotThrowAsync(action);
 
             _appDbContext.Verify(x => x.SaveChangesAsync(),Times.Once);
         }

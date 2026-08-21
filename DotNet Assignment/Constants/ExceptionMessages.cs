@@ -18,19 +18,20 @@ namespace DotNet_Assignment.Constants
         public const string RefreshTokenInvalid = "Refresh token invalid";
         public const string RefreshTokenExpired = "Refresh token Expired";
         public const string OldPasswordIncorrect = "Old Password is Incorrect";
-        public const string OneFieldRequired = "Atleast one field is required";
-        public const string RestaurantNotFound = "Restaurant not Found";
+        public const string OneFieldRequired = "At least one field is required";
+        public const string RestaurantNotFound = "Restaurant not found";
         public const string NoMenuItems = "This restaurant has no menu items";
         public const string NoRestaurants = "No Restaurants found";
-        public const string AtleastOneOrderItemRequired = "Atleast one order item required";
+        public const string AtleastOneOrderItemRequired = "At least one order item required";
         public const string MenuItemNotFound = "Menu Item not found";
-        public const string InsufficientBalance = "Insufficient Balance";
-        public const string OrderNotFound = "Order Not Found";
-        public const string OrderAlreadyCancelled = "Order Already Cancelled";
-        public const string OrderCantBeCancelled = "Order Can't be Cancelled";
-        public const string InsufficientStock = "Insufficient Stock";
+        public const string InsufficientBalance = "Insufficient balance";
+        public const string OrderNotFound = "Order not found";
+        public const string OrderAlreadyCancelled = "Order already cancelled";
+        public const string OrderCantBeCancelled = "Order can't be cancelled";
+        public const string InsufficientStock = "Insufficient stock";
         public const string Unauthorized = "Unauthorized";
-        public const string OrderRejectedByRestaurant = "Order Rejected By Restaurant";
-        public const string RestaurantIsClosed = "Restaurant Is Closed";
+        public const string OrderRejectedByRestaurant = "Order rejected by restaurant";
+        public const string RestaurantIsClosed = "Restaurant is closed";
+        public const string InvalidOperation = "Invalid Operation";
     }
 }

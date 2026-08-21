@@ -15,7 +15,7 @@ namespace DotNet_Assignment.Repository.Restaurants
 
         Task<MenuItem> GetMenuItemByIdAsync(Guid menuItemId);
 
-        Task<MenuItem> GetMenuItemForUpdateAsync(Guid menuItemId);
+        Task<List<MenuItem>> GetMenuItemsForUpdateAsync(List<Guid> menuItemIds);
 
         Task<List<MenuItem>> GetPagedMenuItems(Guid restaurantId, int page, int pagesize);
 

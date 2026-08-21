@@ -46,9 +46,9 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync((User)null);
 
-            Func<Task> Action = async() => await _userService.DeactivateUserAsync(userId);
+            Func<Task> action = async() => await _userService.DeactivateUserAsync(userId);
 
-            var exception = Assert.CatchAsync<Exception>(Action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.UserNotFound));
 
@@ -69,9 +69,9 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            Func<Task> Action = async () =>await _userService.DeactivateUserAsync(userId);
+            Func<Task> action = async () =>await _userService.DeactivateUserAsync(userId);
 
-            Assert.DoesNotThrowAsync(Action);
+            Assert.DoesNotThrowAsync(action);
 
             Assert.That(user.IsDeleted, Is.True);
             _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
@@ -91,9 +91,9 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            Func<Task> Action = async () => await _userService.DeactivateUserAsync(userId);
+            Func<Task> action = async () => await _userService.DeactivateUserAsync(userId);
 
-            Assert.DoesNotThrowAsync(Action);
+            Assert.DoesNotThrowAsync(action);
 
             _refreshTokenRepository.Verify(
                 x => x.DeleteTokensByUserId(userId),
@@ -116,9 +116,9 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            Func<Task> Action = async () => await _userService.DeactivateUserAsync(userId);
+            Func<Task> action = async () => await _userService.DeactivateUserAsync(userId);
 
-            Assert.DoesNotThrowAsync(Action);
+            Assert.DoesNotThrowAsync(action);
 
             _appDbContext.Verify(
                 x => x.SaveChangesAsync(),

@@ -52,9 +52,9 @@ namespace DotNet_Assignment.Repository.Orders
         /// <returns>List of ordered items</returns>
         public async Task<List<OrderedItem>> GetOrderItemsAsync(Guid orderId)
         {
-            return await _context.OrderedItems.Include(oi=> oi.MenuItem).Where(oi => oi.OrderId == orderId).ToListAsync();
+            return await _context.OrderedItems.Include(oi => oi.MenuItem).Where(oi => oi.OrderId == orderId).ToListAsync();
         }
-        
+
         /// <summary>
         /// Applies update and row lock and gets order
         /// </summary>
@@ -62,7 +62,14 @@ namespace DotNet_Assignment.Repository.Orders
         /// <returns>order</returns>
         public async Task<Order> GetOrderForUpdateAsync(Guid orderId)
         {
-            return await _context.Orders.SqlQuery("SELECT * FROM  Orders WITH (UPDLOCK, ROWLOCK) where OrderId = @p0", orderId).SingleOrDefaultAsync();
+            var order = await _context.Orders.SqlQuery("SELECT * FROM Orders WITH (UPDLOCK, ROWLOCK) WHERE OrderId = @p0", orderId).SingleOrDefaultAsync();
+
+            if (order != null)
+            {
+                await _context.Entry(order).Collection(o => o.OrderedItems).LoadAsync();
+            }
+
+            return order;
         }
     }
 }
