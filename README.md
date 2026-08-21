@@ -28,10 +28,44 @@ DotNetAssignment_Om-Handa_UID-00729/
 ├── .gitattributes
 ├── .gitignore
 ├── DotNet Assignment.Tests/
+│   ├── Constants/
+│   │   └── MockConstants.cs
+│   ├── Controllers/
+│   │   ├── Address/
+│   │   │   └── AddressControllerTests.cs
+│   │   ├── Auth/
+│   │   │   └── AuthControllerTests.cs
+│   │   └── Users/
+│   │       └── UserControllerTests.cs
 │   ├── DotNet Assignment.Tests.csproj
 │   ├── Properties/
 │   │   └── AssemblyInfo.cs
-│   ├── UnitTest1.cs
+│   ├── Repository/
+│   │   ├── AddressRepositoryTests.cs
+│   │   ├── RefreshTokenRepositoryTests.cs
+│   │   └── UserRepositoryTests.cs
+│   ├── Services/
+│   │   ├── Address/
+│   │   │   ├── AddAddressTests.cs
+│   │   │   └── UpdateAddressTests.cs
+│   │   ├── Auth/
+│   │   │   ├── LoginTests.cs
+│   │   │   ├── LogoutTests.cs
+│   │   │   ├── RefreshAccessTokensTests.cs
+│   │   │   └── SignupTests.cs
+│   │   ├── JWT/
+│   │   │   └── JWTTests.cs
+│   │   └── Users/
+│   │       ├── ChangePasswordTests.cs
+│   │       ├── DeactivateUserTests.cs
+│   │       └── UpdateUsersTests.cs
+│   ├── Utils/
+│   │   ├── AuthTestUtil.cs
+│   │   ├── RepositoryHelpers/
+│   │   │   ├── TestDbAsyncEnumerable.cs
+│   │   │   ├── TestDbAsyncEnumerator.cs
+│   │   │   └── TestDbAsyncQueryProvider.cs
+│   │   └── UserTestUtil.cs
 │   ├── app.config
 │   └── packages.config
 ├── DotNet Assignment.slnx

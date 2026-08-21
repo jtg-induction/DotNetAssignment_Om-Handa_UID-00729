@@ -7,14 +7,14 @@ namespace DotNet_Assignment.Data
     {
         public AppDbContext() : base("name= RestaurantPortal") { }
 
-        public DbSet<User> Users { get; set; }
-        public DbSet<MenuItem> MenuItems { get; set; }
-        public DbSet<Order> Orders { get; set; }
-        public DbSet<OrderedItem> OrderedItems { get; set; }
-        public DbSet<Restaurant> Restaurants { get; set; }
-        public DbSet<RestaurantOwner> RestaurantsOwner { get; set; }
-        public DbSet<UserAddress> UserAddresses { get; set; }
-        public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<MenuItem> MenuItems { get; set; }
+        public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<OrderedItem> OrderedItems { get; set; }
+        public virtual DbSet<Restaurant> Restaurants { get; set; }
+        public virtual DbSet<RestaurantOwner> RestaurantsOwner { get; set; }
+        public virtual DbSet<UserAddress> UserAddresses { get; set; }
+        public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
