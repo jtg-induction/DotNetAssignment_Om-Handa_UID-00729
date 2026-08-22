@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DotNet_Assignment.Tests.Repository
@@ -201,7 +200,7 @@ namespace DotNet_Assignment.Tests.Repository
 
             repository.AddRestaurant(restaurant);
 
-            mockSet.Verify( x => x.Add(restaurant), Times.Once);
+            mockSet.Verify(x => x.Add(restaurant), Times.Once);
         }
 
         /// <summary>
@@ -227,10 +226,10 @@ namespace DotNet_Assignment.Tests.Repository
 
             repository.AddRestaurantOwner(restaurantOwner);
 
-            mockSet.Verify( x => x.Add(restaurantOwner), Times.Once);
+            mockSet.Verify(x => x.Add(restaurantOwner), Times.Once);
         }
 
-        public Mock<AppDbContext> BuildRestaurantMockContext(IQueryable<Restaurant> data)
+        private Mock<AppDbContext> BuildRestaurantMockContext(IQueryable<Restaurant> data)
         {
             var mockSet = new Mock<DbSet<Restaurant>>();
             mockSet.As<IDbAsyncEnumerable<Restaurant>>()
@@ -244,6 +243,7 @@ namespace DotNet_Assignment.Tests.Repository
             mockSet.As<IQueryable<Restaurant>>().Setup(m => m.Expression).Returns(data.Expression);
             mockSet.As<IQueryable<Restaurant>>().Setup(m => m.ElementType).Returns(data.ElementType);
             mockSet.As<IQueryable<Restaurant>>().Setup(m => m.GetEnumerator()).Returns(() => data.GetEnumerator());
+            mockSet.Setup(x => x.AsNoTracking()).Returns(mockSet.Object);
 
             var mockContext = new Mock<AppDbContext>();
             mockContext.Setup(c => c.Restaurants).Returns(mockSet.Object);
@@ -251,7 +251,7 @@ namespace DotNet_Assignment.Tests.Repository
             return mockContext;
         }
 
-        public Mock<AppDbContext> BuildMenuItemMockContext(IQueryable<MenuItem> data)
+        private Mock<AppDbContext> BuildMenuItemMockContext(IQueryable<MenuItem> data)
         {
             var mockSet = new Mock<DbSet<MenuItem>>();
             mockSet.As<IDbAsyncEnumerable<MenuItem>>()
@@ -265,6 +265,7 @@ namespace DotNet_Assignment.Tests.Repository
             mockSet.As<IQueryable<MenuItem>>().Setup(m => m.Expression).Returns(data.Expression);
             mockSet.As<IQueryable<MenuItem>>().Setup(m => m.ElementType).Returns(data.ElementType);
             mockSet.As<IQueryable<MenuItem>>().Setup(m => m.GetEnumerator()).Returns(() => data.GetEnumerator());
+            mockSet.Setup(x => x.AsNoTracking()).Returns(mockSet.Object);
 
             var mockContext = new Mock<AppDbContext>();
             mockContext.Setup(c => c.MenuItems).Returns(mockSet.Object);

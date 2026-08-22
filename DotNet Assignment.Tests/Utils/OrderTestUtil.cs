@@ -1,6 +1,7 @@
 ﻿using DotNet_Assignment.Models.DTO;
 using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Models.Enums;
+using Moq;
 using System;
 using System.Collections.Generic;
 
@@ -27,7 +28,7 @@ namespace DotNet_Assignment.Tests.Utils
         /// <param name="orderId"></param>
         /// <param name="restaurantId"></param>
         /// <returns>Order</returns>
-        public static Order CreateMockOrder(Guid orderId, Guid restaurantId, Guid userId)
+        public static Order CreateMockOrder(Guid orderId, Guid restaurantId, Guid userId, Guid menuItemId)
         {
             var menuItem = new MenuItem
             {
@@ -100,7 +101,7 @@ namespace DotNet_Assignment.Tests.Utils
                     OrderId = orderId,
                     MenuItemId = menuItemId,
                     Quantity = 2,
-                    ItemPrice = 250,
+                    ItemPrice = 250m,
                     MenuItem = menuItem
                 }
             };

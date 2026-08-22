@@ -161,7 +161,7 @@ namespace DotNet_Assignment.Tests.Repository
             mockSet.Verify(m => m.RemoveRange(data), Times.Once);
         }
 
-        public Mock<AppDbContext> BuildMockContext(IQueryable<RefreshToken> data)
+        private Mock<AppDbContext> BuildMockContext(IQueryable<RefreshToken> data)
         {
             var mockSet = new Mock<DbSet<RefreshToken>>();
             mockSet.As<IDbAsyncEnumerable<RefreshToken>>()

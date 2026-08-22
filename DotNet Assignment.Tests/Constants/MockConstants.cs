@@ -17,5 +17,10 @@ namespace DotNet_Assignment.Tests.Constants
         public const string MockWrongPassword = "WrongPassword";
         public const string MockNewPassword = "NewPassword";
         public const string MockHashedPassword = "HashedPassword";
+        public const string MockCategory = "veg";
+        public const string MockStatus = "Placed";
+        public const string MockSortBy = "Price";
+        public const string MockSortOrder = "asc";
+        public const string MockSortByDate = "date";
     }
 }

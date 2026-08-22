@@ -55,9 +55,9 @@ namespace DotNet_Assignment.Tests.Services.Auth
                 Setup(x => x.FindUserByEmailAsync(requestDto.Email)).
                 ReturnsAsync(true);
 
-            Func<Task> Action= async() => await _authService.RegisterAsync(requestDto);
+            Func<Task> action = async() => await _authService.RegisterAsync(requestDto);
 
-            var exception= Assert.CatchAsync<Exception>(Action);
+            var exception= Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.EmailAlreadyExists));
             _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Never);
@@ -73,9 +73,9 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             ValidSignupHelper(requestDto);
 
-            Func<Task> Action = async () => await _authService.RegisterAsync(requestDto);
+            Func<Task> action = async () => await _authService.RegisterAsync(requestDto);
 
-            Assert.DoesNotThrowAsync(Action);
+            Assert.DoesNotThrowAsync(action);
 
             _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
@@ -90,9 +90,9 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             ValidSignupHelper(requestDto);
 
-            Func<Task> Action = async () => await _authService.RegisterAsync(requestDto);
+            Func<Task> action = async () => await _authService.RegisterAsync(requestDto);
 
-            Assert.DoesNotThrowAsync(Action);
+            Assert.DoesNotThrowAsync(action);
 
             _userRepository.Verify(x => x.AddUser(It.IsAny<User>()),Times.Once);
             _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
@@ -109,9 +109,9 @@ namespace DotNet_Assignment.Tests.Services.Auth
             ValidSignupHelper(requestDto);
 
             JWTResponseDto response = null;
-            Func<Task> Action = async () => response = await _authService.RegisterAsync(requestDto);
+            Func<Task> action = async () => response = await _authService.RegisterAsync(requestDto);
 
-            Assert.DoesNotThrowAsync(Action);
+            Assert.DoesNotThrowAsync(action);
             Assert.That(response.AccessToken, Is.Not.Null);
             Assert.That(response.RefreshToken, Is.Not.Null);
 
@@ -128,9 +128,9 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             ValidSignupHelper(requestDto);
 
-            Func<Task> Action = async () => await _authService.RegisterAsync(requestDto);
+            Func<Task> action = async () => await _authService.RegisterAsync(requestDto);
 
-            Assert.DoesNotThrowAsync(Action);
+            Assert.DoesNotThrowAsync(action);
 
             _refreshTokenRepository.Verify(x => x.AddRefreshToken(It.IsAny<RefreshToken>()),Times.Once);
             _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
@@ -146,9 +146,9 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             ValidSignupHelper(requestDto);
 
-            Func<Task> Action = async () => await _authService.RegisterAsync(requestDto);
+            Func<Task> action = async () => await _authService.RegisterAsync(requestDto);
 
-            Assert.DoesNotThrowAsync(Action);
+            Assert.DoesNotThrowAsync(action);
 
             _appDbContext.Verify(x => x.SaveChangesAsync(),Times.Once);
         }

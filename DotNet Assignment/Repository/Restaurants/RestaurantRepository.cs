@@ -19,7 +19,7 @@ namespace DotNet_Assignment.Repository.Restaurants
         }
 
         /// <summary>
-        /// Gets restairant by restaurant id with pagination
+        /// Gets restaurant by restaurant id with pagination
         /// </summary>
         /// <param name="page">Page number</param>
         /// <param name="pageSize">Restaurants to show on one page</param>
@@ -27,8 +27,8 @@ namespace DotNet_Assignment.Repository.Restaurants
         public async Task<List<Restaurant>> GetPagedRestaurantsAsync(int page, int pageSize)
         {
             return await _context.Restaurants
-                .OrderBy(r => r.Rating)
-                .Skip((page-1)*pageSize)
+                .OrderByDescending(r => r.Rating)
+                .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
         }
@@ -40,9 +40,9 @@ namespace DotNet_Assignment.Repository.Restaurants
         /// <returns>Restaurant</returns>
         public async Task<Restaurant> GetRestaurantByIdAsync(Guid restaurantId)
         {
-            return await _context.Restaurants.SingleOrDefaultAsync(r => r.RestaurantId == restaurantId);
+            return await _context.Restaurants.AsNoTracking().SingleOrDefaultAsync(r => r.RestaurantId == restaurantId);
         }
-        
+
         /// <summary>
         /// Gets menu item by item id
         /// </summary>
@@ -50,7 +50,7 @@ namespace DotNet_Assignment.Repository.Restaurants
         /// <returns>Menu Item</returns>
         public async Task<MenuItem> GetMenuItemByIdAsync(Guid menuItemId)
         {
-            return await _context.MenuItems.SingleOrDefaultAsync(mi => mi.MenuItemId == menuItemId);
+            return await _context.MenuItems.AsNoTracking().SingleOrDefaultAsync(mi => mi.MenuItemId == menuItemId);
         }
 
         /// <summary>
@@ -58,9 +58,17 @@ namespace DotNet_Assignment.Repository.Restaurants
         /// </summary>
         /// <param name="menuItemId"></param>
         /// <returns>Menu item</returns>
-        public async Task<MenuItem> GetMenuItemForUpdateAsync(Guid menuItemId)
+        public async Task<List<MenuItem>> GetMenuItemsForUpdateAsync(List<Guid> menuItemIds)
         {
-            return await _context.MenuItems.SqlQuery("SELECT * FROM  MenuItems WITH (UPDLOCK, ROWLOCK) where MenuItemId = @p0", menuItemId).SingleOrDefaultAsync();
+            if(menuItemIds == null || !menuItemIds.Any())
+            {
+               return new List<MenuItem>();
+            }
+
+            var joinedIds = string.Join(", ", menuItemIds.Select(id => $"'{id}'"));
+
+            return await _context.MenuItems.SqlQuery($"SELECT * FROM MenuItems WITH (UPDLOCK, ROWLOCK) WHERE MenuItemId IN ({joinedIds})").ToListAsync();
+
         }
 
         /// <summary>
@@ -90,21 +98,31 @@ namespace DotNet_Assignment.Repository.Restaurants
         public async Task<List<MenuItem>> GetPagedMenuItems(Guid restaurantId, int page, int pageSize)
         {
             return await _context.MenuItems
+                .AsNoTracking()
                 .Where(mi => mi.RestaurantId == restaurantId && !mi.IsDeleted)
-                .OrderBy(mi => mi.Rating)
+                .OrderByDescending(mi => mi.Rating)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
         }
 
         /// <summary>
-        /// Checks is user exists or not
+        /// Checks if restaurant exists or not
         /// </summary>
         /// <param name="restaurantId"></param>
         /// <returns>true if restaurant exists else false</returns>
         public async Task<bool> RestaurantExists(Guid restaurantId)
         {
             return await _context.Restaurants.AnyAsync(x => x.RestaurantId == restaurantId);
+        }
+
+        public async Task<bool> IsUserAlreadyOwnerAsync(Guid restaurantId, Guid userId)
+        {
+            return await _context.RestaurantsOwner
+                .AnyAsync(
+                ro => ro.RestaurantId == restaurantId
+                && ro.UserId == userId
+                );
         }
     }
 }

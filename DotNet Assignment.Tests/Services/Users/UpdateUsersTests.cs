@@ -50,9 +50,9 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x=> x.GetUserByIdAsync(userId))
                 .ReturnsAsync((User)null);
 
-            Func<Task> Action =() => _userService.UpdateUserAsync(userId, requestDto);
+            Func<Task> action =() => _userService.UpdateUserAsync(userId, requestDto);
 
-            var exception = Assert.CatchAsync<Exception>(Action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.UserNotFound));
             _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Never);
@@ -100,9 +100,9 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            Func<Task> Action = async() => await _userService.UpdateUserAsync(userId, requestDto);
+            Func<Task> action = async() => await _userService.UpdateUserAsync(userId, requestDto);
 
-            Assert.DoesNotThrowAsync(Action);
+            Assert.DoesNotThrowAsync(action);
             Assert.That(user.PhoneNumber, Is.EqualTo(requestDto.PhoneNumber));
             _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
@@ -123,9 +123,9 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            Func<Task> Action = async () => await _userService.UpdateUserAsync(userId, requestDto);
+            Func<Task> action = async () => await _userService.UpdateUserAsync(userId, requestDto);
 
-            Assert.DoesNotThrowAsync(Action);
+            Assert.DoesNotThrowAsync(action);
 
             Assert.That(user.Name, Is.EqualTo(requestDto.Name));
 
@@ -153,9 +153,9 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            Func<Task> Action = async () => await _userService.UpdateUserAsync(userId, requestDto);
+            Func<Task> action = async () => await _userService.UpdateUserAsync(userId, requestDto);
 
-            Assert.DoesNotThrowAsync(Action);
+            Assert.DoesNotThrowAsync(action);
 
             Assert.That(user.Name, Is.EqualTo(originalName));
             _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
@@ -180,9 +180,9 @@ namespace DotNet_Assignment.Tests.Services.Users
                 .Setup(x => x.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
 
-            Func<Task> Action = async () => await _userService.UpdateUserAsync(userId, requestDto);
+            Func<Task> action = async () => await _userService.UpdateUserAsync(userId, requestDto);
 
-            Assert.DoesNotThrowAsync(Action);
+            Assert.DoesNotThrowAsync(action);
 
             Assert.That(user.PhoneNumber, Is.EqualTo(originalPhone));
             _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);

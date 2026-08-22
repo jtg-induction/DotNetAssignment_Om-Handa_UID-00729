@@ -43,7 +43,7 @@ namespace DotNet_Assignment.Tests.Controllers.Restaurant
 
             var result = await _restaurantController.GetRestaurantsAsync(page, pageSize);
 
-            var okResult = result as OkNegotiatedContentResult<ApiResponseDto<List<RestaurantResponseDto>>>;
+            var okResult = result as OkNegotiatedContentResult<ApiResponseDto<object>>;
 
             Assert.That(okResult, Is.Not.Null);
             Assert.That(okResult.Content.IsSuccess, Is.True);
@@ -63,9 +63,9 @@ namespace DotNet_Assignment.Tests.Controllers.Restaurant
                 .Setup(x => x.GetAllRestaurantsAsync(page, pageSize))
                 .ThrowsAsync(new Exception("Restaurants not found"));
 
-            Func<Task> Action = async () => await _restaurantController.GetRestaurantsAsync(page, pageSize);
+            Func<Task> action = async () => await _restaurantController.GetRestaurantsAsync(page, pageSize);
 
-            var exception = Assert.CatchAsync<Exception>(Action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo("Restaurants not found"));
         }
@@ -85,7 +85,7 @@ namespace DotNet_Assignment.Tests.Controllers.Restaurant
 
             var result = await _restaurantController.GetMenuItemsAsync(restaurantId, page, pageSize);
 
-            var okResult = result as OkNegotiatedContentResult<ApiResponseDto<List<MenuItemResponseDto>>>;
+            var okResult = result as OkNegotiatedContentResult<ApiResponseDto<object>>;
 
             Assert.That(okResult, Is.Not.Null);
             Assert.That(okResult.Content.IsSuccess, Is.True);
@@ -104,9 +104,9 @@ namespace DotNet_Assignment.Tests.Controllers.Restaurant
 
             _restaurantService.Setup(x => x.GetMenuItemsByRestaurantIdAsync(restaurantId, page, pageSize)).ThrowsAsync(new Exception(ExceptionMessages.RestaurantNotFound));
 
-            Func<Task> Action = async () => await _restaurantController.GetMenuItemsAsync(restaurantId, page, pageSize);
+            Func<Task> action = async () => await _restaurantController.GetMenuItemsAsync(restaurantId, page, pageSize);
 
-            var exception = Assert.CatchAsync<Exception>(Action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.RestaurantNotFound));
         }
@@ -127,7 +127,7 @@ namespace DotNet_Assignment.Tests.Controllers.Restaurant
 
             _restaurantService.Verify(x => x.AddRestaurantAsync(request),Times.Once);
 
-            Assert.That(result,Is.TypeOf<OkNegotiatedContentResult<ApiResponseDto<List<MenuItemResponseDto>>>>());
+            Assert.That(result,Is.TypeOf<OkNegotiatedContentResult<ApiResponseDto<object>>>());
         }
 
         /// <summary>
@@ -167,9 +167,9 @@ namespace DotNet_Assignment.Tests.Controllers.Restaurant
 
             var result = await _restaurantController.AddRestaurantOwnerAsync(request);
 
-            _restaurantService.Verify( x => x.AddRestaurantOwner(request), Times.Once);
+            _restaurantService.Verify( x => x.AddRestaurantOwnerAsync(request), Times.Once);
 
-            Assert.That( result, Is.TypeOf<OkNegotiatedContentResult<ApiResponseDto<List<MenuItemResponseDto>>>>());
+            Assert.That( result, Is.TypeOf<OkNegotiatedContentResult<ApiResponseDto<object>>>());
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace DotNet_Assignment.Tests.Controllers.Restaurant
             };
 
             _restaurantService
-                .Setup(x => x.AddRestaurantOwner(request))
+                .Setup(x => x.AddRestaurantOwnerAsync(request))
                 .ThrowsAsync(new Exception(ExceptionMessages.UserNotFound));
 
             Func<Task> action = async () => await _restaurantController.AddRestaurantOwnerAsync(request);

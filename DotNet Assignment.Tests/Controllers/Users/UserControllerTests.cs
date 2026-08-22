@@ -30,7 +30,8 @@ namespace DotNet_Assignment.Tests.Controllers.Users
         }
 
         /// <summary>
-        /// UpdateUser Action - Sent valid request - updates user and returns success
+        /// UpdateUser 
+        /// - Sent valid request - updates user and returns success
         /// </summary>
         [Test]
         public async Task UpdateUser_ValidRequest_ReturnsSuccess()
@@ -53,7 +54,7 @@ namespace DotNet_Assignment.Tests.Controllers.Users
         }
 
         /// <summary>
-        /// UpdateUser Action - Service throws exception - returns exception
+        /// UpdateUser action - Service throws exception - returns exception
         /// </summary>
         [Test]
         public async Task UpdateUser_ServiceThrows_ReturnsFailure()
@@ -67,15 +68,15 @@ namespace DotNet_Assignment.Tests.Controllers.Users
             _userService.Setup(x => x.UpdateUserAsync(userId, dto))
                         .ThrowsAsync(new Exception(ExceptionMessages.UserNotFound));
 
-            Func<Task> Action = async () => await _userController.UpdateUserAsync(dto);
+            Func<Task> action = async () => await _userController.UpdateUserAsync(dto);
 
-            var exception = Assert.CatchAsync<Exception>(Action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.UserNotFound));
         }
 
         /// <summary>
-        /// DeactivateUser Action - Sent valid request - Deactivates user and returns success
+        /// DeactivateUser action - Sent valid request - Deactivates user and returns success
         /// </summary>
         [Test]
         public async Task DeactivateUser_ValidRequest_ReturnsSuccess()
@@ -96,7 +97,7 @@ namespace DotNet_Assignment.Tests.Controllers.Users
         }
 
         /// <summary>
-        /// DeactivateUser Action - Service throws exception - returns exception
+        /// DeactivateUser action - Service throws exception - returns exception
         /// </summary>
         [Test]
         public async Task DeactivateUser_ServiceThrows_ReturnsFailure()
@@ -108,9 +109,9 @@ namespace DotNet_Assignment.Tests.Controllers.Users
             _userService.Setup(x => x.DeactivateUserAsync(userId))
                         .ThrowsAsync(new Exception(ExceptionMessages.UserNotFound));
 
-            Func<Task> Action = async()=> await _userController.DeactivateUserAsync();
+            Func<Task> action = async()=> await _userController.DeactivateUserAsync();
 
-            var exception = Assert.CatchAsync<Exception>(Action);
+            var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.UserNotFound));
         }

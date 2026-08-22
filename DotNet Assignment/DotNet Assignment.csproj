@@ -275,6 +275,9 @@
     <Compile Include="Constants\ExceptionMessages.cs" />
     <Compile Include="Constants\SuccessMessages.cs" />
     <Compile Include="Data\AppDbContext.cs" />
+    <Compile Include="Exceptions\EmailAlreadyExistsException.cs" />
+    <Compile Include="Exceptions\UserDeactivatedException.cs" />
+    <Compile Include="Exceptions\WrongOperationException.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

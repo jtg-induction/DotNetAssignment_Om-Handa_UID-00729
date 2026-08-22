@@ -46,7 +46,6 @@ namespace DotNet_Assignment.App_Start
             container.RegisterType<IOrderRepository, OrderRepository>(new HierarchicalLifetimeManager());
             container.RegisterType<IReportRepository, ReportRepository>(new HierarchicalLifetimeManager());
 
-
             GlobalConfiguration.Configuration.DependencyResolver = new UnityHierarchicalDependencyResolver(container);
 
             return container;

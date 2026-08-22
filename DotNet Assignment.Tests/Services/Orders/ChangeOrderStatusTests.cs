@@ -60,7 +60,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
                 .Setup(x => x.GetOrderForUpdateAsync(orderId))
                 .ReturnsAsync((Order)null);
 
-            Func<Task> action = async () => await _orderService.ChangeOrderStatusAsync(request, orderId, ownerId);
+            Func<Task> action = async () => await _orderService.ExecuteChangeOrderStatusAsync(request, orderId, ownerId);
 
             var exception = Assert.CatchAsync<Exception>(action);
 
@@ -79,13 +79,14 @@ namespace DotNet_Assignment.Tests.Services.Orders
             var ownerId = Guid.NewGuid();
             var request = new ChangeOrderStatusDto { Status = OrderStatus.Placed };
 
-            var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid(), Guid.NewGuid());
+            var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+            order.Restaurant.RestaurantOwners = new List<RestaurantOwner>();
 
             _orderRepository
                 .Setup(x => x.GetOrderForUpdateAsync(orderId))
                 .ReturnsAsync(order);
 
-            Func<Task> action = async () => await _orderService.ChangeOrderStatusAsync(request, orderId, ownerId);
+            Func<Task> action = async () => await _orderService.ExecuteChangeOrderStatusAsync(request, orderId, ownerId);
 
             var exception = Assert.CatchAsync<Exception>(action);
 
@@ -103,7 +104,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
             var orderId = Guid.NewGuid();
             var ownerId = Guid.NewGuid();
 
-            var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid(), ownerId);
+            var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid(), ownerId, Guid.NewGuid());
 
             order.Status = OrderStatus.Placed;
 
@@ -121,7 +122,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
                 .Setup(x => x.GetOrderForUpdateAsync(orderId))
                 .ReturnsAsync(order);
 
-            Func<Task> action = async () => await _orderService.ChangeOrderStatusAsync(request, orderId, ownerId);
+            Func<Task> action = async () => await _orderService.ExecuteChangeOrderStatusAsync(request, orderId, ownerId);
 
             var exception = Assert.CatchAsync<Exception>(action);
 
@@ -139,7 +140,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
             var orderId = Guid.NewGuid();
             var ownerId = Guid.NewGuid();
 
-            var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid(), ownerId);
+            var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid(), ownerId, Guid.NewGuid());
             order.Status = OrderStatus.Delivered;
 
             order.Restaurant.RestaurantOwners = new List<RestaurantOwner>
@@ -156,7 +157,7 @@ namespace DotNet_Assignment.Tests.Services.Orders
                 .Setup(x => x.GetOrderForUpdateAsync(orderId))
                 .ReturnsAsync(order);
 
-            Func<Task> action = async () => await _orderService.ChangeOrderStatusAsync(request, orderId, ownerId);
+            Func<Task> action = async () => await _orderService.ExecuteChangeOrderStatusAsync(request, orderId, ownerId);
 
             var exception = Assert.CatchAsync<Exception>(action);
 
@@ -166,15 +167,16 @@ namespace DotNet_Assignment.Tests.Services.Orders
         }
 
         /// <summary>
-        /// ChangeOrderStatus function - Valid status - Changes status
+        /// ChangeOrderStatus function - Valid Changes - Update Status - Saves Changes
         /// </summary>
         [Test]
-        public async Task ChangeOrderStatus_ValidStatus_ChangesStatus()
+        public async Task ChangeOrderStatus_ValidStatus_UpdatesStatus_SavesChanges()
         {
             var orderId = Guid.NewGuid();
             var ownerId = Guid.NewGuid();
 
-            var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid(), ownerId);
+            var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid(), ownerId, Guid.NewGuid());
+
             order.Status = OrderStatus.Placed;
 
             order.Restaurant.RestaurantOwners = new List<RestaurantOwner>
@@ -191,39 +193,9 @@ namespace DotNet_Assignment.Tests.Services.Orders
                 .Setup(x => x.GetOrderForUpdateAsync(orderId))
                 .ReturnsAsync(order);
 
-            await _orderService.ChangeOrderStatusAsync(request, orderId, ownerId);
+            await _orderService.ExecuteChangeOrderStatusAsync(request, orderId, ownerId);
 
             Assert.That(order.Status, Is.EqualTo(OrderStatus.Accepted));
-        }
-
-        /// <summary>
-        /// ChangeOrderStatus function - Valid Changes - Saves Changes
-        /// </summary>
-        [Test]
-        public async Task ChangeOrderStatus_ValidStatus_SavesChanges()
-        {
-            var orderId = Guid.NewGuid();
-            var ownerId = Guid.NewGuid();
-
-            var order = OrderTestUtil.CreateMockOrder(orderId, Guid.NewGuid(), ownerId);
-
-            order.Status = OrderStatus.Placed;
-
-            order.Restaurant.RestaurantOwners = new List<RestaurantOwner>
-            {
-                new RestaurantOwner { UserId = ownerId }
-            };
-
-            var request = new ChangeOrderStatusDto
-            {
-                Status = OrderStatus.Accepted
-            };
-
-            _orderRepository
-                .Setup(x => x.GetOrderForUpdateAsync(orderId))
-                .ReturnsAsync(order);
-
-            await _orderService.ChangeOrderStatusAsync(request, orderId, ownerId);
 
             _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }

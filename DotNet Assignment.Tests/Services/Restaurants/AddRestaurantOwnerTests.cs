@@ -9,9 +9,6 @@ using DotNet_Assignment.Services.Restaurants;
 using Moq;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DotNet_Assignment.Tests.Services.Restaurants
@@ -55,7 +52,7 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
                 .Setup(x => x.GetUserByEmailAsync(request.UserEmail))
                 .ReturnsAsync((User)null);
 
-            Func<Task> action = async () => await _restaurantService.AddRestaurantOwner(request);
+            Func<Task> action = async () => await _restaurantService.AddRestaurantOwnerAsync(request);
 
             var exception = Assert.CatchAsync<Exception>(action);
 
@@ -86,7 +83,7 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
                 .Setup(x => x.GetUserByEmailAsync(request.UserEmail))
                 .ReturnsAsync(user);
 
-            Func<Task> action = async () => await _restaurantService.AddRestaurantOwner(request);
+            Func<Task> action = async () => await _restaurantService.AddRestaurantOwnerAsync(request);
 
             var exception = Assert.CatchAsync<Exception>(action);
 
@@ -123,7 +120,7 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
                 .ReturnsAsync((Restaurant)null);
 
             Func<Task> action = async () =>
-                await _restaurantService.AddRestaurantOwner(request);
+                await _restaurantService.AddRestaurantOwnerAsync(request);
 
             var exception = Assert.CatchAsync<Exception>(action);
 
@@ -164,7 +161,7 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
                 .Setup(x => x.GetRestaurantByIdAsync(request.RestaurantId))
                 .ReturnsAsync(restaurant);
 
-            await _restaurantService.AddRestaurantOwner(request);
+            await _restaurantService.AddRestaurantOwnerAsync(request);
 
             Assert.That(user.Role, Is.EqualTo(UserRoles.Owner));
         }
@@ -201,7 +198,7 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
                 .Setup(x => x.GetRestaurantByIdAsync(request.RestaurantId))
                 .ReturnsAsync(restaurant);
 
-            await _restaurantService.AddRestaurantOwner(request);
+            await _restaurantService.AddRestaurantOwnerAsync(request);
 
             Assert.That(user.Role, Is.EqualTo(UserRoles.Admin));
         }
@@ -238,11 +235,11 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
                 .Setup(x => x.GetRestaurantByIdAsync(request.RestaurantId))
                 .ReturnsAsync(restaurant);
 
-            await _restaurantService.AddRestaurantOwner(request);
+            await _restaurantService.AddRestaurantOwnerAsync(request);
 
             _restaurantRepository.Verify(x => x.AddRestaurantOwner(
-                    It.Is<RestaurantOwner>(ro =>ro.RestaurantId == request.RestaurantId &&
-                        ro.UserId == user.UserId)),Times.Once);
+                    It.Is<RestaurantOwner>(ro => ro.RestaurantId == request.RestaurantId &&
+                        ro.UserId == user.UserId)), Times.Once);
         }
 
         /// <summary>
@@ -277,9 +274,9 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
                 .Setup(x => x.GetRestaurantByIdAsync(request.RestaurantId))
                 .ReturnsAsync(restaurant);
 
-            await _restaurantService.AddRestaurantOwner(request);
+            await _restaurantService.AddRestaurantOwnerAsync(request);
 
-            _appDbContext.Verify(x => x.SaveChangesAsync(),Times.Once);
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
     }
 }

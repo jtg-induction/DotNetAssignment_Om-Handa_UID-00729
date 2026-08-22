@@ -16,6 +16,6 @@ namespace DotNet_Assignment.Services.Restaurants
 
         Task AddRestaurantAsync(AddRestaurantDto addRestaurantDto);
 
-        Task AddRestaurantOwner(RestaurantOwnerRequestDto restaurantOwnerRequestDto);
+        Task AddRestaurantOwnerAsync(RestaurantOwnerRequestDto restaurantOwnerRequestDto);
     }
 }

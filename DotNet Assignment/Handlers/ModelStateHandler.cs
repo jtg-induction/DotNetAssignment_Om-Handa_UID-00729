@@ -21,7 +21,7 @@ namespace DotNet_Assignment.Handlers
                             .Where(x => x.Value.Errors.Count > 0)
                             .ToDictionary(
                                 er => er.Key.Replace("requestDto.", ""),
-                                er => er.Value.Errors.Select(e => e.ErrorMessage).ToList()
+                                er => er.Value.Errors.Select(e => !string.IsNullOrEmpty(e.ErrorMessage) ? e.ErrorMessage : e.Exception?.Message ?? "Invalid format.").ToList()
                             );
 
                 var response = new ApiResponseDto<object> { IsSuccess = false, Message = ExceptionMessages.InvalidCredentials, Errors = errors };
