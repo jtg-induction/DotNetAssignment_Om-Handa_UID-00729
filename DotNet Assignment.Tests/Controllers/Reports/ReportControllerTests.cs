@@ -127,10 +127,10 @@ namespace DotNet_Assignment.Tests.Controllers.Reports
             SetUser(userId);
 
             _reportService
-                .Setup(x => x.FrequentlyBoughtTogetherAsync(userId, 5))
+                .Setup(x => x.FrequentlyBoughtTogetherAsync(userId, 5, It.IsAny<IncludedRestaurantsDto>()))
                 .ReturnsAsync(pdf);
 
-            var result = await _reportController.FrequentlyBoughtTogetherAsync(5);
+            var result = await _reportController.FrequentlyBoughtTogetherAsync(new IncludedRestaurantsDto { }, 5);
 
             Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(await result.Content.ReadAsByteArrayAsync(), Is.EqualTo(pdf));
@@ -148,12 +148,12 @@ namespace DotNet_Assignment.Tests.Controllers.Reports
             SetUser(userId);
 
             _reportService
-                .Setup(x => x.FrequentlyBoughtTogetherAsync(userId, 10))
+                .Setup(x => x.FrequentlyBoughtTogetherAsync(userId, 10, It.IsAny<IncludedRestaurantsDto>()))
                 .ReturnsAsync(pdf);
 
-            await _reportController.FrequentlyBoughtTogetherAsync(10);
+            await _reportController.FrequentlyBoughtTogetherAsync(new IncludedRestaurantsDto { }, 10);
 
-            _reportService.Verify(x => x.FrequentlyBoughtTogetherAsync(userId, 10), Times.Once);
+            _reportService.Verify(x => x.FrequentlyBoughtTogetherAsync(userId, 10, It.IsAny<IncludedRestaurantsDto>()), Times.Once);
         }
 
         /// <summary>
@@ -168,10 +168,10 @@ namespace DotNet_Assignment.Tests.Controllers.Reports
             SetUser(userId);
 
             _reportService
-                .Setup(x => x.FrequentlyBoughtTogetherAsync(userId, 5))
+                .Setup(x => x.FrequentlyBoughtTogetherAsync(userId, 5, It.IsAny<IncludedRestaurantsDto>()))
                 .ReturnsAsync(pdf);
 
-            var result = await _reportController.FrequentlyBoughtTogetherAsync(5);
+            var result = await _reportController.FrequentlyBoughtTogetherAsync(new IncludedRestaurantsDto { }, 5);
 
             Assert.That(result.Content.Headers.ContentType.MediaType, Is.EqualTo("application/pdf"));
             Assert.That(result.Content.Headers.ContentDisposition.FileName, Is.EqualTo("FrequentlyBoughtTogether.pdf"));
@@ -187,10 +187,10 @@ namespace DotNet_Assignment.Tests.Controllers.Reports
             SetUser(userId);
 
             _reportService
-                .Setup(x => x.FrequentlyBoughtTogetherAsync(userId, 5))
+                .Setup(x => x.FrequentlyBoughtTogetherAsync(userId, 5, It.IsAny<IncludedRestaurantsDto>()))
                 .ThrowsAsync(new Exception());
 
-            Func<Task> Action = async () => await _reportController.FrequentlyBoughtTogetherAsync(5);
+            Func<Task> Action = async () => await _reportController.FrequentlyBoughtTogetherAsync(new IncludedRestaurantsDto { }, 5);
             Assert.ThrowsAsync<Exception>(Action);
         }
 

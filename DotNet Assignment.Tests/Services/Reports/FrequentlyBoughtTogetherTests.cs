@@ -49,14 +49,14 @@ namespace DotNet_Assignment.Tests.Services.Reports
             var expectedPdf = new byte[] { 1, 2, 3 };
 
             _reportRepository
-                .Setup(x => x.GetFrequentlyBoughtTogetherAsync(ownerId, 5))
+                .Setup(x => x.GetFrequentlyBoughtTogetherAsync(ownerId, 5, It.IsAny<IncludedRestaurantsDto>()))
                 .ReturnsAsync(data);
 
             _reportRenderer
                 .Setup(x => x.RenderReport("~/Reports/FrequentlyBoughtTogether.trdp", data))
                 .Returns(expectedPdf);
 
-            var result = await _reportService.FrequentlyBoughtTogetherAsync(ownerId, 5);
+            var result = await _reportService.FrequentlyBoughtTogetherAsync(ownerId, 5, It.IsAny<IncludedRestaurantsDto>());
 
             Assert.That(result, Is.EqualTo(expectedPdf));
         }
@@ -72,16 +72,16 @@ namespace DotNet_Assignment.Tests.Services.Reports
             var data = new List<FrequentlyBoughtItemsDto>();
 
             _reportRepository
-                .Setup(x => x.GetFrequentlyBoughtTogetherAsync(ownerId, 5))
+                .Setup(x => x.GetFrequentlyBoughtTogetherAsync(ownerId, 5, It.IsAny<IncludedRestaurantsDto>()))
                 .ReturnsAsync(data);
 
             _reportRenderer
                 .Setup(x => x.RenderReport("~/Reports/FrequentlyBoughtTogether.trdp", data))
                 .Returns(new byte[] { 1 });
 
-            await _reportService.FrequentlyBoughtTogetherAsync(ownerId, 5);
+            await _reportService.FrequentlyBoughtTogetherAsync(ownerId, 5, It.IsAny<IncludedRestaurantsDto>());
 
-            _reportRepository.Verify(x => x.GetFrequentlyBoughtTogetherAsync(ownerId, 5), Times.Once);
+            _reportRepository.Verify(x => x.GetFrequentlyBoughtTogetherAsync(ownerId, 5, It.IsAny<IncludedRestaurantsDto>()), Times.Once);
         }
 
         /// <summary>
@@ -103,14 +103,14 @@ namespace DotNet_Assignment.Tests.Services.Reports
             };
 
             _reportRepository
-                .Setup(x => x.GetFrequentlyBoughtTogetherAsync(ownerId, 5))
+                .Setup(x => x.GetFrequentlyBoughtTogetherAsync(ownerId, 5, It.IsAny<IncludedRestaurantsDto>()))
                 .ReturnsAsync(data);
 
             _reportRenderer
                 .Setup(x => x.RenderReport("~/Reports/FrequentlyBoughtTogether.trdp", data))
                 .Returns(new byte[] { 1 });
 
-            await _reportService.FrequentlyBoughtTogetherAsync(ownerId, 5);
+            await _reportService.FrequentlyBoughtTogetherAsync(ownerId, 5, It.IsAny<IncludedRestaurantsDto>());
 
             _reportRenderer.Verify(x => x.RenderReport("~/Reports/FrequentlyBoughtTogether.trdp", data), Times.Once);
         }

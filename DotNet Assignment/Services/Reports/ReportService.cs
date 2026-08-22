@@ -40,9 +40,9 @@ namespace DotNet_Assignment.Services.Reports
         /// </summary>
         /// <param name="ownerId"></param>
         /// <returns>Pdf bytes </returns>
-        public async Task<byte[]> FrequentlyBoughtTogetherAsync(Guid ownerId, int size)
+        public async Task<byte[]> FrequentlyBoughtTogetherAsync(Guid ownerId, int size, IncludedRestaurantsDto includedRestaurants)
         {
-            var data = await _reportRepository.GetFrequentlyBoughtTogetherAsync(ownerId, size);
+            var data = await _reportRepository.GetFrequentlyBoughtTogetherAsync(ownerId, size, includedRestaurants);
 
             return _reportRenderer.RenderReport("~/Reports/FrequentlyBoughtTogether.trdp", data);
         }

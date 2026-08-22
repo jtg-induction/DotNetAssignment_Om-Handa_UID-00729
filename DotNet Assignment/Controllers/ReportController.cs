@@ -60,11 +60,11 @@ namespace DotNet_Assignment.Controllers
         [Authorize(Roles = nameof(UserRoles.Owner))]
         [HttpGet]
         [Route("bought-together")]
-        public async Task<HttpResponseMessage> FrequentlyBoughtTogetherAsync([FromUri]int size = 5)
+        public async Task<HttpResponseMessage> FrequentlyBoughtTogetherAsync(IncludedRestaurantsDto includedRestaurants, [FromUri]int size = 5)
         {
             var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            var pdf = await _reportService.FrequentlyBoughtTogetherAsync(userId, size);
+            var pdf = await _reportService.FrequentlyBoughtTogetherAsync(userId, size, includedRestaurants);
 
             var response = new HttpResponseMessage(HttpStatusCode.OK)
             {

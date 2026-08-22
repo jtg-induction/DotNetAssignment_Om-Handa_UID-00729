@@ -1,14 +1,11 @@
 ﻿using DotNet_Assignment.Data;
 using DotNet_Assignment.Models.DTO;
-using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Runtime.Remoting.Contexts;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace DotNet_Assignment.Repository.Reports
 {
@@ -33,18 +30,22 @@ namespace DotNet_Assignment.Repository.Reports
 
             string targetCategory = category?.ToLower() ?? string.Empty ;
 
-
             return await _context.OrderedItems
                 .Where(x => x.Order.Restaurant.RestaurantOwners.Any(ro => ro.UserId == ownerId)
                 && x.Order.Status != OrderStatus.Cancelled
                 && targetCategory != x.MenuItem.Category
                 && !safeExcludedItems.Contains(x.MenuItem.Name)
                 && !safeExcludedRestaurant.Contains(x.MenuItem.Restaurant.Name))
-                .GroupBy(x =>x.MenuItem.Name)
+                .GroupBy(x => new
+                {
+                    ItemName = x.MenuItem.Name,
+                    RestaurantName = x.MenuItem.Restaurant.Name
+                })
                 .Select(x => new TopOrderedItemsResponseDto
                 {
-                    MenuItemName = x.Key,
-                    TotalQuantity = x.Sum(q => q.Quantity)
+                    MenuItemName = x.Key.ItemName,
+                    TotalQuantity = x.Sum(q => q.Quantity),
+                    RestaurantName = x.Key.RestaurantName 
                 })
                 .OrderByDescending(x => x.TotalQuantity)
                 .Take(10)
@@ -56,8 +57,11 @@ namespace DotNet_Assignment.Repository.Reports
         /// </summary>
         /// <param name="ownerId"></param>
         /// <returns>list of frequently bought together items</returns>
-        public async Task<List<FrequentlyBoughtItemsDto>> GetFrequentlyBoughtTogetherAsync(Guid ownerId, int size)
+        public async Task<List<FrequentlyBoughtItemsDto>> GetFrequentlyBoughtTogetherAsync(Guid ownerId, int size, IncludedRestaurantsDto includedRestaurants)
         {
+            var safeIncludedRestaurant = (includedRestaurants.IncludeRestaurants ?? new List<string>()).Where(r => !string.IsNullOrWhiteSpace(r)).ToList();
+            bool hasRestaurantFilter = safeIncludedRestaurant.Any();
+
             return await _context.OrderedItems
             .Join(_context.OrderedItems,
                 o1 => o1.OrderId,
@@ -72,6 +76,10 @@ namespace DotNet_Assignment.Repository.Reports
                 x => x.o2.MenuItemId,
                 b => b.MenuItemId,
                 (x, b) => new { x.a, b })
+            .Where(x =>
+                !hasRestaurantFilter ||
+                (safeIncludedRestaurant.Contains(x.a.Restaurant.Name) &&
+                 safeIncludedRestaurant.Contains(x.b.Restaurant.Name)))
             .GroupBy(
                 x => new { ItemA = x.a.Name, ItemB = x.b.Name }) 
             .OrderByDescending(g => g.Count())

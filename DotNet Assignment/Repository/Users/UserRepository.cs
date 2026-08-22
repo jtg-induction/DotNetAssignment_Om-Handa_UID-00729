@@ -54,5 +54,15 @@ namespace DotNet_Assignment.Repository.Users
         public void AddUser(User user) { 
             _context.Users.Add(user);
         }
+
+        /// <summary>
+        /// Finds User by Phone Number
+        /// </summary>
+        /// <param name="phoneNumber"></param>
+        /// <returns>True if Phone number exists, false otherwise</returns>
+        public async Task<bool> FindUserByPhoneNumber(string phoneNumber)
+        {
+            return await _context.Users.AnyAsync(u => u.PhoneNumber == phoneNumber);
+        }
     }
 }

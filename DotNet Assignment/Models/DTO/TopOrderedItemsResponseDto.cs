@@ -9,5 +9,6 @@ namespace DotNet_Assignment.Models.DTO
     {
         public string MenuItemName { get; set; }
         public int TotalQuantity { get; set; }
+        public string RestaurantName { get; set; }
     }
 }

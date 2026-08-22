@@ -276,6 +276,7 @@
     <Compile Include="Constants\SuccessMessages.cs" />
     <Compile Include="Data\AppDbContext.cs" />
     <Compile Include="Exceptions\EmailAlreadyExistsException.cs" />
+    <Compile Include="Exceptions\PhoneNumberExistsException.cs" />
     <Compile Include="Exceptions\UserDeactivatedException.cs" />
     <Compile Include="Exceptions\WrongOperationException.cs" />
     <Compile Include="Global.asax.cs">
@@ -324,6 +325,7 @@
     <Compile Include="Models\DTO\ExcludedItemsDto.cs" />
     <Compile Include="Models\DTO\FilterOptionsDto.cs" />
     <Compile Include="Models\DTO\FrequentlyBoughtItemsDto.cs" />
+    <Compile Include="Models\DTO\IncludedRestaurantsDto.cs" />
     <Compile Include="Models\DTO\JWTResponseDto.cs" />
     <Compile Include="Models\DTO\LoginRequestDto.cs" />
     <Compile Include="Models\DTO\LogoutRequestDto.cs" />

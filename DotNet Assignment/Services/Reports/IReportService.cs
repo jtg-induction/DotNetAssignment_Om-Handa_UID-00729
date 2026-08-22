@@ -11,6 +11,6 @@ namespace DotNet_Assignment.Services.Reports
     {
         Task<byte[]> GetTop10OrderedItemsAsync(Guid ownerId, string category, ExcludedItemsDto excludedItemsDto);
 
-        Task<byte[]> FrequentlyBoughtTogetherAsync(Guid ownerId, int size);
+        Task<byte[]> FrequentlyBoughtTogetherAsync(Guid ownerId, int size, IncludedRestaurantsDto includedRestaurants);
     }
 }

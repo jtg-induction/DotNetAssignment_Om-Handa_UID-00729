@@ -54,6 +54,11 @@ namespace DotNet_Assignment.Services.Users
                 throw new ArgumentException(ExceptionMessages.OneFieldRequired);
             }
 
+            if (await _userRepository.FindUserByPhoneNumber(updateUserDto.PhoneNumber))
+            {
+                throw new PhoneNumberExistsException(ExceptionMessages.PhoneNumberExists);
+            }
+
             if (!string.IsNullOrWhiteSpace(updateUserDto.Name))
             {
                 user.Name = updateUserDto.Name;
