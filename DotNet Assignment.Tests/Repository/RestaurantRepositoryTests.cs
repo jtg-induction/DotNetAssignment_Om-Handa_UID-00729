@@ -200,7 +200,7 @@ namespace DotNet_Assignment.Tests.Repository
 
             repository.AddRestaurant(restaurant);
 
-            mockSet.Verify( x => x.Add(restaurant), Times.Once);
+            mockSet.Verify(x => x.Add(restaurant), Times.Once);
         }
 
         /// <summary>
@@ -226,10 +226,10 @@ namespace DotNet_Assignment.Tests.Repository
 
             repository.AddRestaurantOwner(restaurantOwner);
 
-            mockSet.Verify( x => x.Add(restaurantOwner), Times.Once);
+            mockSet.Verify(x => x.Add(restaurantOwner), Times.Once);
         }
 
-        public Mock<AppDbContext> BuildRestaurantMockContext(IQueryable<Restaurant> data)
+        private Mock<AppDbContext> BuildRestaurantMockContext(IQueryable<Restaurant> data)
         {
             var mockSet = new Mock<DbSet<Restaurant>>();
             mockSet.As<IDbAsyncEnumerable<Restaurant>>()
@@ -251,7 +251,7 @@ namespace DotNet_Assignment.Tests.Repository
             return mockContext;
         }
 
-        public Mock<AppDbContext> BuildMenuItemMockContext(IQueryable<MenuItem> data)
+        private Mock<AppDbContext> BuildMenuItemMockContext(IQueryable<MenuItem> data)
         {
             var mockSet = new Mock<DbSet<MenuItem>>();
             mockSet.As<IDbAsyncEnumerable<MenuItem>>()

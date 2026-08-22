@@ -121,7 +121,7 @@ namespace DotNet_Assignment.Tests.Repository
             mockSet.Verify(m => m.Add(data), Times.Once);
         }
 
-        public Mock<AppDbContext> BuildMockContext(IQueryable<UserAddress> data)
+        private Mock<AppDbContext> BuildMockContext(IQueryable<UserAddress> data)
         {
             var mockSet = new Mock<DbSet<UserAddress>>();
             mockSet.As<IDbAsyncEnumerable<UserAddress>>()

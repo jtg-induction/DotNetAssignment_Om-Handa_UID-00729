@@ -92,9 +92,6 @@ namespace DotNet_Assignment.Repository.Orders
         {
             var query = _context.Orders.AsNoTracking().Where(o => o.Restaurant.RestaurantOwners.Any(ro => ro.UserId == userId));
 
-            query = query.Include(o => o.Restaurant)
-                        .Include(o => o.OrderedItems.Select(oi => oi.MenuItem));
-
             if (filterOptionsDto == null)
             {
                 filterOptionsDto = new FilterOptionsDto();

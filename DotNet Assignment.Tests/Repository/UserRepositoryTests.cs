@@ -27,7 +27,7 @@ namespace DotNet_Assignment.Tests.Repository
         [Test]
         public async Task GetUserByEmailAsync_ReturnsUser()
         {
-            var requestUserEmail= "user@email.com";
+            var requestUserEmail = "user@email.com";
 
             var data = new List<User>
                 {
@@ -163,7 +163,7 @@ namespace DotNet_Assignment.Tests.Repository
         [Test]
         public async Task GetUserByIdAsync_ReturnsUser()
         {
-            var requestUserId= Guid.NewGuid();
+            var requestUserId = Guid.NewGuid();
 
             var data = new List<User>
                 {
@@ -257,7 +257,7 @@ namespace DotNet_Assignment.Tests.Repository
             mockSet.Verify(m => m.Add(data), Times.Once);
         }
 
-        public Mock<AppDbContext> BuildMockContext(IQueryable<User> data)
+        private Mock<AppDbContext> BuildMockContext(IQueryable<User> data)
         {
             var mockSet = new Mock<DbSet<User>>();
             mockSet.As<IDbAsyncEnumerable<User>>()

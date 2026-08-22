@@ -67,7 +67,7 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
 
             await _restaurantService.AddRestaurantAsync(request);
 
-            _restaurantRepository.Verify( x => x.AddRestaurant(It.IsAny<Restaurant>()), Times.Once);
+            _restaurantRepository.Verify(x => x.AddRestaurant(It.IsAny<Restaurant>()), Times.Once);
         }
 
         /// <summary>
@@ -79,12 +79,18 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
             var request = new AddRestaurantDto
             {
                 Name = "Restaurant",
-                UserEmail = "owner@gmail.com"
+                UserEmail = "owner@gmail.com",
+                City = "City",
+                Description = "Description",
+                Landmark = "Landmark",
+                Pincode = "147201",
+                State = "State",
+                Street = "street"
             };
 
             var user = new User
             {
-                UserId = Guid.NewGuid()
+                UserId = Guid.NewGuid(),
             };
 
             _userRepository
@@ -93,7 +99,7 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
 
             await _restaurantService.AddRestaurantAsync(request);
 
-            _restaurantRepository.Verify(x => x.AddRestaurantOwner(It.Is<RestaurantOwner>(r =>r.UserId == user.UserId)),Times.Once);
+            _restaurantRepository.Verify(x => x.AddRestaurantOwner(It.Is<RestaurantOwner>(r => r.UserId == user.UserId)), Times.Once);
         }
 
         /// <summary>
@@ -173,9 +179,9 @@ namespace DotNet_Assignment.Tests.Services.Restaurants
 
             var exception = Assert.CatchAsync<Exception>(action);
 
-            Assert.That(exception.Message,Is.EqualTo(ExceptionMessages.UserDeactivated));
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.UserDeactivated));
 
-            _appDbContext.Verify(x => x.SaveChangesAsync(),Times.Never);
+            _appDbContext.Verify(x => x.SaveChangesAsync(), Times.Never);
         }
     }
 }
