@@ -1,9 +1,9 @@
 ﻿using DotNet_Assignment.Constants;
 using DotNet_Assignment.Controllers;
 using DotNet_Assignment.Models.DTO;
-using DotNet_Assignment.Models.Entities;
-using DotNet_Assignment.Services.Address;
+using DotNet_Assignment.Models.Enums;
 using DotNet_Assignment.Services.Orders;
+using DotNet_Assignment.Tests.Constants;
 using DotNet_Assignment.Tests.Utils;
 using Moq;
 using NUnit.Framework;
@@ -174,6 +174,122 @@ namespace DotNet_Assignment.Tests.Controllers.Order
         }
 
         /// <summary>
+        /// ChangeOrderStatus function - valid request - returns success
+        /// </summary>
+        [Test]
+        public async Task ChangeOrderStatus_ValidRequest_ReturnsSuccess()
+        {
+            var orderId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+
+            SetUser(userId);
+
+            var request = new ChangeOrderStatusDto
+            {
+                Status = OrderStatus.Accepted
+            };
+
+            _orderService
+                .Setup(x => x.ChangeOrderStatusAsync(request, orderId, userId))
+                .Returns(Task.CompletedTask);
+
+            var result = await _orderController.ChangeOrderStatusAsync(request, orderId);
+
+            _orderService.Verify(x => x.ChangeOrderStatusAsync(request, orderId, It.IsAny<Guid>()), Times.Once);
+
+            Assert.That(result, Is.TypeOf<OkNegotiatedContentResult<ApiResponseDto<OrderDetailsResponseDto>>>());
+        }
+
+        /// <summary>
+        /// ChangeOrderStatus function - service throws - throws exception
+        /// </summary>
+        [Test]
+        public void ChangeOrderStatus_ServiceThrows_ThrowsException()
+        {
+            var orderId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+
+            SetUser(userId);
+
+            var request = new ChangeOrderStatusDto
+            {
+                Status = OrderStatus.Accepted
+            };
+
+            _orderService.Setup(x => x.ChangeOrderStatusAsync(request, orderId, It.IsAny<Guid>())).ThrowsAsync(new Exception(ExceptionMessages.OrderNotFound));
+
+            Func<Task> action = async () => await _orderController.ChangeOrderStatusAsync(request, orderId);
+
+            var exception = Assert.CatchAsync<Exception>(action);
+
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.OrderNotFound));
+        }
+
+        /// <summary>
+        /// GetFilteredOrders function - Valid request - returns success
+        /// </summary>
+        [Test]
+        public async Task GetFilteredOrders_ValidRequest_ReturnsSuccess()
+        {
+            var userId = Guid.NewGuid();
+
+            SetUser(userId);
+
+            var orders = new List<OrderDetailsResponseDto>
+                {
+                    new OrderDetailsResponseDto
+                    {
+                        OrderId = Guid.NewGuid(),
+                        TotalPrice = 500
+                    }
+                };
+
+            _orderService
+                .Setup(x => x.GetFilteredOrders(It.IsAny<Guid>(), It.IsAny<FilterOptionsDto>()))
+                .ReturnsAsync(orders);
+
+            var filterOrderDto = new FilterOptionsDto
+            {
+                Category = MockConstants.MockCategory,
+                Status = MockConstants.MockStatus,
+                SortBy = MockConstants.MockSortBy,
+                SortOrder = MockConstants.MockSortOrder,
+                Page = 1,
+                PageSize = 10,
+                SearchByOrderId = null
+            };
+
+            var result = await _orderController.FilterOrder(filterOrderDto);
+
+            Assert.That(result, Is.TypeOf<OkNegotiatedContentResult<ApiResponseDto<List<OrderDetailsResponseDto>>>>());
+
+            _orderService.Verify(x => x.GetFilteredOrders(It.IsAny<Guid>(), It.IsAny<FilterOptionsDto>()), Times.Once);
+        }
+
+        /// <summary>
+        /// GetFilteredOrders function - service throws - throws exception
+        /// </summary>
+        [Test]
+        public void GetFilteredOrders_ServiceThrows_PropagatesException()
+        {
+            var userId = Guid.NewGuid();
+
+            SetUser(userId);
+
+            var exceptionMessage = ExceptionMessages.NoOrdersToShow;
+
+            _orderService
+                .Setup(x => x.GetFilteredOrders(It.IsAny<Guid>(), It.IsAny<FilterOptionsDto>()))
+                .ThrowsAsync(new Exception(exceptionMessage));
+
+            Func<Task> action = async () => await _orderController.FilterOrder(new FilterOptionsDto { });
+
+            var exception = Assert.CatchAsync<Exception>(action);
+
+            Assert.That(exception.Message, Is.EqualTo(exceptionMessage));
+        }
+
+        /// <summary>
         /// Mocks User Identity to send with Context
         /// </summary>
         /// <param name="userId"></param>
@@ -182,7 +298,7 @@ namespace DotNet_Assignment.Tests.Controllers.Order
             var identity = new ClaimsIdentity(new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, userId.ToString())
-            });
+                });
 
             _orderController.ControllerContext = new HttpControllerContext();
             _orderController.User = new ClaimsPrincipal(identity);

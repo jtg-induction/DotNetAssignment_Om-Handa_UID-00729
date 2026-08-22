@@ -43,7 +43,7 @@ namespace DotNet_Assignment.Tests.Controllers.Restaurant
 
             var result = await _restaurantController.GetRestaurantsAsync(page, pageSize);
 
-            var okResult = result as OkNegotiatedContentResult<ApiResponseDto<List<RestaurantResponseDto>>>;
+            var okResult = result as OkNegotiatedContentResult<ApiResponseDto<object>>;
 
             Assert.That(okResult, Is.Not.Null);
             Assert.That(okResult.Content.IsSuccess, Is.True);
@@ -85,7 +85,7 @@ namespace DotNet_Assignment.Tests.Controllers.Restaurant
 
             var result = await _restaurantController.GetMenuItemsAsync(restaurantId, page, pageSize);
 
-            var okResult = result as OkNegotiatedContentResult<ApiResponseDto<List<MenuItemResponseDto>>>;
+            var okResult = result as OkNegotiatedContentResult<ApiResponseDto<object>>;
 
             Assert.That(okResult, Is.Not.Null);
             Assert.That(okResult.Content.IsSuccess, Is.True);
@@ -109,6 +109,90 @@ namespace DotNet_Assignment.Tests.Controllers.Restaurant
             var exception = Assert.CatchAsync<Exception>(action);
 
             Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.RestaurantNotFound));
+        }
+
+        /// <summary>
+        /// AddRestaurant function - Valid Request - return success
+        /// </summary>
+        [Test]
+        public async Task AddRestaurant_ValidRequest_ReturnsSuccess()
+        {
+            var request = new AddRestaurantDto
+            {
+                Name = "Restaurant",
+                UserEmail = "owner@gmail.com"
+            };
+
+            var result = await _restaurantController.AddRestaurantAsync(request);
+
+            _restaurantService.Verify(x => x.AddRestaurantAsync(request),Times.Once);
+
+            Assert.That(result,Is.TypeOf<OkNegotiatedContentResult<ApiResponseDto<object>>>());
+        }
+
+        /// <summary>
+        /// AddRestaurant function - Service throws - throws exception
+        /// </summary>
+        [Test]
+        public void AddRestaurant_ServiceThrows_ThrowsException()
+        {
+            var request = new AddRestaurantDto
+            {
+                Name = "Restaurant",
+                UserEmail = "owner@gmail.com"
+            };
+
+            _restaurantService
+                .Setup(x => x.AddRestaurantAsync(request))
+                .ThrowsAsync(new Exception(ExceptionMessages.UserNotFound));
+
+            Func<Task> action = async () => await _restaurantController.AddRestaurantAsync(request);
+
+            var exception = Assert.CatchAsync<Exception>(action);
+
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.UserNotFound));
+        }
+
+        /// <summary>
+        /// AddRestaurantOwner function - Valid Request - return success
+        /// </summary>
+        [Test]
+        public async Task AddRestaurantOwner_ValidRequest_ReturnsSuccess()
+        {
+            var request = new RestaurantOwnerRequestDto
+            {
+                RestaurantId = Guid.NewGuid(),
+                UserEmail = "owner@gmail.com"
+            };
+
+            var result = await _restaurantController.AddRestaurantOwnerAsync(request);
+
+            _restaurantService.Verify( x => x.AddRestaurantOwnerAsync(request), Times.Once);
+
+            Assert.That( result, Is.TypeOf<OkNegotiatedContentResult<ApiResponseDto<object>>>());
+        }
+
+        /// <summary>
+        /// AddRestaurantOwner function - Service throws - throws exception
+        /// </summary>
+        [Test]
+        public void AddRestaurantOwner_ServiceThrows_ThrowsException()
+        {
+            var request = new RestaurantOwnerRequestDto
+            {
+                RestaurantId = Guid.NewGuid(),
+                UserEmail = "owner@gmail.com"
+            };
+
+            _restaurantService
+                .Setup(x => x.AddRestaurantOwnerAsync(request))
+                .ThrowsAsync(new Exception(ExceptionMessages.UserNotFound));
+
+            Func<Task> action = async () => await _restaurantController.AddRestaurantOwnerAsync(request);
+
+            var exception = Assert.CatchAsync<Exception>(action);
+
+            Assert.That(exception.Message, Is.EqualTo(ExceptionMessages.UserNotFound));
         }
     }
 }
