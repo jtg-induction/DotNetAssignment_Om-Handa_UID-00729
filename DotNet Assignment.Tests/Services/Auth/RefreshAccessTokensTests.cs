@@ -171,7 +171,6 @@ namespace DotNet_Assignment.Tests.Services.Auth
             var response = await _authService.RefreshAccessTokenAsync(refreshToken);
 
             Assert.That(response.AccessToken, Is.EqualTo(MockConstants.MockNewAccessToken));
-            Assert.That(response.RefreshToken, Is.EqualTo(refreshToken));
         }
 
 

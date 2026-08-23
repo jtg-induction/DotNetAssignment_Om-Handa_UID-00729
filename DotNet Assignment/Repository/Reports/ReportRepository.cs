@@ -1,5 +1,6 @@
 ﻿using DotNet_Assignment.Data;
 using DotNet_Assignment.Models.DTO;
+using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Models.Enums;
 using System;
 using System.Collections.Generic;
@@ -23,33 +24,49 @@ namespace DotNet_Assignment.Repository.Reports
         /// </summary>
         /// <param name="ownerId"></param>
         /// <returns>list of top 10 ordered Items</returns>
-        public async Task<List<TopOrderedItemsResponseDto>> GetTop10OrderedItemsAsync(Guid ownerId, string category, ExcludedItemsDto excludedItemsDto)
+        public async Task<List<TopOrderedItemsResponseDto>> GetTop10OrderedItemsAsync(Guid ownerId, string category, TopOrderedItemsRequestDto topOrderedItemsRequest)
         {
-            var safeExcludedItems = excludedItemsDto.ExcludeItems ?? new List<string>();
-            var safeExcludedRestaurant = excludedItemsDto.ExcludeRestaurants ?? new List<string>();
+            IQueryable<OrderedItem> query = _context.OrderedItems;
 
-            string targetCategory = category?.ToLower() ?? string.Empty ;
+            query = query.Where(oi => oi.Order.Restaurant.RestaurantOwners
+                    .Any(ro => ro.UserId == ownerId)
+                    && oi.Order.Status == OrderStatus.Delivered
+                    );
 
-            return await _context.OrderedItems
-                .Where(x => x.Order.Restaurant.RestaurantOwners.Any(ro => ro.UserId == ownerId)
-                && x.Order.Status != OrderStatus.Cancelled
-                && targetCategory != x.MenuItem.Category
-                && !safeExcludedItems.Contains(x.MenuItem.Name)
-                && !safeExcludedRestaurant.Contains(x.MenuItem.Restaurant.Name))
-                .GroupBy(x => new
+            if (!string.IsNullOrWhiteSpace(category))
+            {
+                string targetCategory = category.Trim().ToLower();
+                query = query.Where(oi => oi.MenuItem.Category.ToLower() == targetCategory);
+            }
+
+            if (topOrderedItemsRequest?.ExcludeItems != null && topOrderedItemsRequest.ExcludeItems.Any())
+            {
+                var safeExcludedItems = topOrderedItemsRequest.ExcludeItems;
+                query = query.Where(x => !safeExcludedItems.Contains(x.MenuItem.MenuItemId));
+            }
+
+            if (topOrderedItemsRequest?.IncludeRestaurants != null && topOrderedItemsRequest.IncludeRestaurants.Any())
+            {
+                var safeIncludedRestaurants = topOrderedItemsRequest.IncludeRestaurants;
+                query = query.Where(x => safeIncludedRestaurants.Contains(x.MenuItem.RestaurantId));
+            }
+
+            return await query
+                .GroupBy(oi => new
                 {
-                    ItemName = x.MenuItem.Name,
-                    RestaurantName = x.MenuItem.Restaurant.Name
+                    ItemName = oi.MenuItem.Name,
+                    RestaurantName = oi.MenuItem.Restaurant.Name
                 })
-                .Select(x => new TopOrderedItemsResponseDto
+                .Select(grp => new TopOrderedItemsResponseDto
                 {
-                    MenuItemName = x.Key.ItemName,
-                    TotalQuantity = x.Sum(q => q.Quantity),
-                    RestaurantName = x.Key.RestaurantName 
+                    MenuItemName = grp.Key.ItemName,
+                    RestaurantName = grp.Key.RestaurantName,
+                    TotalQuantity = grp.Sum(q => q.Quantity)
                 })
-                .OrderByDescending(x => x.TotalQuantity)
+                .OrderByDescending(oi => oi.TotalQuantity)
                 .Take(10)
                 .ToListAsync();
+
         }
 
         /// <summary>
@@ -57,40 +74,40 @@ namespace DotNet_Assignment.Repository.Reports
         /// </summary>
         /// <param name="ownerId"></param>
         /// <returns>list of frequently bought together items</returns>
-        public async Task<List<FrequentlyBoughtItemsDto>> GetFrequentlyBoughtTogetherAsync(Guid ownerId, int size, IncludedRestaurantsDto includedRestaurants)
+        public async Task<List<FrequentlyBoughtItemsDto>> GetFrequentlyBoughtTogetherAsync(Guid ownerId, IncludedRestaurantsDto includedRestaurants, int? size)
         {
-            var safeIncludedRestaurant = (includedRestaurants.IncludeRestaurants ?? new List<string>()).Where(r => !string.IsNullOrWhiteSpace(r)).ToList();
-            bool hasRestaurantFilter = safeIncludedRestaurant.Any();
+            int listSize = size ?? 5;
 
-            return await _context.OrderedItems
-            .Join(_context.OrderedItems,
-                o1 => o1.OrderId,
-                o2 => o2.OrderId,
-                (o1, o2) => new { o1, o2 })
-            .Where(x => x.o1.MenuItemId.CompareTo(x.o2.MenuItemId) < 0)
-            .Join(_context.MenuItems,
-                x => x.o1.MenuItemId,
-                a => a.MenuItemId,
-                (x, a) => new { x.o1, x.o2, a })
-            .Join(_context.MenuItems,
-                x => x.o2.MenuItemId,
-                b => b.MenuItemId,
-                (x, b) => new { x.a, b })
-            .Where(x =>
-                !hasRestaurantFilter ||
-                (safeIncludedRestaurant.Contains(x.a.Restaurant.Name) &&
-                 safeIncludedRestaurant.Contains(x.b.Restaurant.Name)))
-            .GroupBy(
-                x => new { ItemA = x.a.Name, ItemB = x.b.Name }) 
-            .OrderByDescending(g => g.Count())
-            .Select(g => new FrequentlyBoughtItemsDto
+            IQueryable<OrderedItem> baseQuery = _context.OrderedItems;
+
+            var query = baseQuery.SelectMany(o1 => o1.Order.OrderedItems, (o1, o2) => new { ItemA = o1, ItemB = o2 });
+
+            query = query.Where(x => x.ItemA.MenuItemId.CompareTo(x.ItemB.MenuItemId) < 0);
+
+            if (includedRestaurants?.IncludeRestaurants != null && includedRestaurants.IncludeRestaurants.Any())
             {
-                Item1 = g.Key.ItemA,
-                Item2 = g.Key.ItemB,
-                TotalTimesBought = g.Count()
-            })
-            .Take(size)
-            .ToListAsync();
+                query = query.Where(x =>
+                    includedRestaurants.IncludeRestaurants.Contains(x.ItemA.MenuItem.RestaurantId) &&
+                    includedRestaurants.IncludeRestaurants.Contains(x.ItemB.MenuItem.RestaurantId));
+            }
+
+            return await query
+                .GroupBy(x => new
+                {
+                    NameA = x.ItemA.MenuItem.Name,
+                    NameB = x.ItemB.MenuItem.Name,
+                    Restaurant = x.ItemA.MenuItem.Restaurant.Name
+                })
+                .OrderByDescending(g => g.Count())
+                .Select(g => new FrequentlyBoughtItemsDto
+                {
+                    Item1 = g.Key.NameA,
+                    Item2 = g.Key.NameB,
+                    TotalTimesBought = g.Count(),
+                    RestaurantName = g.Key.Restaurant
+                })
+                .Take(listSize)
+                .ToListAsync();
         }
     }
 }

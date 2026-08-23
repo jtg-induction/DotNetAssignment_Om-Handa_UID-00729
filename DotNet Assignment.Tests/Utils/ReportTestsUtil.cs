@@ -40,7 +40,8 @@ namespace DotNet_Assignment.Tests.Utils
             {
                 MenuItemId = Guid.NewGuid(),
                 Name = name,
-                Category = category
+                Category = category,
+
             };
         }
 

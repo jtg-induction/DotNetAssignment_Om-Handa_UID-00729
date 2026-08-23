@@ -322,7 +322,7 @@
     <Compile Include="Models\DTO\ApiResponseDto.cs" />
     <Compile Include="Models\DTO\ChangeOrderStatusDto.cs" />
     <Compile Include="Models\DTO\ChangePasswordDto.cs" />
-    <Compile Include="Models\DTO\ExcludedItemsDto.cs" />
+    <Compile Include="Models\DTO\TopOrderedItemsRequestDto.cs" />
     <Compile Include="Models\DTO\FilterOptionsDto.cs" />
     <Compile Include="Models\DTO\FrequentlyBoughtItemsDto.cs" />
     <Compile Include="Models\DTO\IncludedRestaurantsDto.cs" />

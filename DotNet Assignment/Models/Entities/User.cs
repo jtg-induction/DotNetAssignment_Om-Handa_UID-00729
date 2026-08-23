@@ -16,7 +16,7 @@ namespace DotNet_Assignment.Models.Entities
         [EmailAddress]
         [Index("IX_User_Email", IsUnique = true)]
         [StringLength(255)]
-        [RegularExpression(Regex.EmailRegex)]
+        [RegularExpression(Regex.EmailRegex, ErrorMessage =ExceptionMessages.InvalidEmail)]
         public string Email { get; set; }
 
         [Required]
@@ -29,7 +29,7 @@ namespace DotNet_Assignment.Models.Entities
 
         [Required]
         [StringLength(10), MinLength(10)]
-        [RegularExpression(Regex.PhoneNumberRegex)]
+        [RegularExpression(Regex.PhoneNumberRegex, ErrorMessage = ExceptionMessages.InvalidPhoneNumber)]
         [Index("IX_User_PhoneNumber", IsUnique = true)]
         public string PhoneNumber { get; set; }
 

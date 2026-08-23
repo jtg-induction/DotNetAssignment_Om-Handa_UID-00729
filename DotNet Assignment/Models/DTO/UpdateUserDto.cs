@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DotNet_Assignment.Constants;
+using System.ComponentModel.DataAnnotations;
 
 namespace DotNet_Assignment.Models.DTO
 {
@@ -9,6 +10,7 @@ namespace DotNet_Assignment.Models.DTO
 
         [Phone]
         [StringLength(10)]
+        [RegularExpression(Regex.PhoneNumberRegex, ErrorMessage = ExceptionMessages.InvalidPhoneNumber)]
         public string PhoneNumber { get; set; }
     }
 }

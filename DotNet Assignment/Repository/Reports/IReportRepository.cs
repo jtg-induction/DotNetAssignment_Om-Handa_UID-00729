@@ -7,9 +7,9 @@ namespace DotNet_Assignment.Repository.Reports
 {
     public interface IReportRepository
     {
-        Task<List<TopOrderedItemsResponseDto>> GetTop10OrderedItemsAsync(Guid ownerId, string category, ExcludedItemsDto excludedItemsDto);
+        Task<List<TopOrderedItemsResponseDto>> GetTop10OrderedItemsAsync(Guid ownerId, string category, TopOrderedItemsRequestDto excludedItemsDto);
 
-        Task<List<FrequentlyBoughtItemsDto>> GetFrequentlyBoughtTogetherAsync(Guid ownerId, int size, IncludedRestaurantsDto includedRestaurants);
+        Task<List<FrequentlyBoughtItemsDto>> GetFrequentlyBoughtTogetherAsync(Guid ownerId,IncludedRestaurantsDto includedRestaurants, int? size );
 
     }
 }

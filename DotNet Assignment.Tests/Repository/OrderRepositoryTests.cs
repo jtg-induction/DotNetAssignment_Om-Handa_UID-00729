@@ -221,7 +221,7 @@ namespace DotNet_Assignment.Tests.Repository
                 PageSize = 10
             };
 
-            var result = await repository.FilterOrderAsync(userId, filter);
+            var result = await repository.FilterOrderAsync(userId, new IncludedRestaurantsDto(), filter);
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Count, Is.EqualTo(2));
@@ -272,7 +272,7 @@ namespace DotNet_Assignment.Tests.Repository
                 PageSize = 10
             };
 
-            var result = await repository.FilterOrderAsync(userId, filter);
+            var result = await repository.FilterOrderAsync(userId, new IncludedRestaurantsDto(), filter);
 
             Assert.That(result.Count, Is.EqualTo(1));
             Assert.That(result[0].Status, Is.EqualTo("Placed"));
@@ -327,7 +327,7 @@ namespace DotNet_Assignment.Tests.Repository
                 PageSize = 10,
             };
 
-            var result = await repository.FilterOrderAsync(userId, filter);
+            var result = await repository.FilterOrderAsync(userId, new IncludedRestaurantsDto(), filter);
 
             Assert.That(result.Count, Is.EqualTo(1));
         }
@@ -375,7 +375,7 @@ namespace DotNet_Assignment.Tests.Repository
                 PageSize = 10
             };
 
-            var result = await repository.FilterOrderAsync(userId, filter);
+            var result = await repository.FilterOrderAsync(userId, new IncludedRestaurantsDto(), filter);
 
             Assert.That(result.Count, Is.EqualTo(1));
             Assert.That(result[0].OrderId, Is.EqualTo(orderId));
@@ -416,7 +416,7 @@ namespace DotNet_Assignment.Tests.Repository
                 PageSize = 2
             };
 
-            var result = await repository.FilterOrderAsync(userId, filter);
+            var result = await repository.FilterOrderAsync(userId, new IncludedRestaurantsDto(), filter);
 
             Assert.That(result.Count, Is.EqualTo(2));
         }
@@ -457,7 +457,7 @@ namespace DotNet_Assignment.Tests.Repository
                 PageSize = 10
             };
 
-            var result = await repository.FilterOrderAsync(userId, filter);
+            var result = await repository.FilterOrderAsync(userId, new IncludedRestaurantsDto(), filter);
 
             Assert.That(result[0].TotalPrice, Is.EqualTo(200));
             Assert.That(result[1].TotalPrice, Is.EqualTo(300));
@@ -499,7 +499,7 @@ namespace DotNet_Assignment.Tests.Repository
                 PageSize = 10
             };
 
-            var result = await repository.FilterOrderAsync(userId, filter);
+            var result = await repository.FilterOrderAsync(userId, new IncludedRestaurantsDto(), filter);
 
             //Assert.That(result[0].CreatedAt, Is.LessThan(result[1].CreatedAt));
         }

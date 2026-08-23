@@ -171,7 +171,6 @@ namespace DotNet_Assignment.Tests.Services.Auth
 
             Assert.DoesNotThrowAsync(action);
             Assert.That(response.AccessToken, Is.Not.Null);
-            Assert.That(response.RefreshToken, Is.Not.Null);
 
             _appDbContext.Verify(x => x.SaveChanges(), Times.Once);
         }

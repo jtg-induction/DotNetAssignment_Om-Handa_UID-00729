@@ -32,7 +32,7 @@ namespace DotNet_Assignment.Controllers
         [Authorize(Roles = nameof(UserRoles.Owner))]
         [HttpGet]
         [Route("top-items")]
-        public async Task<HttpResponseMessage> GetTop10OrderedItemsAsync(ExcludedItemsDto excludedItemsDto, [FromUri] string category = null)
+        public async Task<HttpResponseMessage> GetTop10OrderedItemsAsync(TopOrderedItemsRequestDto excludedItemsDto, [FromUri] string category = null)
         {
             var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
 
@@ -60,11 +60,11 @@ namespace DotNet_Assignment.Controllers
         [Authorize(Roles = nameof(UserRoles.Owner))]
         [HttpGet]
         [Route("bought-together")]
-        public async Task<HttpResponseMessage> FrequentlyBoughtTogetherAsync(IncludedRestaurantsDto includedRestaurants, [FromUri]int size = 5)
+        public async Task<HttpResponseMessage> FrequentlyBoughtTogetherAsync(IncludedRestaurantsDto includedRestaurants, [FromUri]int? size = 5)
         {
             var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            var pdf = await _reportService.FrequentlyBoughtTogetherAsync(userId, size, includedRestaurants);
+            var pdf = await _reportService.FrequentlyBoughtTogetherAsync(userId, includedRestaurants, size);
 
             var response = new HttpResponseMessage(HttpStatusCode.OK)
             {

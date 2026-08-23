@@ -29,7 +29,7 @@ namespace DotNet_Assignment.Tests.Repository
             var ownerId = Guid.NewGuid();
 
             var data = ReportTestsUtil.CreateOrderedItems(
-                ownerId, OrderStatus.Placed,
+                ownerId, OrderStatus.Delivered,
                 ("Dish1", "Veg", 10),
                 ("Dish2", "NonVeg", 5)
             ).AsQueryable();
@@ -38,12 +38,12 @@ namespace DotNet_Assignment.Tests.Repository
 
             var repository = new ReportRepository(mockContext.Object);
 
-            var excludedItems = new ExcludedItemsDto
+            var topOrderedItemsRequest = new TopOrderedItemsRequestDto
             {
-                ExcludeItems = new List<string>()
+                ExcludeItems = new List<Guid>()
             };
 
-            var result = await repository.GetTop10OrderedItemsAsync(ownerId, null, excludedItems);
+            var result = await repository.GetTop10OrderedItemsAsync(ownerId, null, topOrderedItemsRequest);
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Count, Is.EqualTo(2));
@@ -73,26 +73,26 @@ namespace DotNet_Assignment.Tests.Repository
 
             var repository = new ReportRepository(mockContext.Object);
 
-            var excludedItems = new ExcludedItemsDto
+            var topOrderedItemsRequest = new TopOrderedItemsRequestDto
             {
-                ExcludeItems = new List<string>()
+                ExcludeItems = new List<Guid>()
             };
 
-            var result = await repository.GetTop10OrderedItemsAsync(ownerId, null, excludedItems);
+            var result = await repository.GetTop10OrderedItemsAsync(ownerId, null, topOrderedItemsRequest);
 
             Assert.That(result, Is.Empty);
         }
 
         /// <summary>
-        /// GetTop10OrderedItemsAsync - Category excluded - Excludes category
+        /// GetTop10OrderedItemsAsync - Category included - includes category
         /// </summary>
         [Test]
-        public async Task GetTop10OrderedItemsAsync_ExcludedCategory_ExcludesItems()
+        public async Task GetTop10OrderedItemsAsync_IncludedCategory_ExcludesItems()
         {
             var ownerId = Guid.NewGuid();
 
             var data = ReportTestsUtil.CreateOrderedItems(
-                ownerId, OrderStatus.Placed,
+                ownerId, OrderStatus.Delivered,
                 ("Dish1", "veg", 10),
                 ("Dish2", "nonveg", 5)
             ).AsQueryable();
@@ -101,16 +101,16 @@ namespace DotNet_Assignment.Tests.Repository
 
             var repository = new ReportRepository(mockContext.Object);
 
-            var excludedItems = new ExcludedItemsDto
+            var topOrderedItemsRequest = new TopOrderedItemsRequestDto
             {
-                ExcludeItems = new List<string>()
+                ExcludeItems = new List<Guid>()
             };
 
-            var result = await repository.GetTop10OrderedItemsAsync(ownerId, "nonveg", excludedItems);
+            var result = await repository.GetTop10OrderedItemsAsync(ownerId, "nonveg", topOrderedItemsRequest);
 
             Assert.That(result, Has.Count.EqualTo(1));
-            Assert.That(result[0].MenuItemName, Is.EqualTo("Dish1"));
-            Assert.That(result[0].TotalQuantity, Is.EqualTo(10));
+            Assert.That(result[0].MenuItemName, Is.EqualTo("Dish2"));
+            Assert.That(result[0].TotalQuantity, Is.EqualTo(5));
         }
 
         /// <summary>
@@ -122,24 +122,23 @@ namespace DotNet_Assignment.Tests.Repository
             var ownerId = Guid.NewGuid();
 
             var data = ReportTestsUtil.CreateOrderedItems(
-                ownerId, OrderStatus.Placed,
+                ownerId, OrderStatus.Delivered,
                 ("Dish1", "Veg", 10),
                 ("Dish2", "NonVeg", 5)
             ).AsQueryable();
+
+            var dish1Id = data.First(x => x.MenuItem.Name == "Dish1").MenuItem.MenuItemId;
 
             var mockContext = BuildMockContext(data);
 
             var repository = new ReportRepository(mockContext.Object);
 
-            var excludedItems = new ExcludedItemsDto
+            var topOrderedItemsRequest = new TopOrderedItemsRequestDto
             {
-                ExcludeItems = new List<string>
-                {
-                    "Dish1"
-                }
+                ExcludeItems = new List<Guid> { dish1Id }
             };
 
-            var result = await repository.GetTop10OrderedItemsAsync(ownerId, null, excludedItems);
+            var result = await repository.GetTop10OrderedItemsAsync(ownerId, null, topOrderedItemsRequest);
 
             Assert.That(result, Has.Count.EqualTo(1));
             Assert.That(result[0].MenuItemName, Is.EqualTo("Dish2"));
@@ -165,7 +164,7 @@ namespace DotNet_Assignment.Tests.Repository
 
             var data = ReportTestsUtil.CreateOrderedItems(
                 ownerId,
-                OrderStatus.Placed,
+                OrderStatus.Delivered,
                 items.Select(x => (x.Name, x.Category,
                     x.Quantity
                 )).ToArray()
@@ -175,12 +174,12 @@ namespace DotNet_Assignment.Tests.Repository
 
             var repository = new ReportRepository(mockContext.Object);
 
-            var excludedItems = new ExcludedItemsDto
+            var topOrderedItemsRequest = new TopOrderedItemsRequestDto
             {
-                ExcludeItems = new List<string>()
+                ExcludeItems = new List<Guid>()
             };
 
-            var result = await repository.GetTop10OrderedItemsAsync(ownerId, null, excludedItems);
+            var result = await repository.GetTop10OrderedItemsAsync(ownerId, null, topOrderedItemsRequest);
 
             Assert.That(result, Has.Count.EqualTo(10));
         }
@@ -191,45 +190,31 @@ namespace DotNet_Assignment.Tests.Repository
         [Test]
         public async Task GetFrequentlyBoughtTogetherAsync_TwoItemsInSameOrder_ReturnsPair()
         {
-            var item1 = ReportTestsUtil.CreateMenuItem("Dish1", "Veg");
+            var ownerId = Guid.NewGuid();
 
-            var item2 = ReportTestsUtil.CreateMenuItem("Dish2", "NonVeg");
+            var orderedItemsList = ReportTestsUtil.CreateOrderedItems(
+                ownerId,
+                OrderStatus.Delivered,
+                ("Dish1", "Veg", 1),
+                ("Dish2", "NonVeg", 1)
+            );
 
-            var orderId = Guid.NewGuid();
+            var order = orderedItemsList[0].Order;
+            order.OrderedItems = orderedItemsList;
 
-            var data = new List<OrderedItem>
-            {
-                new OrderedItem
-                {
-                    OrderId = orderId,
-                    MenuItemId = item1.MenuItemId,
-                    MenuItem = item1
-                },
+            var data = orderedItemsList.AsQueryable();
 
-                new OrderedItem
-                {
-                    OrderId = orderId,
-                    MenuItemId = item2.MenuItemId,
-                    MenuItem = item2
-                }
-            }.AsQueryable();
-
-            var menuItems = new List<MenuItem>
-            {
-                item1,
-                item2
-            }.AsQueryable();
+            var menuItems = orderedItemsList.Select(x => x.MenuItem).AsQueryable();
 
             var mockContext = BuildMockContext(data, menuItems);
 
             var repository = new ReportRepository(mockContext.Object);
 
-            var result = await repository.GetFrequentlyBoughtTogetherAsync(Guid.NewGuid(), 10, new IncludedRestaurantsDto {} );
+            var result = await repository.GetFrequentlyBoughtTogetherAsync(Guid.NewGuid(), new IncludedRestaurantsDto { }, 10);
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Count, Is.EqualTo(1));
 
-            Assert.That(result[0].Item1, Is.EqualTo("Dish1"));
             Assert.That(result[0].TotalTimesBought, Is.EqualTo(1));
         }
 
@@ -239,38 +224,29 @@ namespace DotNet_Assignment.Tests.Repository
         [Test]
         public async Task GetFrequentlyBoughtTogetherAsync_DifferentOrders_ReturnsEmpty()
         {
-            var item1 = ReportTestsUtil.CreateMenuItem("Dish1", "Veg");
+            var ownerId = Guid.NewGuid();
 
-            var item2 = ReportTestsUtil.CreateMenuItem("Dish2", "NonVeg");
+            var orderItems1 = ReportTestsUtil.CreateOrderedItems(
+                ownerId, OrderStatus.Delivered,
+                ("Dish1", "Veg", 1)
+            );
+            orderItems1[0].Order.OrderedItems = orderItems1;
 
-            var data = new List<OrderedItem>
-            {
-                new OrderedItem
-                {
-                    OrderId = Guid.NewGuid(),
-                    MenuItemId = item1.MenuItemId,
-                    MenuItem = item1
-                },
+            var orderItems2 = ReportTestsUtil.CreateOrderedItems(
+                ownerId, OrderStatus.Delivered,
+                ("Dish2", "NonVeg", 1)
+            );
+            orderItems2[0].Order.OrderedItems = orderItems2;
 
-                new OrderedItem
-                {
-                    OrderId = Guid.NewGuid(),
-                    MenuItemId = item2.MenuItemId,
-                    MenuItem = item2
-                }
-            }.AsQueryable();
+            var data = orderItems1.Concat(orderItems2).ToList().AsQueryable();
 
-            var menuItems = new List<MenuItem>
-            {
-                item1,
-                item2
-            }.AsQueryable();
+            var menuItems = data.Select(x => x.MenuItem).AsQueryable();
 
-            var mockContext = BuildMockContext( data, menuItems);
+            var mockContext = BuildMockContext(data, menuItems);
 
             var repository = new ReportRepository(mockContext.Object);
 
-            var result = await repository.GetFrequentlyBoughtTogetherAsync(Guid.NewGuid(), 10, new IncludedRestaurantsDto { });
+            var result = await repository.GetFrequentlyBoughtTogetherAsync(Guid.NewGuid(), new IncludedRestaurantsDto { }, 10);
 
             Assert.That(result, Is.Empty);
         }
@@ -281,50 +257,28 @@ namespace DotNet_Assignment.Tests.Repository
         [Test]
         public async Task GetFrequentlyBoughtTogetherAsync_SizeLimitsResults()
         {
-            var item1 = ReportTestsUtil.CreateMenuItem("Dish1", "Veg");
-            var item2 = ReportTestsUtil.CreateMenuItem("Dish2", "NonVeg");
-            var item3 = ReportTestsUtil.CreateMenuItem("Dish3", "Veg");
+            var ownerId = Guid.NewGuid();
 
-            var orderId = Guid.NewGuid();
+            var orderedItemsList = ReportTestsUtil.CreateOrderedItems(
+                ownerId,
+                OrderStatus.Delivered,
+                ("Dish1", "Veg", 1),
+                ("Dish2", "NonVeg", 1),
+                ("Dish3", "Veg", 1)
+            );
 
-            var data = new List<OrderedItem>
-            {
-                new OrderedItem
-                {
-                    OrderId = orderId,
-                    MenuItemId = item1.MenuItemId,
-                    MenuItem = item1
-                },
+            var order = orderedItemsList[0].Order;
+            order.OrderedItems = orderedItemsList;
 
-                new OrderedItem
-                {
-                    OrderId = orderId,
-                    MenuItemId = item2.MenuItemId,
-                    MenuItem = item2
-                },
+            var data = orderedItemsList.AsQueryable();
 
-                new OrderedItem
-                {
-                    OrderId = orderId,
-                    MenuItemId = item3.MenuItemId,
-                    MenuItem = item3
-                }
-            }.AsQueryable();
+            var menuItems = orderedItemsList.Select(x => x.MenuItem).AsQueryable();
 
-            var menuItems = new List<MenuItem>
-            {
-                item1,
-                item2,
-                item3
-            }.AsQueryable();
-
-            var mockContext = BuildMockContext(
-                data,
-                menuItems);
+            var mockContext = BuildMockContext(data, menuItems);
 
             var repository = new ReportRepository(mockContext.Object);
 
-            var result = await repository.GetFrequentlyBoughtTogetherAsync(Guid.NewGuid(), 2, new IncludedRestaurantsDto { });
+            var result = await repository.GetFrequentlyBoughtTogetherAsync(Guid.NewGuid(), new IncludedRestaurantsDto { }, 2);
 
             Assert.That(result, Has.Count.EqualTo(2));
         }

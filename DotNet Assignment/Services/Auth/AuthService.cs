@@ -47,7 +47,7 @@ namespace DotNet_Assignment.Services.Auth
                 throw new EmailAlreadyExistsException(ExceptionMessages.EmailAlreadyExists);
             }
 
-            if(await _userRepository.FindUserByPhoneNumber(requestDto.PhoneNumber))
+            if (await _userRepository.FindUserByPhoneNumber(requestDto.PhoneNumber))
             {
                 throw new PhoneNumberExistsException(ExceptionMessages.PhoneNumberExists);
             }

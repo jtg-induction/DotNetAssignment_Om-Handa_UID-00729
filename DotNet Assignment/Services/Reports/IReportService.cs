@@ -9,8 +9,8 @@ namespace DotNet_Assignment.Services.Reports
 {
     public interface IReportService
     {
-        Task<byte[]> GetTop10OrderedItemsAsync(Guid ownerId, string category, ExcludedItemsDto excludedItemsDto);
+        Task<byte[]> GetTop10OrderedItemsAsync(Guid ownerId, string category, TopOrderedItemsRequestDto excludedItemsDto);
 
-        Task<byte[]> FrequentlyBoughtTogetherAsync(Guid ownerId, int size, IncludedRestaurantsDto includedRestaurants);
+        Task<byte[]> FrequentlyBoughtTogetherAsync(Guid ownerId, IncludedRestaurantsDto includedRestaurants, int? size);
     }
 }

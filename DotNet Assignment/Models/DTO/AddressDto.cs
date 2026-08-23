@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DotNet_Assignment.Constants;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace DotNet_Assignment.Models.DTO
 
         [Required]
         [StringLength(6)]
-        [RegularExpression(@"^[1-9][0-9]{5}$")]
+        [RegularExpression(Regex.PincodeRegex, ErrorMessage = ExceptionMessages.InvalidPincode)]
         public string Pincode { get; set; }
 
     }

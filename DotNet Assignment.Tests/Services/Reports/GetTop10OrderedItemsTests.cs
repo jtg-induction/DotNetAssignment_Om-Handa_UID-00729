@@ -62,14 +62,14 @@ namespace DotNet_Assignment.Tests.Services.Reports
             var expectedPdf = new byte[] { 1, 2, 3 };
 
             _reportRepository
-                .Setup(x => x.GetTop10OrderedItemsAsync(ownerId, category, It.IsAny<ExcludedItemsDto>()))
+                .Setup(x => x.GetTop10OrderedItemsAsync(ownerId, category, It.IsAny<TopOrderedItemsRequestDto>()))
                 .ReturnsAsync(data);
 
             _reportRenderer
                 .Setup(x => x.RenderReport("~/Reports/Top10OrderedItems.trdp", data))
                 .Returns(expectedPdf);
 
-            var result = await _reportService.GetTop10OrderedItemsAsync(ownerId, category, It.IsAny<ExcludedItemsDto>());
+            var result = await _reportService.GetTop10OrderedItemsAsync(ownerId, category, It.IsAny<TopOrderedItemsRequestDto>());
 
             Assert.That(result, Is.EqualTo(expectedPdf));
         }
@@ -87,16 +87,16 @@ namespace DotNet_Assignment.Tests.Services.Reports
             var data = new List<TopOrderedItemsResponseDto>();
 
             _reportRepository
-                .Setup(x => x.GetTop10OrderedItemsAsync(ownerId, category, It.IsAny<ExcludedItemsDto>()))
+                .Setup(x => x.GetTop10OrderedItemsAsync(ownerId, category, It.IsAny<TopOrderedItemsRequestDto>()))
                 .ReturnsAsync(data);
 
             _reportRenderer
                 .Setup(x => x.RenderReport("~/Reports/Top10OrderedItems.trdp", data))
                 .Returns(new byte[] { 1 });
 
-            await _reportService.GetTop10OrderedItemsAsync(ownerId, category, It.IsAny<ExcludedItemsDto>());
+            await _reportService.GetTop10OrderedItemsAsync(ownerId, category, It.IsAny<TopOrderedItemsRequestDto>());
 
-            _reportRepository.Verify(x => x.GetTop10OrderedItemsAsync(ownerId, category, It.IsAny<ExcludedItemsDto>()), Times.Once);
+            _reportRepository.Verify(x => x.GetTop10OrderedItemsAsync(ownerId, category, It.IsAny<TopOrderedItemsRequestDto>()), Times.Once);
         }
 
         /// <summary>
@@ -119,14 +119,14 @@ namespace DotNet_Assignment.Tests.Services.Reports
             };
 
             _reportRepository
-                .Setup(x => x.GetTop10OrderedItemsAsync(ownerId, category, It.IsAny<ExcludedItemsDto>()))
+                .Setup(x => x.GetTop10OrderedItemsAsync(ownerId, category, It.IsAny<TopOrderedItemsRequestDto>()))
                 .ReturnsAsync(data);
 
             _reportRenderer
                 .Setup(x => x.RenderReport("~/Reports/Top10OrderedItems.trdp", data))
                 .Returns(new byte[] { 1 });
 
-            await _reportService.GetTop10OrderedItemsAsync(ownerId, category, It.IsAny<ExcludedItemsDto>());
+            await _reportService.GetTop10OrderedItemsAsync(ownerId, category, It.IsAny<TopOrderedItemsRequestDto>());
 
             _reportRenderer.Verify(x => x.RenderReport("~/Reports/Top10OrderedItems.trdp", data), Times.Once);
         }

@@ -28,7 +28,7 @@ namespace DotNet_Assignment.Services.Reports
         /// </summary>
         /// <param name="ownerId"></param>
         /// <returns>Pdf bytes </returns>
-        public async Task<byte[]> GetTop10OrderedItemsAsync(Guid ownerId, string category, ExcludedItemsDto excludedItemsDto)
+        public async Task<byte[]> GetTop10OrderedItemsAsync(Guid ownerId, string category, TopOrderedItemsRequestDto excludedItemsDto)
         {
             var data = await _reportRepository.GetTop10OrderedItemsAsync(ownerId, category, excludedItemsDto);
 
@@ -40,9 +40,9 @@ namespace DotNet_Assignment.Services.Reports
         /// </summary>
         /// <param name="ownerId"></param>
         /// <returns>Pdf bytes </returns>
-        public async Task<byte[]> FrequentlyBoughtTogetherAsync(Guid ownerId, int size, IncludedRestaurantsDto includedRestaurants)
+        public async Task<byte[]> FrequentlyBoughtTogetherAsync(Guid ownerId, IncludedRestaurantsDto includedRestaurants,int? size)
         {
-            var data = await _reportRepository.GetFrequentlyBoughtTogetherAsync(ownerId, size, includedRestaurants);
+            var data = await _reportRepository.GetFrequentlyBoughtTogetherAsync(ownerId, includedRestaurants, size);
 
             return _reportRenderer.RenderReport("~/Reports/FrequentlyBoughtTogether.trdp", data);
         }
