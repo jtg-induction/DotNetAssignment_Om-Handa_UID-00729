@@ -47,6 +47,6 @@ namespace DotNet_Assignment.Constants
         public const string OrderCancelledByUser = "Order Cancelled By User";
         public const string CantCancelOrderDelivered = "Can't cancel, Order has already been delivered";
         public const string CantCancelOrderDispatched = "Can't cancel, Order has already been dispatched";
-
+        public const string OwnerNotAssignedToRestaurant = "Owner is not associated with the restauarant";
     }
 }

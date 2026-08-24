@@ -100,7 +100,7 @@ namespace DotNet_Assignment.Repository.Reports
                     ItemBId = x.ItemB.MenuItemId,
                     RestaurantId = x.ItemA.MenuItem.RestaurantId,
                     ItemAName = x.ItemA.MenuItem.Name,
-                    ItemBName = x.ItemA.MenuItem.Name,
+                    ItemBName = x.ItemB.MenuItem.Name,
                     RestaurantName = x.ItemA.MenuItem.Restaurant.Name
                 })
                 .OrderByDescending(g => g.Count())

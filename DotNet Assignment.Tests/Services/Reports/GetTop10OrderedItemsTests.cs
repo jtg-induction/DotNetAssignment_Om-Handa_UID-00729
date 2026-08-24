@@ -1,5 +1,6 @@
 ﻿using DotNet_Assignment.Data;
 using DotNet_Assignment.Models.DTO;
+using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Repository.Address;
 using DotNet_Assignment.Repository.Orders;
 using DotNet_Assignment.Repository.Reports;
@@ -22,6 +23,8 @@ namespace DotNet_Assignment.Tests.Services.Reports
     {
         private Mock<IReportRepository> _reportRepository;
         private Mock<IReportRenderer> _reportRenderer;
+        private Mock<IRestaurantRepository> _restaurantRepository;
+
         private ReportService _reportService;
 
         [SetUp]
@@ -29,10 +32,13 @@ namespace DotNet_Assignment.Tests.Services.Reports
         {
             _reportRepository = new Mock<IReportRepository>();
             _reportRenderer = new Mock<IReportRenderer>();
+            _restaurantRepository = new Mock<IRestaurantRepository>();
 
             _reportService = new ReportService(
                 _reportRepository.Object,
-                _reportRenderer.Object);
+                _reportRenderer.Object,
+                _restaurantRepository.Object
+                );
         }
 
         /// <summary>
@@ -61,6 +67,10 @@ namespace DotNet_Assignment.Tests.Services.Reports
 
             var expectedPdf = new byte[] { 1, 2, 3 };
 
+            _restaurantRepository
+                .Setup(x => x.GetRestaurantsWithOwnersByIdsAsync(It.IsAny<List<Guid>>()))
+                .ReturnsAsync(new List<Restaurant>());
+
             _reportRepository
                 .Setup(x => x.GetTop10OrderedItemsAsync(ownerId, category, It.IsAny<TopOrderedItemsRequestDto>()))
                 .ReturnsAsync(data);
@@ -69,7 +79,7 @@ namespace DotNet_Assignment.Tests.Services.Reports
                 .Setup(x => x.RenderReport("~/Reports/Top10OrderedItems.trdp", data))
                 .Returns(expectedPdf);
 
-            var result = await _reportService.GetTop10OrderedItemsAsync(ownerId, category, It.IsAny<TopOrderedItemsRequestDto>());
+            var result = await _reportService.GetTop10OrderedItemsAsync(ownerId, category, new TopOrderedItemsRequestDto());
 
             Assert.That(result, Is.EqualTo(expectedPdf));
         }
@@ -86,6 +96,10 @@ namespace DotNet_Assignment.Tests.Services.Reports
 
             var data = new List<TopOrderedItemsResponseDto>();
 
+            _restaurantRepository
+                .Setup(x => x.GetRestaurantsWithOwnersByIdsAsync(It.IsAny<List<Guid>>()))
+                .ReturnsAsync(new List<Restaurant>());
+
             _reportRepository
                 .Setup(x => x.GetTop10OrderedItemsAsync(ownerId, category, It.IsAny<TopOrderedItemsRequestDto>()))
                 .ReturnsAsync(data);
@@ -94,7 +108,7 @@ namespace DotNet_Assignment.Tests.Services.Reports
                 .Setup(x => x.RenderReport("~/Reports/Top10OrderedItems.trdp", data))
                 .Returns(new byte[] { 1 });
 
-            await _reportService.GetTop10OrderedItemsAsync(ownerId, category, It.IsAny<TopOrderedItemsRequestDto>());
+            await _reportService.GetTop10OrderedItemsAsync(ownerId, category, new TopOrderedItemsRequestDto());
 
             _reportRepository.Verify(x => x.GetTop10OrderedItemsAsync(ownerId, category, It.IsAny<TopOrderedItemsRequestDto>()), Times.Once);
         }
@@ -118,6 +132,10 @@ namespace DotNet_Assignment.Tests.Services.Reports
                 }
             };
 
+            _restaurantRepository
+                .Setup(x => x.GetRestaurantsWithOwnersByIdsAsync(It.IsAny<List<Guid>>()))
+                .ReturnsAsync(new List<Restaurant>());
+
             _reportRepository
                 .Setup(x => x.GetTop10OrderedItemsAsync(ownerId, category, It.IsAny<TopOrderedItemsRequestDto>()))
                 .ReturnsAsync(data);
@@ -126,7 +144,7 @@ namespace DotNet_Assignment.Tests.Services.Reports
                 .Setup(x => x.RenderReport("~/Reports/Top10OrderedItems.trdp", data))
                 .Returns(new byte[] { 1 });
 
-            await _reportService.GetTop10OrderedItemsAsync(ownerId, category, It.IsAny<TopOrderedItemsRequestDto>());
+            await _reportService.GetTop10OrderedItemsAsync(ownerId, category, new TopOrderedItemsRequestDto());
 
             _reportRenderer.Verify(x => x.RenderReport("~/Reports/Top10OrderedItems.trdp", data), Times.Once);
         }
