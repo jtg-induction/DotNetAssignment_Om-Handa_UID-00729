@@ -88,13 +88,18 @@ namespace DotNet_Assignment.Repository.Orders
         /// <param name="userId"></param>
         /// <param name="filterOptionsDto"></param>
         /// <returns>List of filtered Orders</returns>
-        public async Task<List<OrderDetailsResponseDto>> FilterOrderAsync(Guid userId, FilterOptionsDto filterOptionsDto)
+        public async Task<List<OrderDetailsResponseDto>> FilterOrderAsync(Guid userId, IncludedRestaurantsDto includedRestaurants, FilterOptionsDto filterOptionsDto)
         {
             var query = _context.Orders.AsNoTracking().Where(o => o.Restaurant.RestaurantOwners.Any(ro => ro.UserId == userId));
 
             if (filterOptionsDto == null)
             {
                 filterOptionsDto = new FilterOptionsDto();
+            }
+
+            if (includedRestaurants?.IncludeRestaurants != null && includedRestaurants.IncludeRestaurants.Any())
+            {
+                query = query.Where(x => includedRestaurants.IncludeRestaurants.Contains(x.RestaurantId));
             }
 
             if (!string.IsNullOrWhiteSpace(filterOptionsDto.Status))

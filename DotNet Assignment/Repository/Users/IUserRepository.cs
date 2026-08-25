@@ -14,6 +14,8 @@ namespace DotNet_Assignment.Repository.Users
         Task<User> GetUserByIdAsync(Guid userId);
 
         void AddUser(User user);
+
+        Task<bool> FindUserByPhoneNumber(string phoneNumber);
     }
 
 }

@@ -37,8 +37,7 @@ namespace DotNet_Assignment.Tests.Controllers.Auth
 
             var response = new JWTResponseDto
             {
-                AccessToken = "AccessToken",
-                RefreshToken = "RefreshToken"
+                AccessToken = "AccessToken"
             };
 
             _authService.Setup(x => x.RegisterAsync(requestDto))
@@ -82,8 +81,7 @@ namespace DotNet_Assignment.Tests.Controllers.Auth
 
             var response = new JWTResponseDto
             {
-                AccessToken = "AccessToken",
-                RefreshToken = "RefreshToken"
+                AccessToken = "AccessToken"
             };
 
             _authService.Setup(x => x.LoginAsync(requestDto))
@@ -174,8 +172,7 @@ namespace DotNet_Assignment.Tests.Controllers.Auth
 
             var response = new JWTResponseDto
             {
-                AccessToken = Constants.MockConstants.MockNewAccessToken,
-                RefreshToken = Constants.MockConstants.MockRefreshToken
+                AccessToken = Constants.MockConstants.MockNewAccessToken
             };
 
             _authService.Setup(x => x.RefreshAccessTokenAsync(requestDto.RefreshToken))

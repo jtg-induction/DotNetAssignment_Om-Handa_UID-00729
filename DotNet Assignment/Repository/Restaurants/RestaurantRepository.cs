@@ -116,6 +116,12 @@ namespace DotNet_Assignment.Repository.Restaurants
             return await _context.Restaurants.AnyAsync(x => x.RestaurantId == restaurantId);
         }
 
+        /// <summary>
+        /// Checks if a user is already an owner by userId
+        /// </summary>
+        /// <param name="restaurantId"></param>
+        /// <param name="userId"></param>
+        /// <returns>true if already owner, false otherwise</returns>
         public async Task<bool> IsUserAlreadyOwnerAsync(Guid restaurantId, Guid userId)
         {
             return await _context.RestaurantsOwner
@@ -123,6 +129,24 @@ namespace DotNet_Assignment.Repository.Restaurants
                 ro => ro.RestaurantId == restaurantId
                 && ro.UserId == userId
                 );
+        }
+
+        /// <summary>
+        /// Gets list of restaurants with its owners using restaurant Ids
+        /// </summary>
+        /// <param name="restaurantIds"></param>
+        /// <returns></returns>
+        public async Task<List<Restaurant>> GetRestaurantsWithOwnersByIdsAsync(List<Guid> restaurantIds)
+        {
+            if (restaurantIds == null || !restaurantIds.Any())
+            {
+                return new List<Restaurant>();
+            }
+
+            return await _context.Restaurants
+                .Include(r => r.RestaurantOwners)
+                .Where(r => restaurantIds.Contains(r.RestaurantId))
+                .ToListAsync();
         }
     }
 }

@@ -39,5 +39,14 @@ namespace DotNet_Assignment.Constants
         public const string InvalidOperation = "Invalid Operation";
         public const string NewPasswordCantBeSameAsOld = "New password can't be same as old password";
         public const string UserALreadyAssignedToThisRestaurant = "User is already assigned to this restaurant";
+        public const string PhoneNumberExists = "Phone Number Already Exists";
+        public const string WeakPassword = "At least 8 characters, including one uppercase letter, one lowercase letter, one number, and one special character is required";
+        public const string InvalidEmail = "Entered Email is not a valid Email";
+        public const string InvalidPhoneNumber = "Entered phone number is not a valid phone number";
+        public const string InvalidPincode = "Entered pincode is not a valid pincode";
+        public const string OrderCancelledByUser = "Order Cancelled By User";
+        public const string CantCancelOrderDelivered = "Can't cancel, Order has already been delivered";
+        public const string CantCancelOrderDispatched = "Can't cancel, Order has already been dispatched";
+        public const string OwnerNotAssignedToRestaurant = "Owner is not associated with the restauarant";
     }
 }

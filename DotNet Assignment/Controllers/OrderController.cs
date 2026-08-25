@@ -129,11 +129,11 @@ namespace DotNet_Assignment.Controllers
         [Authorize(Roles = nameof(UserRoles.Owner))]
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> FilterOrder([FromUri] FilterOptionsDto filterOptions)
+        public async Task<IHttpActionResult> FilterOrder(IncludedRestaurantsDto includedRestaurants, [FromUri] FilterOptionsDto filterOptions)
         {
             var userId = Guid.Parse(((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            var result = await _orderService.GetFilteredOrders(userId, filterOptions);
+            var result = await _orderService.GetFilteredOrders(userId, includedRestaurants, filterOptions);
 
             var response = new ApiResponseDto<List<OrderDetailsResponseDto>>
             {

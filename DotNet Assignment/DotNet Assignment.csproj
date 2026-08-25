@@ -161,6 +161,7 @@
     <Reference Include="System.Collections.Immutable, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Collections.Immutable.8.0.0\lib\net462\System.Collections.Immutable.dll</HintPath>
     </Reference>
+    <Reference Include="System.Design" />
     <Reference Include="System.Diagnostics.DiagnosticSource, Version=6.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Diagnostics.DiagnosticSource.6.0.2\lib\net461\System.Diagnostics.DiagnosticSource.dll</HintPath>
     </Reference>
@@ -210,6 +211,7 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
@@ -217,6 +219,18 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Telerik.Licensing.Runtime, Version=1.9.1.0, Culture=neutral, PublicKeyToken=98bb5b04e55c09ef, processorArchitecture=MSIL">
+      <HintPath>..\packages\Telerik.Licensing.1.9.1\lib\net462\Telerik.Licensing.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Reporting, Version=20.2.26.812, Culture=neutral, PublicKeyToken=a9d7983dfcc261be, processorArchitecture=MSIL">
+      <HintPath>..\packages\Telerik.Reporting.20.2.26.812\lib\net462\Telerik.Reporting.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Reporting.OpenXmlRendering.2.7.2, Version=20.2.26.812, Culture=neutral, PublicKeyToken=a9d7983dfcc261be, processorArchitecture=MSIL">
+      <HintPath>..\packages\Telerik.Reporting.20.2.26.812\lib\net462\Telerik.Reporting.OpenXmlRendering.2.7.2.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Reporting.XpsRendering, Version=20.2.26.812, Culture=neutral, PublicKeyToken=a9d7983dfcc261be, processorArchitecture=MSIL">
+      <HintPath>..\packages\Telerik.Reporting.20.2.26.812\lib\net462\Telerik.Reporting.XpsRendering.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.Abstractions, Version=5.11.6.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
       <HintPath>..\packages\Unity.Abstractions.5.11.6\lib\net48\Unity.Abstractions.dll</HintPath>
     </Reference>
@@ -229,6 +243,7 @@
     <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
       <HintPath>..\packages\WebActivatorEx.2.2.0\lib\net40\WebActivatorEx.dll</HintPath>
     </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Net.Http.Formatting">
@@ -254,12 +269,14 @@
     <Compile Include="Constants\Regex.cs" />
     <Compile Include="Controllers\AddressController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\RestaurantController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Constants\ExceptionMessages.cs" />
     <Compile Include="Constants\SuccessMessages.cs" />
     <Compile Include="Data\AppDbContext.cs" />
     <Compile Include="Exceptions\EmailAlreadyExistsException.cs" />
+    <Compile Include="Exceptions\PhoneNumberExistsException.cs" />
     <Compile Include="Exceptions\UserDeactivatedException.cs" />
     <Compile Include="Exceptions\WrongOperationException.cs" />
     <Compile Include="Global.asax.cs">
@@ -305,7 +322,10 @@
     <Compile Include="Models\DTO\ApiResponseDto.cs" />
     <Compile Include="Models\DTO\ChangeOrderStatusDto.cs" />
     <Compile Include="Models\DTO\ChangePasswordDto.cs" />
+    <Compile Include="Models\DTO\TopOrderedItemsRequestDto.cs" />
     <Compile Include="Models\DTO\FilterOptionsDto.cs" />
+    <Compile Include="Models\DTO\FrequentlyBoughtItemsDto.cs" />
+    <Compile Include="Models\DTO\IncludedRestaurantsDto.cs" />
     <Compile Include="Models\DTO\JWTResponseDto.cs" />
     <Compile Include="Models\DTO\LoginRequestDto.cs" />
     <Compile Include="Models\DTO\LogoutRequestDto.cs" />
@@ -319,6 +339,7 @@
     <Compile Include="Models\DTO\RestaurantOwnerRequestDto.cs" />
     <Compile Include="Models\DTO\RestaurantResponseDto.cs" />
     <Compile Include="Models\DTO\SignupRequestDto.cs" />
+    <Compile Include="Models\DTO\TopOrderedItemsResponseDto.cs" />
     <Compile Include="Models\DTO\UpdateUserDto.cs" />
     <Compile Include="Models\Entities\RefreshToken.cs" />
     <Compile Include="Models\Entities\UserAddress.cs" />
@@ -337,6 +358,8 @@
     <Compile Include="Repository\Orders\OrderRepository.cs" />
     <Compile Include="Repository\RefreshTokens\IRefreshTokenRepository.cs" />
     <Compile Include="Repository\RefreshTokens\RefreshTokenRepository.cs" />
+    <Compile Include="Repository\Reports\ReportRepository.cs" />
+    <Compile Include="Repository\Reports\IReportRepository.cs" />
     <Compile Include="Repository\Restaurants\IRestaurantRepository.cs" />
     <Compile Include="Repository\Restaurants\RestaurantRepository.cs" />
     <Compile Include="Repository\Users\IUserRepository.cs" />
@@ -350,6 +373,10 @@
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Services\Orders\IOrderService.cs" />
     <Compile Include="Services\Orders\OrderService.cs" />
+    <Compile Include="Services\Reports\IReportRenderer.cs" />
+    <Compile Include="Services\Reports\IReportService.cs" />
+    <Compile Include="Services\Reports\ReportRenderer.cs" />
+    <Compile Include="Services\Reports\ReportService.cs" />
     <Compile Include="Services\Restaurants\IRestaurantService.cs" />
     <Compile Include="Services\Restaurants\RestaurantService.cs" />
     <Compile Include="Services\Users\IUserService.cs" />
@@ -370,6 +397,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Reports\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202608011106215_InitialCreate.resx">
@@ -455,6 +483,7 @@
     <Error Condition="!Exists('..\packages\Microsoft.CodeCoverage.18.8.1\build\netstandard2.0\Microsoft.CodeCoverage.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeCoverage.18.8.1\build\netstandard2.0\Microsoft.CodeCoverage.targets'))" />
     <Error Condition="!Exists('..\packages\Microsoft.NET.Test.Sdk.18.8.1\build\net462\Microsoft.NET.Test.Sdk.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.NET.Test.Sdk.18.8.1\build\net462\Microsoft.NET.Test.Sdk.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.NET.Test.Sdk.18.8.1\build\net462\Microsoft.NET.Test.Sdk.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.NET.Test.Sdk.18.8.1\build\net462\Microsoft.NET.Test.Sdk.targets'))" />
+    <Error Condition="!Exists('..\packages\Telerik.Licensing.1.9.1\build\Telerik.Licensing.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Telerik.Licensing.1.9.1\build\Telerik.Licensing.targets'))" />
   </Target>
   <Import Project="..\packages\EntityFramework.6.5.2\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.5.2\build\EntityFramework.targets')" />
   <Import Project="..\packages\System.ValueTuple.4.6.2\build\net471\System.ValueTuple.targets" Condition="Exists('..\packages\System.ValueTuple.4.6.2\build\net471\System.ValueTuple.targets')" />
@@ -463,4 +492,5 @@
   <Import Project="..\packages\NUnit3TestAdapter.6.2.0\build\net462\NUnit3TestAdapter.targets" Condition="Exists('..\packages\NUnit3TestAdapter.6.2.0\build\net462\NUnit3TestAdapter.targets')" />
   <Import Project="..\packages\Microsoft.CodeCoverage.18.8.1\build\netstandard2.0\Microsoft.CodeCoverage.targets" Condition="Exists('..\packages\Microsoft.CodeCoverage.18.8.1\build\netstandard2.0\Microsoft.CodeCoverage.targets')" />
   <Import Project="..\packages\Microsoft.NET.Test.Sdk.18.8.1\build\net462\Microsoft.NET.Test.Sdk.targets" Condition="Exists('..\packages\Microsoft.NET.Test.Sdk.18.8.1\build\net462\Microsoft.NET.Test.Sdk.targets')" />
+  <Import Project="..\packages\Telerik.Licensing.1.9.1\build\Telerik.Licensing.targets" Condition="Exists('..\packages\Telerik.Licensing.1.9.1\build\Telerik.Licensing.targets')" />
 </Project>

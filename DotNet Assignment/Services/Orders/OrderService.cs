@@ -261,9 +261,14 @@ namespace DotNet_Assignment.Services.Orders
                 throw new WrongOperationException(ExceptionMessages.OrderRejectedByRestaurant);
             }
 
-            if (order.Status == OrderStatus.Dispatched || order.Status == OrderStatus.Delivered)
+            if (order.Status == OrderStatus.Dispatched)
             {
-                throw new WrongOperationException(ExceptionMessages.OrderCantBeCancelled);
+                throw new WrongOperationException(ExceptionMessages.CantCancelOrderDispatched);
+            }
+
+            if (order.Status == OrderStatus.Delivered)
+            {
+                throw new WrongOperationException(ExceptionMessages.CantCancelOrderDelivered);
             }
 
             var orderedItemIds = order.OrderedItems.Select(oi => oi.MenuItemId).ToList();
@@ -322,6 +327,11 @@ namespace DotNet_Assignment.Services.Orders
                 throw new UnauthorizedAccessException(ExceptionMessages.Unauthorized);
             }
 
+            if(order.Status == OrderStatus.Cancelled)
+            {
+                throw new WrongOperationException(ExceptionMessages.OrderCancelledByUser);
+            }
+
             if (order.Status == orderStatusDto.Status)
             {
                 throw new WrongOperationException(ExceptionMessages.OrderStatusAlreadyChanged);
@@ -368,9 +378,9 @@ namespace DotNet_Assignment.Services.Orders
         /// <param name="userId"></param>
         /// <param name="filterOptions">Query params given by controller</param>
         /// <returns>List of orders</returns>
-        public async Task<List<OrderDetailsResponseDto>> GetFilteredOrders(Guid userId, FilterOptionsDto filterOptions)
+        public async Task<List<OrderDetailsResponseDto>> GetFilteredOrders(Guid userId, IncludedRestaurantsDto includedRestaurants, FilterOptionsDto filterOptions)
         {
-            return await _orderRepository.FilterOrderAsync(userId, filterOptions);
+            return await _orderRepository.FilterOrderAsync(userId, includedRestaurants, filterOptions);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DotNet_Assignment.Constants;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace DotNet_Assignment.Models.DTO
 
         [Required]
         [StringLength(50), MinLength(8)]
+        [RegularExpression(Regex.PasswordRegex, ErrorMessage = ExceptionMessages.WeakPassword)]
         public string NewPassword { get; set; }
     }
 }

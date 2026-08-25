@@ -15,6 +15,6 @@ namespace DotNet_Assignment.Services.Orders
 
         Task ChangeOrderStatusAsync(ChangeOrderStatusDto orderStatusDto, Guid orderId, Guid ownerId);
 
-        Task<List<OrderDetailsResponseDto>> GetFilteredOrders(Guid userId, FilterOptionsDto filterOptions);
+        Task<List<OrderDetailsResponseDto>> GetFilteredOrders(Guid userId, IncludedRestaurantsDto includedRestaurants, FilterOptionsDto filterOptions);
     }
 }

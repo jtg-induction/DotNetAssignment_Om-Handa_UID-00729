@@ -10,6 +10,6 @@ namespace DotNet_Assignment.Constants
         public const string EmailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
         public const string PhoneNumberRegex = "^[0-9]{10}$";
         public const string PincodeRegex = "^[1-9][0-9]{5}$";
-
+        public const string PasswordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
     }
 }

@@ -63,12 +63,12 @@ namespace DotNet_Assignment.Tests.Services.Orders
             };
 
             _orderRepository
-                .Setup(x => x.FilterOrderAsync(userId, filterOptions))
+                .Setup(x => x.FilterOrderAsync(userId,  It.IsAny<IncludedRestaurantsDto>(), filterOptions))
                 .ReturnsAsync(new List<OrderDetailsResponseDto>{mockDto});
 
-            await _orderService.GetFilteredOrders(userId, filterOptions);
+            await _orderService.GetFilteredOrders(userId, new IncludedRestaurantsDto(), filterOptions);
 
-            _orderRepository.Verify(x => x.FilterOrderAsync(userId, filterOptions),Times.Once);
+            _orderRepository.Verify(x => x.FilterOrderAsync(userId, It.IsAny<IncludedRestaurantsDto>(), filterOptions),Times.Once);
         }
 
         /// <summary>
@@ -81,14 +81,14 @@ namespace DotNet_Assignment.Tests.Services.Orders
             var filterOptions = new FilterOptionsDto();
 
             _orderRepository
-                .Setup(x => x.FilterOrderAsync(userId, filterOptions))
+                .Setup(x => x.FilterOrderAsync(userId, It.IsAny<IncludedRestaurantsDto>(), filterOptions))
                 .ReturnsAsync(new List<OrderDetailsResponseDto> {});
 
-            var result = await _orderService.GetFilteredOrders(userId, filterOptions);
+            var result = await _orderService.GetFilteredOrders(userId, new IncludedRestaurantsDto(), filterOptions);
 
             Assert.That(result.Count ,Is.EqualTo(0));
 
-            _orderRepository.Verify(x => x.FilterOrderAsync(userId, filterOptions), Times.Once);
+            _orderRepository.Verify(x => x.FilterOrderAsync(userId, It.IsAny<IncludedRestaurantsDto>(), filterOptions), Times.Once);
         }
 
         /// <summary>
@@ -107,14 +107,14 @@ namespace DotNet_Assignment.Tests.Services.Orders
             var mockDto = new List<OrderDetailsResponseDto> { dto1, dto2, dto3 };
 
             _orderRepository
-                .Setup(x => x.FilterOrderAsync(userId, filterOptions))
+                .Setup(x => x.FilterOrderAsync(userId, It.IsAny<IncludedRestaurantsDto>(), filterOptions))
                 .ReturnsAsync( mockDto );
 
-            var result = await _orderService.GetFilteredOrders(userId, filterOptions);
+            var result = await _orderService.GetFilteredOrders(userId, new IncludedRestaurantsDto(), filterOptions);
 
             Assert.That(result.Count, Is.EqualTo(3));
 
-            _orderRepository.Verify(x => x.FilterOrderAsync(userId, filterOptions), Times.Once);
+            _orderRepository.Verify(x => x.FilterOrderAsync(userId, It.IsAny<IncludedRestaurantsDto>(), filterOptions), Times.Once);
         }
     }
 }

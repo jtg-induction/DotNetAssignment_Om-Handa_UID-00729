@@ -20,6 +20,6 @@ namespace DotNet_Assignment.Repository.Orders
 
         Task<Order> GetOrderForUpdateAsync(Guid orderId);
 
-        Task<List<OrderDetailsResponseDto>> FilterOrderAsync(Guid userId, FilterOptionsDto filterOptionsDto);
+        Task<List<OrderDetailsResponseDto>> FilterOrderAsync(Guid userId, IncludedRestaurantsDto includedRestaurants, FilterOptionsDto filterOptionsDto);
     }
 }

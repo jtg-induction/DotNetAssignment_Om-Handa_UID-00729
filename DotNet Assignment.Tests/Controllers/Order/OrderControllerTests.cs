@@ -245,7 +245,7 @@ namespace DotNet_Assignment.Tests.Controllers.Order
                 };
 
             _orderService
-                .Setup(x => x.GetFilteredOrders(It.IsAny<Guid>(), It.IsAny<FilterOptionsDto>()))
+                .Setup(x => x.GetFilteredOrders(It.IsAny<Guid>(), It.IsAny<IncludedRestaurantsDto>(), It.IsAny<FilterOptionsDto>()))
                 .ReturnsAsync(orders);
 
             var filterOrderDto = new FilterOptionsDto
@@ -259,11 +259,11 @@ namespace DotNet_Assignment.Tests.Controllers.Order
                 SearchByOrderId = null
             };
 
-            var result = await _orderController.FilterOrder(filterOrderDto);
+            var result = await _orderController.FilterOrder(new IncludedRestaurantsDto(),filterOrderDto);
 
             Assert.That(result, Is.TypeOf<OkNegotiatedContentResult<ApiResponseDto<List<OrderDetailsResponseDto>>>>());
 
-            _orderService.Verify(x => x.GetFilteredOrders(It.IsAny<Guid>(), It.IsAny<FilterOptionsDto>()), Times.Once);
+            _orderService.Verify(x => x.GetFilteredOrders(It.IsAny<Guid>(), It.IsAny<IncludedRestaurantsDto>(), It.IsAny<FilterOptionsDto>()), Times.Once);
         }
 
         /// <summary>
@@ -279,10 +279,10 @@ namespace DotNet_Assignment.Tests.Controllers.Order
             var exceptionMessage = ExceptionMessages.NoOrdersToShow;
 
             _orderService
-                .Setup(x => x.GetFilteredOrders(It.IsAny<Guid>(), It.IsAny<FilterOptionsDto>()))
+                .Setup(x => x.GetFilteredOrders(It.IsAny<Guid>(), It.IsAny<IncludedRestaurantsDto>(), It.IsAny<FilterOptionsDto>()))
                 .ThrowsAsync(new Exception(exceptionMessage));
 
-            Func<Task> action = async () => await _orderController.FilterOrder(new FilterOptionsDto { });
+            Func<Task> action = async () => await _orderController.FilterOrder(new IncludedRestaurantsDto(), new FilterOptionsDto { });
 
             var exception = Assert.CatchAsync<Exception>(action);
 

@@ -28,5 +28,7 @@ namespace DotNet_Assignment.Repository.Restaurants
 
         Task<bool> IsUserAlreadyOwnerAsync(Guid restaurantId, Guid userId);
 
+        Task<List<Restaurant>> GetRestaurantsWithOwnersByIdsAsync(List<Guid> restaurantIds);
+
     }
 }

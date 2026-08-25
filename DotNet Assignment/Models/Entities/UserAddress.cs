@@ -26,7 +26,7 @@ namespace DotNet_Assignment.Models.Entities
 
         [Required]
         [StringLength(6)]
-        [RegularExpression(Regex.PincodeRegex)]
+        [RegularExpression(Regex.PincodeRegex, ErrorMessage =ExceptionMessages.InvalidPincode)]
         public string Pincode { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
