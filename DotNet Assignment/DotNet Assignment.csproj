@@ -390,6 +390,7 @@
     <Content Include="Secrets.config" />
     <Content Include="Reports\Top10OrderedItems.trdp" />
     <Content Include="Reports\Top10OrderedItems.trdp" />
+    <Content Include="Secrets.template.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -33,7 +33,7 @@ namespace DotNet_Assignment.Constants
         public const string NoOrdersToShow = "No Orders To Show";
         public const string Unauthorized = "Unauthorized";
         public const string OrderStatusAlreadyChanged = "Order status has already been changed";
-        public const string InvalidOrderStatus = "Invalid Order Status";
+        public const string InvalidOrderStatus = "Invalid order status";
         public const string OrderRejectedByRestaurant = "Order Rejected By Restaurant";
         public const string RestaurantIsClosed = "Restaurant Is Closed";
         public const string InvalidOperation = "Invalid Operation";
