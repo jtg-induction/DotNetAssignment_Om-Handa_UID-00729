@@ -1,6 +1,7 @@
 ﻿using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
 using DotNet_Assignment.Handlers;
+using Newtonsoft.Json;
 
 namespace DotNet_Assignment
 {
@@ -23,6 +24,8 @@ namespace DotNet_Assignment
                 typeof(IExceptionHandler), new GlobalExceptionHandler());
 
             config.Filters.Add(new ModelStateHandler());
+
+            config.Formatters.JsonFormatter.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
         }
     }
 }

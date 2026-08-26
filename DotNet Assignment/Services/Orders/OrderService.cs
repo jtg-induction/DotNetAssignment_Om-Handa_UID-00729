@@ -202,7 +202,8 @@ namespace DotNet_Assignment.Services.Orders
                     Name = item.MenuItem.Name,
                     Description = item.MenuItem.Description,
                     Price = item.ItemPrice,
-                    Quantity = item.Quantity
+                    Quantity = item.Quantity,
+                    Category = item.MenuItem.Category
                 }).ToList()
             };
         }

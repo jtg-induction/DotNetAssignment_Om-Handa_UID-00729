@@ -116,6 +116,12 @@ namespace DotNet_Assignment.Repository.Restaurants
             return await _context.Restaurants.AnyAsync(x => x.RestaurantId == restaurantId);
         }
 
+        /// <summary>
+        /// Checks is a user is already owner of a restaurant
+        /// </summary>
+        /// <param name="restaurantId"></param>
+        /// <param name="userId"></param>
+        /// <returns>True is user is already an owner, else otherwise</returns>
         public async Task<bool> IsUserAlreadyOwnerAsync(Guid restaurantId, Guid userId)
         {
             return await _context.RestaurantsOwner
@@ -124,5 +130,25 @@ namespace DotNet_Assignment.Repository.Restaurants
                 && ro.UserId == userId
                 );
         }
+
+        /// <summary>
+        /// Gets count of all restaurants available
+        /// </summary>
+        /// <returns>Count of all restaurants</returns>
+        public async Task<int> GetRestaurantsCount()
+        {
+            return await _context.Restaurants.CountAsync();
+        }
+
+        /// <summary>
+        /// Gets count of all available menu items of a restaurants
+        /// </summary>
+        /// <param name="restaurantId"></param>
+        /// <returns>Count of all menu items of a restaurant</returns>
+        public async Task<int> GetMenuItemsCountByRestaurantId(Guid restaurantId)
+        {
+            return await _context.MenuItems.Where(mi => mi.RestaurantId == restaurantId && !mi.IsDeleted).CountAsync();
+        }
+
     }
 }

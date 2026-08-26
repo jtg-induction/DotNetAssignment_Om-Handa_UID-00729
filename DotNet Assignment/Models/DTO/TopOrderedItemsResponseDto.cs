@@ -8,7 +8,7 @@ namespace DotNet_Assignment.Models.DTO
     public class TopOrderedItemsResponseDto
     {
         public string MenuItemName { get; set; }
-        public int TotalQuantity { get; set; }
+        public int TotalQuantityOrdered { get; set; }
         public string RestaurantName { get; set; }
     }
 }

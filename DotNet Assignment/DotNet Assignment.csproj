@@ -322,6 +322,7 @@
     <Compile Include="Models\DTO\ApiResponseDto.cs" />
     <Compile Include="Models\DTO\ChangeOrderStatusDto.cs" />
     <Compile Include="Models\DTO\ChangePasswordDto.cs" />
+    <Compile Include="Models\DTO\PagedResponseDto.cs" />
     <Compile Include="Models\DTO\TopOrderedItemsRequestDto.cs" />
     <Compile Include="Models\DTO\FilterOptionsDto.cs" />
     <Compile Include="Models\DTO\FrequentlyBoughtItemsDto.cs" />
@@ -385,9 +386,10 @@
     <Compile Include="Utils\Hasher.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ConnectionString.config" />
     <None Include="packages.config" />
     <Content Include="Secrets.config" />
+    <Content Include="Reports\Top10OrderedItems.trdp" />
+    <Content Include="Reports\Top10OrderedItems.trdp" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -397,7 +399,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Reports\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202608011106215_InitialCreate.resx">

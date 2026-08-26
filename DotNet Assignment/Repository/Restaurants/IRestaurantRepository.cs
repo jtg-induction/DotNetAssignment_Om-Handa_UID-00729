@@ -28,5 +28,9 @@ namespace DotNet_Assignment.Repository.Restaurants
 
         Task<bool> IsUserAlreadyOwnerAsync(Guid restaurantId, Guid userId);
 
+        Task<int> GetRestaurantsCount();
+
+        Task<int> GetMenuItemsCountByRestaurantId(Guid restaurantId);
+
     }
 }

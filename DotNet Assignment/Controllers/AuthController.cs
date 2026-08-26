@@ -4,7 +4,9 @@ using DotNet_Assignment.Services.Auth;
 using System;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 
 namespace DotNet_Assignment.Controllers
@@ -56,9 +58,13 @@ namespace DotNet_Assignment.Controllers
         [Authorize]
         [HttpPost]
         [Route("logout")]
-        public async Task<IHttpActionResult> LogoutAsync(LogoutRequestDto requestDto)
+        public async Task<IHttpActionResult> LogoutAsync(LogoutRequestDto logoutRequest)
         {
-            await _authService.LogoutAsync(requestDto);
+            var cookie = Request.Headers.GetCookies("RefreshToken").FirstOrDefault();
+
+            string refreshToken = cookie["RefreshToken"].Value;
+            
+            await _authService.LogoutAsync(logoutRequest);
 
             var response = new ApiResponseDto<object>() { IsSuccess = true, Message = SuccessMessages.UserLoggedOut };
             return Ok(response);

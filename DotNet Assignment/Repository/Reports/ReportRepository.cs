@@ -39,15 +39,15 @@ namespace DotNet_Assignment.Repository.Reports
                 query = query.Where(oi => oi.MenuItem.Category.ToLower() == targetCategory);
             }
 
-            if (topOrderedItemsRequest?.ExcludeItems != null && topOrderedItemsRequest.ExcludeItems.Any())
+            if (topOrderedItemsRequest?.ExcludedItemIds != null && topOrderedItemsRequest.ExcludedItemIds.Any())
             {
-                var safeExcludedItems = topOrderedItemsRequest.ExcludeItems;
+                var safeExcludedItems = topOrderedItemsRequest.ExcludedItemIds;
                 query = query.Where(x => !safeExcludedItems.Contains(x.MenuItem.MenuItemId));
             }
 
-            if (topOrderedItemsRequest?.IncludeRestaurants != null && topOrderedItemsRequest.IncludeRestaurants.Any())
+            if (topOrderedItemsRequest?.RestaurantIds != null && topOrderedItemsRequest.RestaurantIds.Any())
             {
-                var safeIncludedRestaurants = topOrderedItemsRequest.IncludeRestaurants;
+                var safeIncludedRestaurants = topOrderedItemsRequest.RestaurantIds;
                 query = query.Where(x => safeIncludedRestaurants.Contains(x.MenuItem.RestaurantId));
             }
 
@@ -63,9 +63,9 @@ namespace DotNet_Assignment.Repository.Reports
                 {
                     MenuItemName = grp.Key.ItemName,
                     RestaurantName = grp.Key.RestaurantName,
-                    TotalQuantity = grp.Sum(q => q.Quantity)
+                    TotalQuantityOrdered = grp.Sum(q => q.Quantity)
                 })
-                .OrderByDescending(oi => oi.TotalQuantity)
+                .OrderByDescending(oi => oi.TotalQuantityOrdered)
                 .Take(10)
                 .ToListAsync();
 
@@ -86,11 +86,11 @@ namespace DotNet_Assignment.Repository.Reports
 
             query = query.Where(x => x.ItemA.MenuItemId.CompareTo(x.ItemB.MenuItemId) < 0);
 
-            if (includedRestaurants?.IncludeRestaurants != null && includedRestaurants.IncludeRestaurants.Any())
+            if (includedRestaurants?.RestaurantsIds != null && includedRestaurants.RestaurantsIds.Any())
             {
                 query = query.Where(x =>
-                    includedRestaurants.IncludeRestaurants.Contains(x.ItemA.MenuItem.RestaurantId) &&
-                    includedRestaurants.IncludeRestaurants.Contains(x.ItemB.MenuItem.RestaurantId));
+                    includedRestaurants.RestaurantsIds.Contains(x.ItemA.MenuItem.RestaurantId) &&
+                    includedRestaurants.RestaurantsIds.Contains(x.ItemB.MenuItem.RestaurantId));
             }
 
             return await query
@@ -108,7 +108,7 @@ namespace DotNet_Assignment.Repository.Reports
                 {
                     Item1 = g.Key.ItemAName,
                     Item2 = g.Key.ItemBName,
-                    TotalTimesBought = g.Count(),
+                    TotalTimesBoughtTogether = g.Count(),
                     RestaurantName = g.Key.RestaurantName
                 })
                 .Take(listSize)

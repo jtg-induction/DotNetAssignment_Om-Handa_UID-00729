@@ -2,13 +2,11 @@
 using DotNet_Assignment.Data;
 using DotNet_Assignment.Exceptions;
 using DotNet_Assignment.Models.DTO;
-using DotNet_Assignment.Models.Entities;
 using DotNet_Assignment.Repository.RefreshTokens;
 using DotNet_Assignment.Repository.Users;
 using DotNet_Assignment.Utils;
 using System;
 using System.Collections.Generic;
-using System.Security.Authentication;
 using System.Threading.Tasks;
 
 namespace DotNet_Assignment.Services.Users

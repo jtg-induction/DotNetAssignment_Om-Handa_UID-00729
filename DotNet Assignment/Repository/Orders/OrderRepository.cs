@@ -97,9 +97,9 @@ namespace DotNet_Assignment.Repository.Orders
                 filterOptionsDto = new FilterOptionsDto();
             }
 
-            if (includedRestaurants?.IncludeRestaurants != null && includedRestaurants.IncludeRestaurants.Any())
+            if (includedRestaurants?.RestaurantsIds != null && includedRestaurants.RestaurantsIds.Any())
             {
-                query = query.Where(x => includedRestaurants.IncludeRestaurants.Contains(x.RestaurantId));
+                query = query.Where(x => includedRestaurants.RestaurantsIds.Contains(x.RestaurantId));
             }
 
             if (!string.IsNullOrWhiteSpace(filterOptionsDto.Status))
@@ -151,7 +151,8 @@ namespace DotNet_Assignment.Repository.Orders
                         Name = oi.MenuItem.Name,
                         Description = oi.MenuItem.Description,
                         Price = oi.ItemPrice,
-                        Quantity = oi.Quantity
+                        Quantity = oi.Quantity,
+                        Category = oi.MenuItem.Category
                     }).ToList()
                 }).ToListAsync();
         }

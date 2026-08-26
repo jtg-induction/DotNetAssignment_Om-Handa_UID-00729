@@ -1,11 +1,12 @@
 ﻿using DotNet_Assignment.Models.Entities;
+using System.Configuration;
 using System.Data.Entity;
 
 namespace DotNet_Assignment.Data
 {
     public class AppDbContext: DbContext
     {
-        public AppDbContext() : base("name= RestaurantPortal") { }
+        public AppDbContext() : base(ConfigurationManager.AppSettings["DbConnectionString"]) { }
 
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<MenuItem> MenuItems { get; set; }

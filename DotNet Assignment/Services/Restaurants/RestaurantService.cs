@@ -37,23 +37,41 @@ namespace DotNet_Assignment.Services.Restaurants
         /// <param name="pageSize">Restaurants to be shown on one page</param>
         /// <returns>List of restaurants</returns>
         /// <exception cref="Exception">If no restaurants found</exception>
-        public async Task<List<RestaurantResponseDto>> GetAllRestaurantsAsync(int page, int pageSize)
+        public async Task<PagedResponseDto<RestaurantResponseDto>> GetAllRestaurantsAsync(int page, int pageSize)
         {
-            var restaurants = await _restaurantRepository.GetPagedRestaurantsAsync(page, pageSize);
-
-            return restaurants.Select(r => new RestaurantResponseDto
+            if (pageSize < 0 || page < 0)
             {
-                RestaurantId = r.RestaurantId,
-                Name = r.Name,
-                Description = r.Description,
-                Street = r.Street,
-                Landmark = r.Landmark,
-                City = r.City,
-                State = r.State,
-                Pincode = r.Pincode,
-                Rating = r.Rating,
-                IsOpen = r.IsOpen,
-            }).ToList();
+                throw new Exception(ExceptionMessages.InvalidPageorPageSize);
+            }
+
+            var restaurants = await _restaurantRepository.GetPagedRestaurantsAsync(page, pageSize);
+            var totalCount = await _restaurantRepository.GetRestaurantsCount();
+            int totalPages = (totalCount + pageSize - 1) / pageSize;
+            bool hasNextPage = page < totalPages;
+            bool hasPrevPage = page > 1;
+
+            return new PagedResponseDto<RestaurantResponseDto>
+            {
+                ItemsList = restaurants.Select(r => new RestaurantResponseDto
+                {
+                    RestaurantId = r.RestaurantId,
+                    Name = r.Name,
+                    Description = r.Description,
+                    Street = r.Street,
+                    Landmark = r.Landmark,
+                    City = r.City,
+                    State = r.State,
+                    Pincode = r.Pincode,
+                    Rating = r.Rating,
+                    IsOpen = r.IsOpen,
+                }).ToList(),
+                TotalPages = totalPages,
+                TotalCount = totalCount,
+                PageNumber = page,
+                PageSize = pageSize,
+                HasNextPage = hasNextPage,
+                HasPrevPage = hasPrevPage
+            };
         }
 
         /// <summary>
@@ -64,8 +82,12 @@ namespace DotNet_Assignment.Services.Restaurants
         /// <param name="pageSize">Items to be shown on a page</param>
         /// <returns>List of menu items</returns>
         /// <exception cref="Exception">If restaurant not found, no items in restaurant</exception>
-        public async Task<List<MenuItemResponseDto>> GetMenuItemsByRestaurantIdAsync(Guid restaurantId, int page, int pageSize)
+        public async Task<PagedResponseDto<MenuItemResponseDto>> GetMenuItemsByRestaurantIdAsync(Guid restaurantId, int page, int pageSize)
         {
+            if (pageSize < 0 || page < 0)
+            {
+                throw new Exception(ExceptionMessages.InvalidPageorPageSize);
+            }
 
             if (!await _restaurantRepository.RestaurantExists(restaurantId))
             {
@@ -73,16 +95,29 @@ namespace DotNet_Assignment.Services.Restaurants
             }
 
             var menuItems = await _restaurantRepository.GetPagedMenuItems(restaurantId, page, pageSize);
+            int totalCount = await _restaurantRepository.GetMenuItemsCountByRestaurantId(restaurantId);
+            int totalPages = (totalCount + pageSize - 1) / pageSize;
+            bool hasNextPage = page < totalPages;
+            bool hasPrevPage = page > 1;
 
-            return menuItems.Select(mi => new MenuItemResponseDto
+            return new PagedResponseDto<MenuItemResponseDto>
             {
-                MenuItemId = mi.MenuItemId,
-                Name = mi.Name,
-                Description = mi.Description,
-                Rating = mi.Rating,
-                Category = mi.Category,
-                Price = mi.Price,
-            }).ToList();
+                ItemsList = menuItems.Select(mi => new MenuItemResponseDto
+                {
+                    MenuItemId = mi.MenuItemId,
+                    Name = mi.Name,
+                    Description = mi.Description,
+                    Rating = mi.Rating,
+                    Category = mi.Category,
+                    Price = mi.Price,
+                }).ToList(),
+                TotalPages = totalPages,
+                TotalCount = totalCount,
+                PageNumber = page,
+                PageSize = pageSize,
+                HasNextPage = hasNextPage,
+                HasPrevPage = hasPrevPage
+            };
         }
 
         /// <summary>

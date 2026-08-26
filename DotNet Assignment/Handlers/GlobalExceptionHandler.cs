@@ -30,10 +30,6 @@ namespace DotNet_Assignment.Handlers
 
             switch (exception)
             {
-                case KeyNotFoundException _:
-                    statusCode = HttpStatusCode.NotFound;
-                    break;
-
                 case SecurityTokenExpiredException _:
                 case SecurityTokenException _:
                 case AuthenticationException _:
@@ -45,12 +41,14 @@ namespace DotNet_Assignment.Handlers
                     statusCode = HttpStatusCode.Forbidden;
                     break;
 
-                case EmailAlreadyExistsException _: 
+                case EmailAlreadyExistsException _:
+                case PhoneNumberExistsException _:
                     statusCode = HttpStatusCode.Conflict;
                     break;
 
                 case WrongOperationException _:
                 case ArgumentException _:
+                case KeyNotFoundException _:
                     statusCode = HttpStatusCode.BadRequest;
                     break;
 
